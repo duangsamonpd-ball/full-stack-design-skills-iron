@@ -1,0 +1,18 @@
+---
+// Material 3 button — utility classes live here; variants via a prop (component-library-mastery).
+interface Props {
+  variant?: 'filled' | 'outlined' | 'text';
+  type?: 'button' | 'submit' | 'reset';
+  id?: string;
+  class?: string;
+}
+const { variant = 'filled', type = 'button', id, class: extra = '' } = Astro.props;
+
+const base = 'state inline-flex items-center justify-center gap-2 rounded-full text-sm font-medium focus-visible:outline-none';
+const variants = {
+  filled:   'h-10 px-6 bg-primary text-on-primary transition-shadow hover:shadow-md disabled:opacity-40 disabled:shadow-none disabled:pointer-events-none',
+  outlined: 'h-10 px-6 border border-outline text-primary',
+  text:     'h-9 px-3 text-primary',
+};
+---
+<button type={type} id={id} class={`${base} ${variants[variant]} ${extra}`}><slot /></button>

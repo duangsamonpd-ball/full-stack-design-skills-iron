@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Prototype — Iron Software Skills Test (Tailwind v4)</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script>
+    (function () {
+      var s = localStorage.getItem('theme');
+      if (s === 'dark' || (!s && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    })();
+  </script>
+
+  <style type="text/tailwindcss">
+    @custom-variant dark (&:where(.dark, .dark *));
+
+    :root {
+      --steel-50:  oklch(0.985 0.003 250); --steel-100: oklch(0.968 0.005 250);
+      --steel-200: oklch(0.922 0.007 250); --steel-300: oklch(0.860 0.009 250);
+      --steel-400: oklch(0.680 0.012 250); --steel-500: oklch(0.550 0.013 250);
+      --steel-700: oklch(0.372 0.013 255); --steel-800: oklch(0.270 0.013 255);
+      --steel-900: oklch(0.208 0.013 258); --steel-950: oklch(0.150 0.012 260);
+      --white: oklch(1 0 0);
+      --teal-500: oklch(0.680 0.105 197); --teal-600: oklch(0.600 0.108 198);
+      --teal-700: oklch(0.520 0.100 199); --teal-800: oklch(0.460 0.092 200);
+      --green-600: oklch(0.620 0.150 150); --amber-500: oklch(0.800 0.140 78);
+      --red-600: oklch(0.585 0.205 22);   --blue-600: oklch(0.580 0.140 250);
+
+      --bg: var(--steel-50); --surface: var(--white); --surface-2: var(--steel-100);
+      --content: var(--steel-900); --muted: var(--steel-500); --border: var(--steel-200);
+      --brand: var(--teal-700); --brand-hover: var(--teal-800); --brand-fg: var(--white);
+      --ring: var(--teal-600);
+      --success: var(--green-600); --warning: var(--amber-500); --danger: var(--red-600); --info: var(--blue-600);
+      --chart-1: #0d9488;                       /* validated categorical (light) — see dataviz validator */
+    }
+    .dark {
+      --bg: var(--steel-950); --surface: var(--steel-900); --surface-2: var(--steel-800);
+      --content: var(--steel-50); --muted: var(--steel-400); --border: var(--steel-800);
+      --brand: var(--teal-600); --brand-hover: var(--teal-500); --brand-fg: var(--steel-950);
+      --ring: var(--teal-500);
+      --chart-1: #0d9488;                       /* passes contrast on dark surface too */
+    }
+
+    @theme inline {
+      --color-bg: var(--bg); --color-surface: var(--surface); --color-surface-2: var(--surface-2);
+      --color-content: var(--content); --color-muted: var(--muted); --color-border: var(--border);
+      --color-brand: var(--brand); --color-brand-hover: var(--brand-hover); --color-brand-fg: var(--brand-fg);
+      --color-ring: var(--ring);
+      --color-success: var(--success); --color-warning: var(--warning);
+      --color-danger: var(--danger); --color-info: var(--info);
+      --color-chart-1: var(--chart-1);
+      --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    @layer components {
+      .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg font-medium select-none
+             transition-[background-color,box-shadow,opacity] duration-150 focus-visible:outline-none
+             focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+             disabled:opacity-50 disabled:pointer-events-none; }
+      .btn-sm { @apply h-8 px-3 text-sm; } .btn-md { @apply h-10 px-4 text-sm; }
+      .btn-primary { @apply bg-brand text-brand-fg hover:bg-brand-hover; }
+      .btn-secondary { @apply bg-surface text-content ring-1 ring-inset ring-border hover:bg-surface-2; }
+      .btn-ghost { @apply text-content hover:bg-surface-2; }
+      .input { @apply h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-content
+              placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-transparent; }
+      .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset; }
+      .card { @apply rounded-xl border border-border bg-surface; }
+      .nav-link { @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted
+                 transition-colors hover:bg-surface-2 hover:text-content focus-visible:outline-none
+                 focus-visible:ring-2 focus-visible:ring-ring aria-[current=page]:bg-brand/12 aria-[current=page]:text-brand; }
+    }
+
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { transition-duration:.01ms!important; animation-duration:.01ms!important; } }
+  </style>
+</head>
+
+<body class="min-h-screen bg-bg text-content font-sans antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-brand focus:px-4 focus:py-2 focus:text-brand-fg">Skip to content</a>
+
+  <div class="lg:grid lg:grid-cols-[240px_1fr] lg:min-h-screen">
+
+    <!-- ─────────── Sidebar (landmark nav; drawer on mobile) ─────────── -->
+    <div id="backdrop" class="fixed inset-0 z-30 hidden bg-black/40 lg:hidden"></div>
+    <aside id="sidebar"
+           class="fixed inset-y-0 left-0 z-40 w-60 -translate-x-full border-r border-border bg-surface
+                  transition-transform lg:static lg:translate-x-0 lg:transition-none flex flex-col">
+      <div class="flex items-center gap-3 px-5 h-16 border-b border-border">
+        <span aria-hidden="true" class="grid h-9 w-9 place-items-center rounded-lg bg-brand text-brand-fg font-bold">Fe</span>
+        <p class="font-semibold tracking-tight">Iron Analytics</p>
+      </div>
+      <nav aria-label="Primary" class="flex-1 space-y-1 p-3">
+        <a href="#" class="nav-link" aria-current="page">
+          <svg class="h-4.5 w-4.5" width="18" height="18" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M3 4a1 1 0 0 1 1-1h5v14H4a1 1 0 0 1-1-1V4Zm8-1h5a1 1 0 0 1 1 1v6h-6V3Zm0 8h6v5a1 1 0 0 1-1 1h-5v-6Z"/></svg>
+          Overview
+        </a>
+        <a href="#" class="nav-link">
+          <svg class="h-4.5 w-4.5" width="18" height="18" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M2 13a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4H2v-4Zm6-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v9H8V8Zm6-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v13h-4V4Z"/></svg>
+          Reports
+        </a>
+        <a href="#" class="nav-link">
+          <svg class="h-4.5 w-4.5" width="18" height="18" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-7 7a7 7 0 0 1 14 0v1H3v-1Z"/></svg>
+          Customers
+        </a>
+        <a href="#" class="nav-link">
+          <svg class="h-4.5 w-4.5" width="18" height="18" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8.3 2.2a2 2 0 0 1 3.4 0l.5.9 1-.2a2 2 0 0 1 2.4 2.4l-.2 1 .9.5a2 2 0 0 1 0 3.4l-.9.5.2 1a2 2 0 0 1-2.4 2.4l-1-.2-.5.9a2 2 0 0 1-3.4 0l-.5-.9-1 .2a2 2 0 0 1-2.4-2.4l.2-1-.9-.5a2 2 0 0 1 0-3.4l.9-.5-.2-1A2 2 0 0 1 6.8 2.9l1 .2.5-.9ZM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd"/></svg>
+          Settings
+        </a>
+      </nav>
+      <div class="border-t border-border p-3">
+        <div class="flex items-center gap-3 rounded-lg px-2 py-1.5">
+          <span aria-hidden="true" class="grid h-8 w-8 place-items-center rounded-full bg-surface-2 text-xs font-semibold">BP</span>
+          <div class="leading-tight"><p class="text-sm font-medium">Ball P.</p><p class="text-xs text-muted">Iron Software</p></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ─────────── Main column ─────────── -->
+    <div class="flex min-w-0 flex-col">
+      <!-- Top bar -->
+      <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-border bg-bg/80 px-4 backdrop-blur sm:px-6">
+        <button id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar"
+                class="btn btn-sm btn-ghost lg:hidden -ml-1 px-2">
+          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 5h14a1 1 0 0 0 0-2H3a1 1 0 1 0 0 2Zm0 6h14a1 1 0 1 0 0-2H3a1 1 0 1 0 0 2Zm0 6h14a1 1 0 1 0 0-2H3a1 1 0 1 0 0 2Z" clip-rule="evenodd"/></svg>
+        </button>
+        <div>
+          <h1 class="text-base font-semibold tracking-tight">Overview</h1>
+          <p class="hidden text-xs text-muted sm:block">Last 30 days · updated just now</p>
+        </div>
+        <div class="ml-auto flex items-center gap-2">
+          <label class="relative hidden sm:block">
+            <span class="sr-only">Search</span>
+            <svg class="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 3.4 9.8l3.6 3.6a1 1 0 0 0 1.4-1.4l-3.6-3.6A5.5 5.5 0 0 0 9 3.5ZM5.5 9a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0Z" clip-rule="evenodd"/></svg>
+            <input type="search" placeholder="Search…" class="input h-9 w-48 pl-8" />
+          </label>
+          <button id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Toggle dark mode"
+                  class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-surface-2 ring-1 ring-inset ring-border transition-colors
+                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg aria-checked:bg-brand">
+            <span aria-hidden="true" class="inline-block h-4 w-4 translate-x-1 rounded-full bg-white shadow transition-transform"></span>
+          </button>
+          <button class="btn btn-sm btn-primary">Export</button>
+        </div>
+      </header>
+
+      <main id="main" class="flex-1 space-y-6 p-4 sm:p-6">
+
+        <!-- ─────────── KPI tiles (dataviz: hero numbers, status delta + icon) ─────────── -->
+        <section aria-labelledby="kpi-h">
+          <h2 id="kpi-h" class="sr-only">Key metrics</h2>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <!-- tile -->
+            <div class="card p-5">
+              <p class="text-sm text-muted">Revenue</p>
+              <div class="mt-1 flex items-end justify-between gap-2">
+                <p class="text-2xl font-bold tracking-tight tabular-nums">$284.5k</p>
+                <span class="badge bg-success/12 text-success ring-success/25">
+                  <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 2 10 7H2L6 2Z"/></svg>+12.4%
+                </span>
+              </div>
+              <svg class="mt-3 h-8 w-full" viewBox="0 0 120 32" fill="none" preserveAspectRatio="none" aria-hidden="true">
+                <polyline points="0,26 20,22 40,24 60,16 80,18 100,9 120,6" stroke="var(--chart-1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="card p-5">
+              <p class="text-sm text-muted">Active users</p>
+              <div class="mt-1 flex items-end justify-between gap-2">
+                <p class="text-2xl font-bold tracking-tight tabular-nums">18,204</p>
+                <span class="badge bg-success/12 text-success ring-success/25">
+                  <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 2 10 7H2L6 2Z"/></svg>+3.1%
+                </span>
+              </div>
+              <svg class="mt-3 h-8 w-full" viewBox="0 0 120 32" fill="none" preserveAspectRatio="none" aria-hidden="true">
+                <polyline points="0,20 20,18 40,22 60,15 80,17 100,12 120,10" stroke="var(--chart-1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="card p-5">
+              <p class="text-sm text-muted">Conversion</p>
+              <div class="mt-1 flex items-end justify-between gap-2">
+                <p class="text-2xl font-bold tracking-tight tabular-nums">3.84%</p>
+                <span class="badge bg-danger/12 text-danger ring-danger/25">
+                  <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 10 2 5h8L6 10Z"/></svg>−0.6%
+                </span>
+              </div>
+              <svg class="mt-3 h-8 w-full" viewBox="0 0 120 32" fill="none" preserveAspectRatio="none" aria-hidden="true">
+                <polyline points="0,10 20,12 40,11 60,16 80,15 100,20 120,22" stroke="var(--chart-1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="card p-5">
+              <p class="text-sm text-muted">Avg. order</p>
+              <div class="mt-1 flex items-end justify-between gap-2">
+                <p class="text-2xl font-bold tracking-tight tabular-nums">$62.10</p>
+                <span class="badge bg-success/12 text-success ring-success/25">
+                  <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 2 10 7H2L6 2Z"/></svg>+5.9%
+                </span>
+              </div>
+              <svg class="mt-3 h-8 w-full" viewBox="0 0 120 32" fill="none" preserveAspectRatio="none" aria-hidden="true">
+                <polyline points="0,24 20,20 40,21 60,18 80,14 100,13 120,8" stroke="var(--chart-1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </section>
+
+        <!-- ─────────── Charts row ─────────── -->
+        <section class="grid grid-cols-1 gap-4 lg:grid-cols-3" aria-labelledby="charts-h">
+          <h2 id="charts-h" class="sr-only">Charts</h2>
+
+          <!-- Revenue trend: single series + dashed reference (dataviz form=change over time) -->
+          <div class="card p-5 lg:col-span-2">
+            <div class="mb-1 flex items-start justify-between gap-4">
+              <div>
+                <h3 class="font-semibold tracking-tight">Revenue</h3>
+                <p class="text-xs text-muted">Monthly, this year</p>
+              </div>
+              <!-- reference key: gray dashed = last year; not a categorical colour -->
+              <div class="flex items-center gap-4 text-xs text-muted">
+                <span class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-full" style="background:var(--chart-1)"></span>This year</span>
+                <span class="flex items-center gap-1.5"><span class="h-0 w-4 border-t-2 border-dashed border-muted"></span>Last year</span>
+              </div>
+            </div>
+            <div id="trend-wrap" class="relative">
+              <svg id="trend" class="w-full" viewBox="0 0 720 260" role="img" aria-label="Revenue by month, this year versus last year"></svg>
+              <div id="trend-tip" class="pointer-events-none absolute z-10 hidden rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs shadow-lg"></div>
+            </div>
+          </div>
+
+          <!-- Sessions by channel: single-hue bars (magnitude, not coloured by rank) -->
+          <div class="card p-5">
+            <h3 class="font-semibold tracking-tight">Sessions by channel</h3>
+            <p class="text-xs text-muted">Last 30 days</p>
+            <svg class="mt-3 w-full" viewBox="0 0 320 220" role="img" aria-label="Sessions by channel: Organic 12.4k, Direct 8.1k, Referral 5.3k, Social 3.6k">
+              <!-- recessive baseline -->
+              <line x1="16" y1="180" x2="304" y2="180" stroke="var(--border)" stroke-width="1"/>
+              <g class="chart-bar" fill="var(--chart-1)">
+                <rect x="30"  y="30"  width="50" height="150" rx="4"><title>Organic — 12.4k</title></rect>
+                <rect x="100" y="82"  width="50" height="98"  rx="4"><title>Direct — 8.1k</title></rect>
+                <rect x="170" y="116" width="50" height="64"  rx="4"><title>Referral — 5.3k</title></rect>
+                <rect x="240" y="136" width="50" height="44"  rx="4"><title>Social — 3.6k</title></rect>
+              </g>
+              <g fill="var(--content)" font-size="12" font-weight="600" text-anchor="middle">
+                <text x="55" y="22">12.4k</text><text x="125" y="74">8.1k</text>
+                <text x="195" y="108">5.3k</text><text x="265" y="128">3.6k</text>
+              </g>
+              <g fill="var(--muted)" font-size="11" text-anchor="middle">
+                <text x="55" y="198">Organic</text><text x="125" y="198">Direct</text>
+                <text x="195" y="198">Referral</text><text x="265" y="198">Social</text>
+              </g>
+            </svg>
+          </div>
+        </section>
+
+        <!-- ─────────── Bottom row: table + goal meter ─────────── -->
+        <section class="grid grid-cols-1 gap-4 lg:grid-cols-3" aria-labelledby="orders-h">
+          <div class="card lg:col-span-2">
+            <div class="flex items-center justify-between gap-4 border-b border-border px-5 py-3">
+              <h2 id="orders-h" class="font-semibold tracking-tight">Recent orders</h2>
+              <button class="btn btn-sm btn-secondary">View all</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm">
+                <thead class="text-xs uppercase tracking-wide text-muted">
+                  <tr class="border-b border-border">
+                    <th scope="col" class="px-5 py-2.5 font-medium">Order</th>
+                    <th scope="col" class="px-5 py-2.5 font-medium">Customer</th>
+                    <th scope="col" class="px-5 py-2.5 font-medium">Status</th>
+                    <th scope="col" class="px-5 py-2.5 font-medium text-right">Total</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-border">
+                  <tr>
+                    <td class="px-5 py-3 font-medium tabular-nums">#4821</td><td class="px-5 py-3 text-muted">Ada Lovelace</td>
+                    <td class="px-5 py-3"><span class="badge bg-success/12 text-success ring-success/25">Paid</span></td>
+                    <td class="px-5 py-3 text-right tabular-nums">$128.00</td>
+                  </tr>
+                  <tr>
+                    <td class="px-5 py-3 font-medium tabular-nums">#4820</td><td class="px-5 py-3 text-muted">Grace Hopper</td>
+                    <td class="px-5 py-3"><span class="badge bg-warning/15 text-warning ring-warning/30">Pending</span></td>
+                    <td class="px-5 py-3 text-right tabular-nums">$74.50</td>
+                  </tr>
+                  <tr>
+                    <td class="px-5 py-3 font-medium tabular-nums">#4819</td><td class="px-5 py-3 text-muted">Alan Turing</td>
+                    <td class="px-5 py-3"><span class="badge bg-danger/12 text-danger ring-danger/25">Refunded</span></td>
+                    <td class="px-5 py-3 text-right tabular-nums">$52.10</td>
+                  </tr>
+                  <tr>
+                    <td class="px-5 py-3 font-medium tabular-nums">#4818</td><td class="px-5 py-3 text-muted">Katherine Johnson</td>
+                    <td class="px-5 py-3"><span class="badge bg-success/12 text-success ring-success/25">Paid</span></td>
+                    <td class="px-5 py-3 text-right tabular-nums">$213.75</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Goal meter (dataviz: a single proportion → a meter, not a pie) -->
+          <div class="card p-5">
+            <h2 class="font-semibold tracking-tight">Quarterly goal</h2>
+            <p class="text-xs text-muted">$284.5k of $360k</p>
+            <div class="mt-5 flex items-end justify-between">
+              <p class="text-3xl font-bold tracking-tight tabular-nums">79%</p>
+              <p class="text-xs text-muted">21% to go</p>
+            </div>
+            <div class="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-surface-2"
+                 role="progressbar" aria-valuenow="79" aria-valuemin="0" aria-valuemax="100" aria-label="Quarterly goal progress">
+              <div class="h-full rounded-full" style="width:79%;background:var(--chart-1)"></div>
+            </div>
+            <dl class="mt-5 space-y-2 text-sm">
+              <div class="flex justify-between"><dt class="text-muted">Days left</dt><dd class="font-medium tabular-nums">18</dd></div>
+              <div class="flex justify-between"><dt class="text-muted">Daily run-rate</dt><dd class="font-medium tabular-nums">$4.2k</dd></div>
+              <div class="flex justify-between"><dt class="text-muted">Projected</dt><dd class="font-medium tabular-nums text-success">$360k+</dd></div>
+            </dl>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // ── theme toggle ─────────────────────────────────────────────
+    var toggle = document.getElementById('theme-toggle');
+    var knob = toggle.querySelector('span');
+    function sync() {
+      var d = document.documentElement.classList.contains('dark');
+      toggle.setAttribute('aria-checked', d ? 'true' : 'false');
+      knob.classList.toggle('translate-x-6', d); knob.classList.toggle('translate-x-1', !d);
+    }
+    sync();
+    toggle.addEventListener('click', function () {
+      var d = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', d ? 'dark' : 'light'); sync(); drawTrend();
+    });
+
+    // ── mobile sidebar drawer ────────────────────────────────────
+    var sidebar = document.getElementById('sidebar'), backdrop = document.getElementById('backdrop'), menu = document.getElementById('menu-btn');
+    function openNav(o){ sidebar.classList.toggle('-translate-x-full', !o); backdrop.classList.toggle('hidden', !o); menu.setAttribute('aria-expanded', o?'true':'false'); }
+    menu.addEventListener('click', function(){ openNav(sidebar.classList.contains('-translate-x-full')); });
+    backdrop.addEventListener('click', function(){ openNav(false); });
+    addEventListener('keydown', function(e){ if(e.key==='Escape') openNav(false); });
+
+    // ── revenue trend chart (built in JS; sr-only table is the no-JS fallback) ──
+    var SVGNS = 'http://www.w3.org/2000/svg';
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var thisYr = [18,21,19,24,23,27,26,29,28,31,30,34];   // $k
+    var lastYr = [15,16,17,18,20,19,22,21,24,23,25,26];
+    var W=720,H=260, padL=40,padR=16,padT=16,padB=32;
+    var plotW=W-padL-padR, plotH=H-padT-padB;
+    var lo=10, hi=36;                                       // padded domain
+    var X=function(i){ return padL + i*(plotW/(months.length-1)); };
+    var Y=function(v){ return padT + plotH - ((v-lo)/(hi-lo))*plotH; };
+
+    function el(name, attrs){ var e=document.createElementNS(SVGNS,name); for(var k in attrs) e.setAttribute(k,attrs[k]); return e; }
+
+    function drawTrend(){
+      var svg=document.getElementById('trend'); svg.innerHTML='';
+      // area gradient (defs)
+      var defs=el('defs',{}), grad=el('linearGradient',{id:'areaGrad',x1:0,y1:0,x2:0,y2:1});
+      grad.appendChild(el('stop',{offset:'0%','stop-color':'var(--chart-1)','stop-opacity':0.30}));
+      grad.appendChild(el('stop',{offset:'100%','stop-color':'var(--chart-1)','stop-opacity':0}));
+      defs.appendChild(grad); svg.appendChild(defs);
+      // gridlines + y labels (recessive)
+      [10,18,26,34].forEach(function(v){
+        svg.appendChild(el('line',{x1:padL,y1:Y(v),x2:W-padR,y2:Y(v),stroke:'var(--border)','stroke-width':1}));
+        var t=el('text',{x:padL-8,y:Y(v)+4,fill:'var(--muted)','font-size':11,'text-anchor':'end'}); t.textContent='$'+v+'k'; svg.appendChild(t);
+      });
+      // x labels
+      months.forEach(function(m,i){ var t=el('text',{x:X(i),y:H-10,fill:'var(--muted)','font-size':11,'text-anchor':'middle'}); t.textContent=m; svg.appendChild(t); });
+      // last-year reference (dashed, muted — NOT a categorical colour)
+      svg.appendChild(el('polyline',{points:lastYr.map(function(v,i){return X(i)+','+Y(v);}).join(' '),fill:'none',stroke:'var(--muted)','stroke-width':1.5,'stroke-dasharray':'4 4','stroke-linecap':'round'}));
+      // this-year area + line (single series, brand hue)
+      var line=thisYr.map(function(v,i){return X(i)+','+Y(v);}).join(' ');
+      svg.appendChild(el('polygon',{points:padL+','+(padT+plotH)+' '+line+' '+(W-padR)+','+(padT+plotH),fill:'url(#areaGrad)',stroke:'none'}));
+      svg.appendChild(el('polyline',{points:line,fill:'none',stroke:'var(--chart-1)','stroke-width':2.5,'stroke-linecap':'round','stroke-linejoin':'round'}));
+      // direct-label the last point (selective labelling)
+      var lx=X(months.length-1), ly=Y(thisYr[thisYr.length-1]);
+      svg.appendChild(el('circle',{cx:lx,cy:ly,r:3.5,fill:'var(--chart-1)',stroke:'var(--surface)','stroke-width':2}));
+      var lbl=el('text',{x:lx-6,y:ly-8,fill:'var(--content)','font-size':12,'font-weight':600,'text-anchor':'end'}); lbl.textContent='$34k'; svg.appendChild(lbl);
+      // crosshair layer
+      var cross=el('line',{y1:padT,y2:padT+plotH,stroke:'var(--border)','stroke-width':1,visibility:'hidden'});
+      var dot=el('circle',{r:4,fill:'var(--chart-1)',stroke:'var(--surface)','stroke-width':2,visibility:'hidden'});
+      svg.appendChild(cross); svg.appendChild(dot);
+      svg.__cross=cross; svg.__dot=dot;
+    }
+
+    // hover crosshair + tooltip
+    (function(){
+      var svg=document.getElementById('trend'), tip=document.getElementById('trend-tip'), wrap=document.getElementById('trend-wrap');
+      function move(clientX){
+        var r=svg.getBoundingClientRect(), sx=(clientX-r.left)/r.width*W;
+        var i=Math.round((sx-padL)/(plotW/(months.length-1))); i=Math.max(0,Math.min(months.length-1,i));
+        var px=X(i), py=Y(thisYr[i]);
+        svg.__cross.setAttribute('x1',px); svg.__cross.setAttribute('x2',px); svg.__cross.setAttribute('visibility','visible');
+        svg.__dot.setAttribute('cx',px); svg.__dot.setAttribute('cy',py); svg.__dot.setAttribute('visibility','visible');
+        tip.classList.remove('hidden');
+        tip.innerHTML='<div class="font-medium">'+months[i]+'</div><div class="text-muted">This yr <b class="text-content">$'+thisYr[i]+'k</b> · Last yr $'+lastYr[i]+'k</div>';
+        var tx=px/W*wrap.clientWidth, ty=py/H*wrap.clientHeight;
+        tip.style.left=Math.min(Math.max(tx,4),wrap.clientWidth-tip.offsetWidth-4)+'px';
+        tip.style.top=(ty-tip.offsetHeight-12)+'px';
+      }
+      function hide(){ svg.__cross&&svg.__cross.setAttribute('visibility','hidden'); svg.__dot&&svg.__dot.setAttribute('visibility','hidden'); tip.classList.add('hidden'); }
+      svg.addEventListener('pointermove',function(e){ move(e.clientX); });
+      svg.addEventListener('pointerleave',hide);
+    })();
+
+    drawTrend();
+  </script>
+
+  <!-- No-JS / screen-reader data fallback for the trend chart (dataviz: a table view exists) -->
+  <table class="sr-only">
+    <caption>Monthly revenue ($k), this year vs last year</caption>
+    <thead><tr><th>Month</th><th>This year</th><th>Last year</th></tr></thead>
+    <tbody id="trend-data"></tbody>
+  </table>
+  <script>
+    (function(){ var b=document.getElementById('trend-data'); ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].forEach(function(m,i){ b.insertAdjacentHTML('beforeend','<tr><th>'+m+'</th><td>$'+[18,21,19,24,23,27,26,29,28,31,30,34][i]+'k</td><td>$'+[15,16,17,18,20,19,22,21,24,23,25,26][i]+'k</td></tr>'); }); })();
+  </script>
+</body>
+</html>

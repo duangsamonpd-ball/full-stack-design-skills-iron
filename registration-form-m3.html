@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create account — Material 3 (Iron Software Skills Test)</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      var s = localStorage.getItem('theme');
+      if (s === 'dark' || (!s && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    })();
+  </script>
+
+  <style type="text/tailwindcss">
+    @custom-variant dark (&:where(.dark, .dark *));
+
+    /* ── Material 3 tonal scheme (baseline purple) — same method, swapped token values ── */
+    :root {
+      --primary:#6750A4; --on-primary:#FFFFFF; --primary-container:#EADDFF; --on-primary-container:#21005D;
+      --secondary-container:#E8DEF8; --on-secondary-container:#1D192B;
+      --surface:#FEF7FF; --on-surface:#1D1B20; --surface-variant:#E7E0EC; --on-surface-variant:#49454F;
+      --outline:#79747E; --outline-variant:#CAC4D0;
+      --sc-lowest:#FFFFFF; --sc-low:#F7F2FA; --sc:#F3EDF7; --sc-high:#ECE6F0; --sc-highest:#E6E0E9;
+      --error:#B3261E; --on-error:#FFFFFF; --error-container:#F9DEDC; --on-error-container:#410E0B;
+      --success:#386A20; --warning:#8A5A00;
+    }
+    .dark {
+      --primary:#D0BCFF; --on-primary:#381E72; --primary-container:#4F378B; --on-primary-container:#EADDFF;
+      --secondary-container:#4A4458; --on-secondary-container:#E8DEF8;
+      --surface:#141218; --on-surface:#E6E0E9; --surface-variant:#49454F; --on-surface-variant:#CAC4D0;
+      --outline:#938F99; --outline-variant:#49454F;
+      --sc-lowest:#0F0D13; --sc-low:#1D1B20; --sc:#211F26; --sc-high:#2B2930; --sc-highest:#36343B;
+      --error:#F2B8B5; --on-error:#601410; --error-container:#8C1D18; --on-error-container:#F9DEDC;
+      --success:#B6F0A0; --warning:#F5BD6F;
+    }
+
+    @theme inline {
+      --color-primary:var(--primary); --color-on-primary:var(--on-primary);
+      --color-primary-container:var(--primary-container); --color-on-primary-container:var(--on-primary-container);
+      --color-secondary-container:var(--secondary-container); --color-on-secondary-container:var(--on-secondary-container);
+      --color-surface:var(--surface); --color-on-surface:var(--on-surface);
+      --color-surface-variant:var(--surface-variant); --color-on-surface-variant:var(--on-surface-variant);
+      --color-outline:var(--outline); --color-outline-variant:var(--outline-variant);
+      --color-sc-lowest:var(--sc-lowest); --color-sc-low:var(--sc-low); --color-sc:var(--sc);
+      --color-sc-high:var(--sc-high); --color-sc-highest:var(--sc-highest);
+      --color-error:var(--error); --color-on-error:var(--on-error);
+      --color-error-container:var(--error-container); --color-on-error-container:var(--on-error-container);
+      --color-success:var(--success); --color-warning:var(--warning);
+      --font-sans:'Roboto', ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-family:'Material Symbols Outlined'; font-weight:normal; font-style:normal;
+      font-size:20px; line-height:1; letter-spacing:normal; text-transform:none;
+      display:inline-block; white-space:nowrap; direction:ltr;
+    }
+
+    @layer components {
+      /* M3 buttons — stadium shape + state layer (.state below) */
+      .m3-filled   { @apply inline-flex h-10 items-center justify-center gap-2 rounded-full bg-primary px-6
+                     text-sm font-medium text-on-primary transition-shadow hover:shadow-md
+                     focus-visible:outline-none disabled:opacity-40 disabled:shadow-none disabled:pointer-events-none; }
+      .m3-outlined { @apply inline-flex h-10 items-center justify-center gap-2 rounded-full border border-outline
+                     px-6 text-sm font-medium text-primary focus-visible:outline-none; }
+      .m3-text     { @apply inline-flex h-9 items-center justify-center gap-2 rounded-full px-3 text-sm font-medium text-primary focus-visible:outline-none; }
+
+      /* M3 filled text field */
+      .m3-input { @apply h-14 w-full rounded-t-[4px] border-b border-outline bg-sc-highest pl-12 pr-4 pt-5 pb-1
+                  text-sm text-on-surface caret-primary outline-none transition-colors
+                  hover:border-on-surface focus:border-b-2 focus:border-primary
+                  placeholder:text-transparent; }
+      .m3-label { @apply pointer-events-none absolute left-12 top-1.5 text-xs text-on-surface-variant transition-all duration-150; }
+      .m3-lead  { @apply absolute left-3 top-4 text-on-surface-variant transition-colors; }
+      .m3-support { @apply mt-1 flex items-center gap-1 px-4 text-xs; }
+    }
+
+    /* state layer (M3): currentColor overlay at 8/12% */
+    .state { position:relative; overflow:hidden; isolation:isolate; }
+    .state::after { content:""; position:absolute; inset:0; background:currentColor; opacity:0; transition:opacity .15s; pointer-events:none; }
+    .state:hover::after { opacity:.08; }
+    .state:focus-visible::after { opacity:.12; }
+    .state:active::after { opacity:.12; }
+
+    /* error state on a field wrapper */
+    .field-invalid .m3-input, .field-invalid .m3-input:focus { border-color:var(--error); }
+    .field-invalid .m3-label, .field-invalid .m3-lead { color:var(--error); }
+    .req.met { color:var(--success); }
+
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { transition-duration:.01ms!important; animation-duration:.01ms!important; } }
+  </style>
+</head>
+
+<body class="min-h-screen bg-surface font-sans text-on-surface antialiased">
+  <div class="lg:grid lg:min-h-screen lg:grid-cols-2">
+
+    <!-- LEFT: M3 tonal hero panel (lg+) — reflows away on smaller screens -->
+    <aside class="hidden bg-primary-container p-10 text-on-primary-container lg:flex lg:flex-col lg:justify-between xl:p-14">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined">deployed_code</span>
+        <span class="font-medium">Iron Software</span>
+      </div>
+      <div class="max-w-sm">
+        <h2 class="text-3xl font-normal leading-tight tracking-tight xl:text-4xl">Ship UI your whole team trusts.</h2>
+        <ul class="mt-8 space-y-5 text-on-primary-container/90">
+          <li class="flex gap-3"><span class="material-symbols-outlined shrink-0">verified</span><span>Accessible by default — WCAG 2.1 AA states on every component.</span></li>
+          <li class="flex gap-3"><span class="material-symbols-outlined shrink-0">palette</span><span>One token system — light, dark, and per-brand from a single source.</span></li>
+          <li class="flex gap-3"><span class="material-symbols-outlined shrink-0">grid_view</span><span>React · Astro · Vue — the same components across all three.</span></li>
+        </ul>
+      </div>
+      <p class="text-sm text-on-primary-container/70">Material 3 · same skills, swapped design system</p>
+    </aside>
+
+    <!-- RIGHT: form pane -->
+    <main class="flex items-center justify-center p-4 sm:p-6">
+      <div class="w-full max-w-md">
+
+      <!-- top: brand (mobile) + M3 switch -->
+      <div class="mb-4 flex items-center justify-between px-2">
+        <div class="flex items-center gap-2 text-on-surface-variant lg:invisible">
+          <span class="material-symbols-outlined text-primary">deployed_code</span>
+          <span class="text-sm font-medium">Iron Software</span>
+        </div>
+        <button id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Toggle dark mode"
+                class="relative h-8 w-[52px] shrink-0 rounded-full bg-sc-highest ring-2 ring-inset ring-outline transition-colors
+                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary aria-checked:bg-primary aria-checked:ring-primary">
+          <span id="knob" class="absolute left-1.5 top-1/2 grid h-4 w-4 -translate-y-1/2 place-items-center rounded-full bg-outline transition-all"></span>
+        </button>
+      </div>
+
+      <!-- M3 elevated card (extra-large shape) -->
+      <div class="rounded-[28px] bg-sc-high p-6 shadow-lg sm:p-8">
+
+        <div id="form-view">
+          <h1 class="text-2xl font-normal tracking-tight">Create your account</h1>
+          <p class="mt-1 text-sm text-on-surface-variant">Already have one?
+            <a href="#" class="font-medium text-primary hover:underline">Sign in</a>
+          </p>
+
+          <div class="mt-6 grid grid-cols-2 gap-3">
+            <button type="button" class="m3-outlined state"><span class="material-symbols-outlined">login</span>Google</button>
+            <button type="button" class="m3-outlined state"><span class="material-symbols-outlined">code</span>GitHub</button>
+          </div>
+
+          <div class="my-6 flex items-center gap-3 text-xs text-on-surface-variant">
+            <span class="h-px flex-1 bg-outline-variant"></span> or use your email <span class="h-px flex-1 bg-outline-variant"></span>
+          </div>
+
+          <div id="summary" role="alert" class="mb-4 hidden rounded-xl bg-error-container p-3 text-sm text-on-error-container"></div>
+
+          <form id="signup" novalidate class="space-y-5">
+            <!-- name -->
+            <div>
+              <div class="field relative">
+                <input id="name" name="name" type="text" autocomplete="name" required placeholder=" " class="m3-input peer" />
+                <label for="name" class="m3-label peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-focus:top-1.5 peer-focus:text-xs peer-focus:font-medium peer-focus:text-primary">Full name</label>
+                <span class="material-symbols-outlined m3-lead peer-focus:text-primary" aria-hidden="true">person</span>
+              </div>
+              <p id="name-err" class="m3-support hidden text-error"></p>
+            </div>
+
+            <!-- email -->
+            <div>
+              <div class="field relative">
+                <input id="email" name="email" type="email" autocomplete="email" required placeholder=" " class="m3-input peer" />
+                <label for="email" class="m3-label peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-focus:top-1.5 peer-focus:text-xs peer-focus:font-medium peer-focus:text-primary">Email</label>
+                <span class="material-symbols-outlined m3-lead peer-focus:text-primary" aria-hidden="true">mail</span>
+              </div>
+              <p id="email-err" class="m3-support hidden text-error"></p>
+            </div>
+
+            <!-- password -->
+            <div>
+              <div class="field relative">
+                <input id="password" name="password" type="password" autocomplete="new-password" required placeholder=" "
+                       class="m3-input peer pr-12" aria-describedby="pw-reqs" />
+                <label for="password" class="m3-label peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-focus:top-1.5 peer-focus:text-xs peer-focus:font-medium peer-focus:text-primary">Password</label>
+                <span class="material-symbols-outlined m3-lead peer-focus:text-primary" aria-hidden="true">lock</span>
+                <button type="button" id="pw-toggle" aria-pressed="false" aria-label="Show password"
+                        class="state absolute right-2 top-2 grid h-10 w-10 place-items-center rounded-full text-on-surface-variant focus-visible:outline-none">
+                  <span class="material-symbols-outlined" id="eye">visibility</span>
+                </button>
+              </div>
+
+              <!-- strength (status colour + text label) -->
+              <div class="mt-2 flex items-center gap-2 px-1">
+                <div class="flex h-1 flex-1 gap-1" aria-hidden="true">
+                  <span data-seg class="flex-1 rounded-full bg-sc-highest"></span>
+                  <span data-seg class="flex-1 rounded-full bg-sc-highest"></span>
+                  <span data-seg class="flex-1 rounded-full bg-sc-highest"></span>
+                  <span data-seg class="flex-1 rounded-full bg-sc-highest"></span>
+                </div>
+                <span id="pw-strength" class="w-14 text-right text-xs font-medium text-on-surface-variant" aria-live="polite">—</span>
+              </div>
+
+              <ul id="pw-reqs" class="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 px-1 text-xs text-on-surface-variant">
+                <li data-req="len"  class="req flex items-center gap-1"><span class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> 8+ characters</li>
+                <li data-req="case" class="req flex items-center gap-1"><span class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> Upper &amp; lower</li>
+                <li data-req="num"  class="req flex items-center gap-1"><span class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> A number</li>
+                <li data-req="sym"  class="req flex items-center gap-1"><span class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> A symbol</li>
+              </ul>
+            </div>
+
+            <!-- confirm -->
+            <div>
+              <div class="field relative">
+                <input id="confirm" name="confirm" type="password" autocomplete="new-password" required placeholder=" " class="m3-input peer" />
+                <label for="confirm" class="m3-label peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-focus:top-1.5 peer-focus:text-xs peer-focus:font-medium peer-focus:text-primary">Confirm password</label>
+                <span class="material-symbols-outlined m3-lead peer-focus:text-primary" aria-hidden="true">lock_reset</span>
+              </div>
+              <p id="confirm-err" class="m3-support hidden text-error"></p>
+            </div>
+
+            <!-- terms -->
+            <label class="flex items-start gap-3">
+              <input id="terms" type="checkbox" required class="mt-0.5 h-[18px] w-[18px] rounded accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" />
+              <span class="text-sm text-on-surface-variant">I agree to the
+                <a href="#" class="font-medium text-primary hover:underline">Terms</a> and
+                <a href="#" class="font-medium text-primary hover:underline">Privacy Policy</a>.
+              </span>
+            </label>
+            <p id="terms-err" class="m3-support hidden text-error px-0"></p>
+
+            <button type="submit" id="submit" class="m3-filled state w-full">
+              <span class="material-symbols-outlined hidden animate-spin" id="spin" style="font-size:18px">progress_activity</span>
+              <span id="submit-label">Create account</span>
+            </button>
+
+            <p class="text-center text-xs text-on-surface-variant">Fields are required unless noted.</p>
+          </form>
+        </div>
+
+        <!-- success -->
+        <div id="success-view" class="hidden py-4 text-center" tabindex="-1">
+          <span class="material-symbols-outlined text-primary" style="font-size:56px">mark_email_read</span>
+          <h1 class="mt-3 text-2xl font-normal tracking-tight">Check your inbox</h1>
+          <p id="success-msg" class="mt-1 text-sm text-on-surface-variant">We sent a verification link to your email.</p>
+          <button type="button" id="reset" class="m3-text state mx-auto mt-6">Back to form</button>
+        </div>
+      </div>
+
+        <p class="mt-4 text-center text-xs text-on-surface-variant lg:hidden">Material 3 · same skills, swapped design system</p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // theme toggle + M3 knob (grows + checkmark when on)
+    var toggle=document.getElementById('theme-toggle'), knob=document.getElementById('knob');
+    function sync(){
+      var d=document.documentElement.classList.contains('dark');
+      toggle.setAttribute('aria-checked', d?'true':'false');
+      knob.classList.toggle('translate-x-5', d); knob.classList.toggle('h-6', d); knob.classList.toggle('w-6', d);
+      knob.classList.toggle('bg-on-primary', d); knob.classList.toggle('bg-outline', !d);
+    }
+    sync();
+    toggle.addEventListener('click', function(){ var d=document.documentElement.classList.toggle('dark'); localStorage.setItem('theme',d?'dark':'light'); sync(); });
+
+    // show / hide password
+    var pw=document.getElementById('password'), pwToggle=document.getElementById('pw-toggle'), eye=document.getElementById('eye');
+    pwToggle.addEventListener('click', function(){
+      var show = pw.type==='password'; pw.type = show?'text':'password';
+      pwToggle.setAttribute('aria-pressed', show?'true':'false');
+      pwToggle.setAttribute('aria-label', show?'Hide password':'Show password');
+      eye.textContent = show?'visibility_off':'visibility';
+    });
+
+    // password strength + requirements
+    var segs=document.querySelectorAll('[data-seg]'), strengthLabel=document.getElementById('pw-strength');
+    var reqEls={ len:document.querySelector('[data-req="len"]'), case:document.querySelector('[data-req="case"]'), num:document.querySelector('[data-req="num"]'), sym:document.querySelector('[data-req="sym"]') };
+    var LEVELS=[{l:'Weak',c:'bg-error',t:'text-error'},{l:'Weak',c:'bg-error',t:'text-error'},{l:'Fair',c:'bg-warning',t:'text-warning'},{l:'Good',c:'bg-primary',t:'text-primary'},{l:'Strong',c:'bg-success',t:'text-success'}];
+    function reqs(v){ return { len:v.length>=8, case:/[a-z]/.test(v)&&/[A-Z]/.test(v), num:/\d/.test(v), sym:/[^A-Za-z0-9]/.test(v) }; }
+    function updatePw(){
+      var v=pw.value, r=reqs(v);
+      Object.keys(reqEls).forEach(function(k){
+        var met=r[k]; reqEls[k].classList.toggle('met',met);
+        reqEls[k].querySelector('.req-i').textContent = met?'check_circle':'radio_button_unchecked';
+      });
+      var score=(r.len?1:0)+(r.case?1:0)+(r.num?1:0)+(r.sym?1:0), lvl=LEVELS[score];
+      segs.forEach(function(s,i){ s.className='flex-1 rounded-full '+(v && i<score ? lvl.c : 'bg-sc-highest'); });
+      strengthLabel.textContent = v?lvl.l:'—';
+      strengthLabel.className='w-14 text-right text-xs font-medium '+(v?lvl.t:'text-on-surface-variant');
+    }
+    pw.addEventListener('input', updatePw);
+
+    // validation (unchanged method — the universal part)
+    var form=document.getElementById('signup'), summary=document.getElementById('summary');
+    var EMAIL=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var validators={
+      name:    function(v){ return v.trim()?'':'Enter your name.'; },
+      email:   function(v){ return !v.trim()?'Enter your email.':(EMAIL.test(v)?'':'Enter a valid email address.'); },
+      password:function(v){ return v.length>=8?'':'Use at least 8 characters.'; },
+      confirm: function(v){ return !v?'Re-enter your password.':(v===pw.value?'':'Passwords don’t match.'); }
+    };
+    function setError(id,msg){
+      var input=document.getElementById(id), err=document.getElementById(id+'-err'), field=input.closest('.field');
+      if(msg){
+        if(field) field.classList.add('field-invalid');
+        input.setAttribute('aria-invalid','true'); input.setAttribute('aria-describedby', id+'-err');
+        err.innerHTML='<span class="material-symbols-outlined" style="font-size:16px">error</span>'+msg; err.classList.remove('hidden');
+      } else {
+        if(field) field.classList.remove('field-invalid');
+        input.removeAttribute('aria-invalid'); if(id!=='password') input.removeAttribute('aria-describedby');
+        err.classList.add('hidden'); err.textContent='';
+      }
+      return !msg;
+    }
+    Object.keys(validators).forEach(function(id){
+      var input=document.getElementById(id);
+      input.addEventListener('blur', function(){ if(input.dataset.touched) setError(id, validators[id](input.value)); });
+      input.addEventListener('input', function(){ input.dataset.touched='1'; if(input.closest('.field').classList.contains('field-invalid')) setError(id, validators[id](input.value)); });
+    });
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var ok=true, firstBad=null;
+      Object.keys(validators).forEach(function(id){
+        var input=document.getElementById(id); input.dataset.touched='1';
+        var good=setError(id, validators[id](input.value)); if(!good && !firstBad) firstBad=input; ok=ok&&good;
+      });
+      var terms=document.getElementById('terms'), termsErr=document.getElementById('terms-err');
+      if(!terms.checked){ termsErr.innerHTML='<span class="material-symbols-outlined" style="font-size:16px">error</span>Please accept the Terms to continue.'; termsErr.classList.remove('hidden'); ok=false; if(!firstBad) firstBad=terms; }
+      else termsErr.classList.add('hidden');
+
+      if(!ok){ summary.textContent='Please fix the highlighted fields.'; summary.classList.remove('hidden'); if(firstBad) firstBad.focus(); return; }
+      summary.classList.add('hidden');
+
+      var submit=document.getElementById('submit'), spin=document.getElementById('spin'), lbl=document.getElementById('submit-label');
+      submit.disabled=true; spin.classList.remove('hidden'); lbl.textContent='Creating account…';
+      setTimeout(function(){
+        document.getElementById('form-view').classList.add('hidden');
+        var sv=document.getElementById('success-view');
+        document.getElementById('success-msg').textContent='We sent a verification link to '+document.getElementById('email').value+'.';
+        sv.classList.remove('hidden'); sv.focus();
+      }, 1100);
+    });
+
+    document.getElementById('reset').addEventListener('click', function(){
+      document.getElementById('success-view').classList.add('hidden');
+      document.getElementById('form-view').classList.remove('hidden');
+      var submit=document.getElementById('submit'), spin=document.getElementById('spin'), lbl=document.getElementById('submit-label');
+      submit.disabled=false; spin.classList.add('hidden'); lbl.textContent='Create account';
+      form.reset(); updatePw();
+    });
+
+    updatePw();
+  </script>
+</body>
+</html>

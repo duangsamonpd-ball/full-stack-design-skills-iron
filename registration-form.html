@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create account — Iron Software Skills Test (Tailwind v4)</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script>
+    (function () {
+      var s = localStorage.getItem('theme');
+      if (s === 'dark' || (!s && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    })();
+  </script>
+
+  <style type="text/tailwindcss">
+    @custom-variant dark (&:where(.dark, .dark *));
+
+    :root {
+      --steel-50:  oklch(0.985 0.003 250); --steel-100: oklch(0.968 0.005 250);
+      --steel-200: oklch(0.922 0.007 250); --steel-400: oklch(0.680 0.012 250);
+      --steel-500: oklch(0.550 0.013 250); --steel-700: oklch(0.372 0.013 255);
+      --steel-800: oklch(0.270 0.013 255); --steel-900: oklch(0.208 0.013 258);
+      --steel-950: oklch(0.150 0.012 260); --white: oklch(1 0 0);
+      --teal-500: oklch(0.680 0.105 197); --teal-600: oklch(0.600 0.108 198);
+      --teal-700: oklch(0.520 0.100 199); --teal-800: oklch(0.460 0.092 200);
+      --green-600: oklch(0.620 0.150 150); --amber-500: oklch(0.760 0.140 70);
+      --red-600: oklch(0.585 0.205 22);   --blue-600: oklch(0.580 0.140 250);
+
+      --bg: var(--steel-50); --surface: var(--white); --surface-2: var(--steel-100);
+      --content: var(--steel-900); --muted: var(--steel-500); --border: var(--steel-200);
+      --brand: var(--teal-700); --brand-hover: var(--teal-800); --brand-fg: var(--white);
+      --ring: var(--teal-600);
+      --success: var(--green-600); --warning: var(--amber-500); --danger: var(--red-600); --info: var(--blue-600);
+    }
+    .dark {
+      --bg: var(--steel-950); --surface: var(--steel-900); --surface-2: var(--steel-800);
+      --content: var(--steel-50); --muted: var(--steel-400); --border: var(--steel-800);
+      --brand: var(--teal-600); --brand-hover: var(--teal-500); --brand-fg: var(--steel-950);
+      --ring: var(--teal-500);
+    }
+
+    @theme inline {
+      --color-bg: var(--bg); --color-surface: var(--surface); --color-surface-2: var(--surface-2);
+      --color-content: var(--content); --color-muted: var(--muted); --color-border: var(--border);
+      --color-brand: var(--brand); --color-brand-hover: var(--brand-hover); --color-brand-fg: var(--brand-fg);
+      --color-ring: var(--ring);
+      --color-success: var(--success); --color-warning: var(--warning);
+      --color-danger: var(--danger); --color-info: var(--info);
+      --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    @layer components {
+      .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg font-medium select-none
+             transition-[background-color,box-shadow,opacity] duration-150 focus-visible:outline-none
+             focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+             disabled:opacity-50 disabled:pointer-events-none; }
+      .btn-md { @apply h-11 px-4 text-sm; }
+      .btn-primary { @apply bg-brand text-brand-fg hover:bg-brand-hover; }
+      .btn-secondary { @apply bg-surface text-content ring-1 ring-inset ring-border hover:bg-surface-2; }
+      .label { @apply block text-sm font-medium text-content; }
+      .input { @apply h-11 w-full rounded-lg border border-border bg-surface px-3 text-sm text-content
+              placeholder:text-muted transition-colors focus-visible:outline-none focus-visible:ring-2
+              focus-visible:ring-ring focus-visible:border-transparent; }
+      .input-error { @apply border-danger focus-visible:ring-danger; }
+      .field-error { @apply mt-1.5 flex items-center gap-1 text-xs font-medium text-danger; }
+    }
+
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { transition-duration:.01ms!important; animation-duration:.01ms!important; } }
+  </style>
+</head>
+
+<body class="min-h-screen bg-bg text-content font-sans antialiased">
+  <div class="lg:grid lg:grid-cols-2 lg:min-h-screen">
+
+    <!-- ─────────── Brand panel (value prop — concrete, not filler; lg only) ─────────── -->
+    <aside class="relative hidden overflow-hidden bg-brand p-12 text-brand-fg lg:flex lg:flex-col">
+      <div class="flex items-center gap-3">
+        <span aria-hidden="true" class="grid h-9 w-9 place-items-center rounded-lg bg-brand-fg/15 font-bold ring-1 ring-brand-fg/25">Fe</span>
+        <span class="font-semibold tracking-tight">Iron Software</span>
+      </div>
+
+      <div class="my-auto max-w-sm">
+        <h2 class="text-3xl font-bold leading-tight tracking-tight">Ship UI your whole team trusts.</h2>
+        <ul class="mt-8 space-y-4 text-brand-fg/85">
+          <li class="flex gap-3">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.7-9.3a1 1 0 0 0-1.4-1.4L9 10.6 7.7 9.3a1 1 0 0 0-1.4 1.4l2 2a1 1 0 0 0 1.4 0l4-4Z" clip-rule="evenodd"/></svg>
+            <span><b class="font-semibold text-brand-fg">Accessible by default</b> — every component ships WCAG 2.1 AA states.</span>
+          </li>
+          <li class="flex gap-3">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.7-9.3a1 1 0 0 0-1.4-1.4L9 10.6 7.7 9.3a1 1 0 0 0-1.4 1.4l2 2a1 1 0 0 0 1.4 0l4-4Z" clip-rule="evenodd"/></svg>
+            <span><b class="font-semibold text-brand-fg">One token system</b> — theme light, dark, and per-brand from a single source.</span>
+          </li>
+          <li class="flex gap-3">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.7-9.3a1 1 0 0 0-1.4-1.4L9 10.6 7.7 9.3a1 1 0 0 0-1.4 1.4l2 2a1 1 0 0 0 1.4 0l4-4Z" clip-rule="evenodd"/></svg>
+            <span><b class="font-semibold text-brand-fg">React · Astro · Vue</b> — the same components across all three.</span>
+          </li>
+        </ul>
+      </div>
+
+      <p class="text-sm text-brand-fg/70">“The design-system work that used to take a quarter now takes a sprint.”</p>
+    </aside>
+
+    <!-- ─────────── Form side ─────────── -->
+    <main class="flex items-center justify-center px-5 py-10 sm:px-8">
+      <div class="w-full max-w-md">
+
+        <div class="mb-8 flex items-center justify-between">
+          <span class="grid h-9 w-9 place-items-center rounded-lg bg-brand text-brand-fg font-bold lg:hidden" aria-hidden="true">Fe</span>
+          <button id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Toggle dark mode"
+                  class="relative ml-auto inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-surface-2 ring-1 ring-inset ring-border transition-colors
+                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg aria-checked:bg-brand">
+            <span aria-hidden="true" class="inline-block h-4 w-4 translate-x-1 rounded-full bg-white shadow transition-transform"></span>
+          </button>
+        </div>
+
+        <!-- The form -->
+        <div id="form-view">
+          <h1 class="text-2xl font-bold tracking-tight">Create your account</h1>
+          <p class="mt-1 text-sm text-muted">Already have one?
+            <a href="#" class="font-medium text-brand hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">Sign in</a>
+          </p>
+
+          <!-- Social sign-up -->
+          <div class="mt-6 grid grid-cols-2 gap-3">
+            <button type="button" class="btn btn-md btn-secondary">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.6 12.2c0-.7-.1-1.4-.2-2H12v3.8h6a5.1 5.1 0 0 1-2.2 3.4v2.8h3.6c2.1-2 3.3-4.9 3.3-8Z"/><path fill="#34A853" d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.8c-1 .7-2.3 1.1-3.7 1.1-2.8 0-5.3-1.9-6.1-4.5H2.2v2.9A11 11 0 0 0 12 23Z"/><path fill="#FBBC05" d="M5.9 14.1a6.6 6.6 0 0 1 0-4.2V7H2.2a11 11 0 0 0 0 9.9l3.7-2.8Z"/><path fill="#EA4335" d="M12 5.4c1.6 0 3 .5 4.1 1.6l3.1-3.1A11 11 0 0 0 2.2 7l3.7 2.9C6.7 7.3 9.2 5.4 12 5.4Z"/></svg>
+              Google
+            </button>
+            <button type="button" class="btn btn-md btn-secondary">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.4-3.4-1.4-.5-1.1-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.2-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.8-4.6 5 .3.3.6.9.6 1.9v2.8c0 .3.2.6.7.5A10 10 0 0 0 12 2Z" clip-rule="evenodd"/></svg>
+              GitHub
+            </button>
+          </div>
+
+          <div class="my-6 flex items-center gap-3 text-xs text-muted">
+            <span class="h-px flex-1 bg-border"></span> or sign up with email <span class="h-px flex-1 bg-border"></span>
+          </div>
+
+          <!-- Form-level error summary (aria-live) -->
+          <div id="summary" role="alert" class="mb-4 hidden rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger"></div>
+
+          <form id="signup" novalidate class="space-y-4">
+            <div>
+              <label for="name" class="label">Full name <span class="text-danger" aria-hidden="true">*</span></label>
+              <input id="name" name="name" type="text" autocomplete="name" required class="input mt-1.5" placeholder="Ada Lovelace" />
+              <p id="name-err" class="field-error hidden"></p>
+            </div>
+
+            <div>
+              <label for="email" class="label">Email <span class="text-danger" aria-hidden="true">*</span></label>
+              <input id="email" name="email" type="email" autocomplete="email" required class="input mt-1.5" placeholder="you@company.com" />
+              <p id="email-err" class="field-error hidden"></p>
+            </div>
+
+            <div>
+              <label for="password" class="label">Password <span class="text-danger" aria-hidden="true">*</span></label>
+              <div class="relative mt-1.5">
+                <input id="password" name="password" type="password" autocomplete="new-password" required
+                       class="input pr-11" aria-describedby="pw-reqs" placeholder="At least 8 characters" />
+                <button type="button" id="pw-toggle" aria-pressed="false" aria-label="Show password"
+                        class="absolute right-1 top-1 grid h-9 w-9 place-items-center rounded-md text-muted hover:text-content
+                               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  <svg id="eye" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 4c-4 0-7.3 2.6-9 6 1.7 3.4 5 6 9 6s7.3-2.6 9-6c-1.7-3.4-5-6-9-6Zm0 10a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>
+                </button>
+              </div>
+
+              <!-- strength meter (status colour + text label, never colour alone) -->
+              <div class="mt-2 flex items-center gap-2">
+                <div class="flex h-1.5 flex-1 gap-1" aria-hidden="true">
+                  <span data-seg class="flex-1 rounded-full bg-surface-2"></span>
+                  <span data-seg class="flex-1 rounded-full bg-surface-2"></span>
+                  <span data-seg class="flex-1 rounded-full bg-surface-2"></span>
+                  <span data-seg class="flex-1 rounded-full bg-surface-2"></span>
+                </div>
+                <span id="pw-strength" class="w-14 text-right text-xs font-medium text-muted" aria-live="polite">—</span>
+              </div>
+
+              <!-- requirements checklist (progressive feedback) -->
+              <ul id="pw-reqs" class="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-muted">
+                <li data-req="len"   class="flex items-center gap-1.5"><span class="req-dot">○</span> 8+ characters</li>
+                <li data-req="case"  class="flex items-center gap-1.5"><span class="req-dot">○</span> Upper &amp; lower case</li>
+                <li data-req="num"   class="flex items-center gap-1.5"><span class="req-dot">○</span> A number</li>
+                <li data-req="sym"   class="flex items-center gap-1.5"><span class="req-dot">○</span> A symbol</li>
+              </ul>
+            </div>
+
+            <div>
+              <label for="confirm" class="label">Confirm password <span class="text-danger" aria-hidden="true">*</span></label>
+              <input id="confirm" name="confirm" type="password" autocomplete="new-password" required class="input mt-1.5" placeholder="Re-enter password" />
+              <p id="confirm-err" class="field-error hidden"></p>
+            </div>
+
+            <label class="flex items-start gap-2.5 pt-1">
+              <input id="terms" type="checkbox" required
+                     class="mt-0.5 h-4 w-4 rounded border-border text-brand focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg" />
+              <span class="text-sm text-muted">I agree to the
+                <a href="#" class="font-medium text-brand hover:underline">Terms</a> and
+                <a href="#" class="font-medium text-brand hover:underline">Privacy Policy</a>.
+              </span>
+            </label>
+            <p id="terms-err" class="field-error hidden"></p>
+
+            <button type="submit" id="submit" class="btn btn-md btn-primary w-full">
+              <svg id="spin" class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity="0.25"/>
+                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+              <span id="submit-label">Create account</span>
+            </button>
+
+            <p class="text-center text-xs text-muted">Fields marked <span class="text-danger">*</span> are required.</p>
+          </form>
+        </div>
+
+        <!-- Success view (revealed after submit; focus moves here) -->
+        <div id="success-view" class="hidden text-center" tabindex="-1">
+          <div class="mx-auto grid h-14 w-14 place-items-center rounded-full bg-success/12 text-success">
+            <svg class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.7-9.3a1 1 0 0 0-1.4-1.4L9 10.6 7.7 9.3a1 1 0 0 0-1.4 1.4l2 2a1 1 0 0 0 1.4 0l4-4Z" clip-rule="evenodd"/></svg>
+          </div>
+          <h1 class="mt-4 text-2xl font-bold tracking-tight">Check your inbox</h1>
+          <p id="success-msg" class="mt-1 text-sm text-muted">We sent a verification link to your email.</p>
+          <button type="button" id="reset" class="btn btn-md btn-secondary mt-6">Back to form</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <style type="text/tailwindcss">
+    .req-dot { @apply inline-block w-3 text-center; }
+    li[data-req].met { @apply text-success; }
+  </style>
+
+  <script>
+    // ── theme toggle ──
+    var toggle = document.getElementById('theme-toggle'), knob = toggle.querySelector('span');
+    function sync(){ var d=document.documentElement.classList.contains('dark'); toggle.setAttribute('aria-checked',d?'true':'false'); knob.classList.toggle('translate-x-6',d); knob.classList.toggle('translate-x-1',!d); }
+    sync();
+    toggle.addEventListener('click', function(){ var d=document.documentElement.classList.toggle('dark'); localStorage.setItem('theme',d?'dark':'light'); sync(); });
+
+    // ── show / hide password ──
+    var pw = document.getElementById('password'), pwToggle = document.getElementById('pw-toggle');
+    pwToggle.addEventListener('click', function(){
+      var show = pw.type === 'password';
+      pw.type = show ? 'text' : 'password';
+      pwToggle.setAttribute('aria-pressed', show ? 'true' : 'false');
+      pwToggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    });
+
+    // ── password strength + requirements ──
+    var segs = document.querySelectorAll('[data-seg]'), strengthLabel = document.getElementById('pw-strength');
+    var reqEls = { len:document.querySelector('[data-req="len"]'), case:document.querySelector('[data-req="case"]'), num:document.querySelector('[data-req="num"]'), sym:document.querySelector('[data-req="sym"]') };
+    var LEVELS = [
+      { label:'Weak',   seg:'bg-danger' },
+      { label:'Weak',   seg:'bg-danger' },
+      { label:'Fair',   seg:'bg-warning' },
+      { label:'Good',   seg:'bg-info' },
+      { label:'Strong', seg:'bg-success' }
+    ];
+    function reqs(v){ return { len:v.length>=8, case:/[a-z]/.test(v)&&/[A-Z]/.test(v), num:/\d/.test(v), sym:/[^A-Za-z0-9]/.test(v) }; }
+    function updatePw(){
+      var v = pw.value, r = reqs(v);
+      Object.keys(reqEls).forEach(function(k){
+        reqEls[k].classList.toggle('met', r[k]);
+        reqEls[k].querySelector('.req-dot').textContent = r[k] ? '✓' : '○';
+      });
+      var score = (r.len?1:0)+(r.case?1:0)+(r.num?1:0)+(r.sym?1:0);
+      var lvl = LEVELS[score];
+      segs.forEach(function(s,i){
+        s.className = 'flex-1 rounded-full ' + (v && i < score ? lvl.seg : 'bg-surface-2');
+      });
+      strengthLabel.textContent = v ? lvl.label : '—';
+      strengthLabel.className = 'w-14 text-right text-xs font-medium ' + (v ? {Weak:'text-danger',Fair:'text-warning',Good:'text-info',Strong:'text-success'}[lvl.label] : 'text-muted');
+    }
+    pw.addEventListener('input', updatePw);
+
+    // ── validation ──
+    var form = document.getElementById('signup'), summary = document.getElementById('summary');
+    var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var validators = {
+      name:    function(v){ return v.trim() ? '' : 'Enter your name.'; },
+      email:   function(v){ return !v.trim() ? 'Enter your email.' : (EMAIL.test(v) ? '' : 'Enter a valid email address.'); },
+      password:function(v){ return v.length>=8 ? '' : 'Use at least 8 characters.'; },
+      confirm: function(v){ return !v ? 'Re-enter your password.' : (v===pw.value ? '' : 'Passwords don’t match.'); }
+    };
+    function setError(id, msg){
+      var input = document.getElementById(id), err = document.getElementById(id+'-err');
+      if(msg){
+        input.classList.add('input-error'); input.setAttribute('aria-invalid','true'); input.setAttribute('aria-describedby', id+'-err');
+        err.innerHTML = '<svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm1-8a1 1 0 1 1-2 0V7a1 1 0 1 1 2 0v3Zm-1 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/></svg>' + msg;
+        err.classList.remove('hidden');
+      } else {
+        input.classList.remove('input-error'); input.removeAttribute('aria-invalid');
+        if(id!=='password') input.removeAttribute('aria-describedby');
+        err.classList.add('hidden'); err.textContent='';
+      }
+      return !msg;
+    }
+    // validate a field on blur, but only after it's been touched
+    Object.keys(validators).forEach(function(id){
+      var input = document.getElementById(id);
+      input.addEventListener('blur', function(){ if(input.dataset.touched) setError(id, validators[id](input.value)); });
+      input.addEventListener('input', function(){ input.dataset.touched='1'; if(input.classList.contains('input-error')) setError(id, validators[id](input.value)); });
+    });
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var ok = true, firstBad = null;
+      Object.keys(validators).forEach(function(id){
+        var input = document.getElementById(id); input.dataset.touched='1';
+        var good = setError(id, validators[id](input.value));
+        if(!good && !firstBad){ firstBad = input; } ok = ok && good;
+      });
+      // terms
+      var terms = document.getElementById('terms'), termsErr = document.getElementById('terms-err');
+      if(!terms.checked){ termsErr.textContent='Please accept the Terms to continue.'; termsErr.classList.remove('hidden'); ok=false; if(!firstBad) firstBad=terms; }
+      else { termsErr.classList.add('hidden'); }
+
+      if(!ok){
+        summary.textContent = 'Please fix the highlighted fields.'; summary.classList.remove('hidden');
+        if(firstBad) firstBad.focus();
+        return;
+      }
+      summary.classList.add('hidden');
+
+      // simulate submit (prototype — no network)
+      var submit=document.getElementById('submit'), spin=document.getElementById('spin'), lbl=document.getElementById('submit-label');
+      submit.disabled=true; spin.classList.remove('hidden'); lbl.textContent='Creating account…';
+      setTimeout(function(){
+        document.getElementById('form-view').classList.add('hidden');
+        var sv=document.getElementById('success-view');
+        document.getElementById('success-msg').textContent = 'We sent a verification link to ' + document.getElementById('email').value + '.';
+        sv.classList.remove('hidden'); sv.focus();
+      }, 1100);
+    });
+
+    document.getElementById('reset').addEventListener('click', function(){
+      document.getElementById('success-view').classList.add('hidden');
+      document.getElementById('form-view').classList.remove('hidden');
+      var submit=document.getElementById('submit'), spin=document.getElementById('spin'), lbl=document.getElementById('submit-label');
+      submit.disabled=false; spin.classList.add('hidden'); lbl.textContent='Create account';
+      form.reset(); updatePw();
+    });
+
+    updatePw();
+  </script>
+</body>
+</html>

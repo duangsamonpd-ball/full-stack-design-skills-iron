@@ -1,0 +1,257 @@
+---
+import Base from '../layouts/Base.astro';
+import TextField from '../components/TextField.astro';
+import Button from '../components/Button.astro';
+---
+<Base title="Create account — Material 3 (Astro)">
+  <div class="lg:grid lg:min-h-screen lg:grid-cols-2">
+
+    <!-- LEFT: M3 tonal hero panel (lg+) — reflows away on smaller screens -->
+    <aside class="hidden bg-primary-container p-10 text-on-primary-container lg:flex lg:flex-col lg:justify-between xl:p-14">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined">deployed_code</span>
+        <span class="font-medium">Iron Software</span>
+      </div>
+      <div class="max-w-sm">
+        <h2 class="text-3xl font-normal leading-tight tracking-tight xl:text-4xl">Ship UI your whole team trusts.</h2>
+        <ul class="mt-8 space-y-5 text-on-primary-container/90">
+          <li class="flex gap-3"><span class="material-symbols-outlined shrink-0">verified</span><span>Accessible by default — WCAG 2.1 AA states on every component.</span></li>
+          <li class="flex gap-3"><span class="material-symbols-outlined shrink-0">palette</span><span>One token system — light, dark, and per-brand from a single source.</span></li>
+          <li class="flex gap-3"><span class="material-symbols-outlined shrink-0">grid_view</span><span>React · Astro · Vue — the same components across all three.</span></li>
+        </ul>
+      </div>
+      <p class="text-sm text-on-primary-container/70">Material 3 · Astro · same skills, swapped framework</p>
+    </aside>
+
+    <!-- RIGHT: form pane -->
+    <main class="flex items-center justify-center p-4 sm:p-6">
+      <div class="w-full max-w-md">
+
+        <div class="mb-4 flex items-center justify-between px-2">
+          <div class="flex items-center gap-2 text-on-surface-variant lg:invisible">
+            <span class="material-symbols-outlined text-primary">deployed_code</span>
+            <span class="text-sm font-medium">Iron Software</span>
+          </div>
+          <button id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Toggle dark mode"
+                  class="relative h-8 w-[52px] shrink-0 rounded-full bg-sc-highest ring-2 ring-inset ring-outline transition-colors
+                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary aria-checked:bg-primary aria-checked:ring-primary">
+            <span id="knob" class="absolute left-1.5 top-1/2 grid h-4 w-4 -translate-y-1/2 place-items-center rounded-full bg-outline transition-all"></span>
+          </button>
+        </div>
+
+        <div id="form-view" class="rounded-[28px] bg-sc-high p-6 shadow-lg sm:p-8">
+          <h1 class="text-2xl font-normal tracking-tight">Create your account</h1>
+          <p class="mt-1 text-sm text-on-surface-variant">Already have one?
+            <a href="#" class="font-medium text-primary hover:underline">Sign in</a>
+          </p>
+
+          <div class="mt-6 grid grid-cols-2 gap-3">
+            <Button variant="outlined"><span class="material-symbols-outlined">login</span>Google</Button>
+            <Button variant="outlined"><span class="material-symbols-outlined">code</span>GitHub</Button>
+          </div>
+
+          <div class="my-6 flex items-center gap-3 text-xs text-on-surface-variant">
+            <span class="h-px flex-1 bg-outline-variant"></span> or use your email <span class="h-px flex-1 bg-outline-variant"></span>
+          </div>
+
+          <div id="summary" role="alert" class="mb-4 hidden rounded-xl bg-error-container p-3 text-sm text-on-error-container"></div>
+
+          <form id="signup" novalidate class="space-y-5">
+            <TextField id="name" label="Full name" icon="person" autocomplete="name" />
+            <TextField id="email" label="Email" icon="mail" type="email" autocomplete="email" />
+
+            <!-- password: the one field with extra UI, written inline (utility-first) -->
+            <div>
+              <div class="field relative">
+                <input id="password" name="password" type="password" autocomplete="new-password" required placeholder=" "
+                       aria-describedby="pw-reqs"
+                       class="peer h-14 w-full rounded-t-[4px] border-b border-outline bg-sc-highest pl-12 pr-12 pt-5 pb-1 text-sm text-on-surface caret-primary outline-none transition-colors hover:border-on-surface focus:border-b-2 focus:border-primary placeholder:text-transparent" />
+                <label for="password" class="pointer-events-none absolute left-12 top-1.5 text-xs text-on-surface-variant transition-all duration-150 peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-focus:top-1.5 peer-focus:text-xs peer-focus:font-medium peer-focus:text-primary">Password</label>
+                <span class="lead material-symbols-outlined absolute left-3 top-4 text-on-surface-variant transition-colors peer-focus:text-primary" aria-hidden="true">lock</span>
+                <button type="button" id="pw-toggle" aria-pressed="false" aria-label="Show password"
+                        class="state absolute right-2 top-2 grid h-10 w-10 place-items-center rounded-full text-on-surface-variant focus-visible:outline-none">
+                  <span class="material-symbols-outlined" id="eye">visibility</span>
+                </button>
+              </div>
+
+              <div class="mt-2 flex items-center gap-2 px-1">
+                <div class="flex h-1 flex-1 gap-1" aria-hidden="true">
+                  <span data-seg class="flex-1 rounded-full bg-sc-highest"></span>
+                  <span data-seg class="flex-1 rounded-full bg-sc-highest"></span>
+                  <span data-seg class="flex-1 rounded-full bg-sc-highest"></span>
+                  <span data-seg class="flex-1 rounded-full bg-sc-highest"></span>
+                </div>
+                <span id="pw-strength" class="w-14 text-right text-xs font-medium text-on-surface-variant" aria-live="polite">—</span>
+              </div>
+
+              <ul id="pw-reqs" class="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 px-1 text-xs text-on-surface-variant">
+                <li data-req="len"  class="req flex items-center gap-1"><span class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> 8+ characters</li>
+                <li data-req="case" class="req flex items-center gap-1"><span class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> Upper &amp; lower</li>
+                <li data-req="num"  class="req flex items-center gap-1"><span class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> A number</li>
+                <li data-req="sym"  class="req flex items-center gap-1"><span class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> A symbol</li>
+              </ul>
+            </div>
+
+            <TextField id="confirm" label="Confirm password" icon="lock_reset" type="password" autocomplete="new-password" />
+
+            <label class="flex items-start gap-3">
+              <input id="terms" type="checkbox" required class="mt-0.5 h-[18px] w-[18px] rounded accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" />
+              <span class="text-sm text-on-surface-variant">I agree to the
+                <a href="#" class="font-medium text-primary hover:underline">Terms</a> and
+                <a href="#" class="font-medium text-primary hover:underline">Privacy Policy</a>.
+              </span>
+            </label>
+            <p id="terms-err" class="mt-1 hidden items-center gap-1 text-xs text-error"></p>
+
+            <Button variant="filled" type="submit" id="submit" class="w-full">
+              <span class="material-symbols-outlined hidden animate-spin" id="spin" style="font-size:18px">progress_activity</span>
+              <span id="submit-label">Create account</span>
+            </Button>
+
+            <p class="text-center text-xs text-on-surface-variant">Fields are required unless noted.</p>
+          </form>
+        </div>
+
+        <div id="success-view" class="hidden rounded-[28px] bg-sc-high p-8 py-10 text-center shadow-lg" tabindex="-1">
+          <span class="material-symbols-outlined text-primary" style="font-size:56px">mark_email_read</span>
+          <h1 class="mt-3 text-2xl font-normal tracking-tight">Check your inbox</h1>
+          <p id="success-msg" class="mt-1 text-sm text-on-surface-variant">We sent a verification link to your email.</p>
+          <Button variant="text" id="reset" class="mx-auto mt-6">Back to form</Button>
+        </div>
+
+        <p class="mt-4 text-center text-xs text-on-surface-variant lg:hidden">Material 3 · Astro · same skills, swapped framework</p>
+      </div>
+    </main>
+  </div>
+</Base>
+
+<!-- Astro bundles this as a client module (the single interactivity island). -->
+<script>
+  // theme toggle + M3 knob
+  const toggle = document.getElementById('theme-toggle')!;
+  const knob = document.getElementById('knob')!;
+  function sync() {
+    const d = document.documentElement.classList.contains('dark');
+    toggle.setAttribute('aria-checked', d ? 'true' : 'false');
+    knob.classList.toggle('translate-x-5', d); knob.classList.toggle('h-6', d); knob.classList.toggle('w-6', d);
+    knob.classList.toggle('bg-on-primary', d); knob.classList.toggle('bg-outline', !d);
+  }
+  sync();
+  toggle.addEventListener('click', () => {
+    const d = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('theme', d ? 'dark' : 'light'); sync();
+  });
+
+  // show / hide password
+  const pw = document.getElementById('password') as HTMLInputElement;
+  const pwToggle = document.getElementById('pw-toggle')!;
+  const eye = document.getElementById('eye')!;
+  pwToggle.addEventListener('click', () => {
+    const show = pw.type === 'password'; pw.type = show ? 'text' : 'password';
+    pwToggle.setAttribute('aria-pressed', show ? 'true' : 'false');
+    pwToggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    eye.textContent = show ? 'visibility_off' : 'visibility';
+  });
+
+  // helpers to show/hide the flex-based error rows deterministically
+  const showRow = (el: HTMLElement) => { el.classList.remove('hidden'); el.classList.add('flex'); };
+  const hideRow = (el: HTMLElement) => { el.classList.add('hidden'); el.classList.remove('flex'); };
+
+  // password strength + requirements
+  const segs = document.querySelectorAll<HTMLElement>('[data-seg]');
+  const strengthLabel = document.getElementById('pw-strength')!;
+  const reqEls: Record<string, HTMLElement> = {
+    len: document.querySelector('[data-req="len"]')!, case: document.querySelector('[data-req="case"]')!,
+    num: document.querySelector('[data-req="num"]')!, sym: document.querySelector('[data-req="sym"]')!,
+  };
+  const LEVELS = [
+    { l: 'Weak', c: 'bg-error', t: 'text-error' }, { l: 'Weak', c: 'bg-error', t: 'text-error' },
+    { l: 'Fair', c: 'bg-warning', t: 'text-warning' }, { l: 'Good', c: 'bg-primary', t: 'text-primary' },
+    { l: 'Strong', c: 'bg-success', t: 'text-success' },
+  ];
+  const reqs = (v: string) => ({ len: v.length >= 8, case: /[a-z]/.test(v) && /[A-Z]/.test(v), num: /\d/.test(v), sym: /[^A-Za-z0-9]/.test(v) });
+  function updatePw() {
+    const v = pw.value, r = reqs(v) as Record<string, boolean>;
+    Object.keys(reqEls).forEach((k) => {
+      reqEls[k].classList.toggle('met', r[k]);
+      reqEls[k].querySelector('.req-i')!.textContent = r[k] ? 'check_circle' : 'radio_button_unchecked';
+    });
+    const score = (r.len ? 1 : 0) + (r.case ? 1 : 0) + (r.num ? 1 : 0) + (r.sym ? 1 : 0), lvl = LEVELS[score];
+    segs.forEach((s, i) => { s.className = 'flex-1 rounded-full ' + (v && i < score ? lvl.c : 'bg-sc-highest'); });
+    strengthLabel.textContent = v ? lvl.l : '—';
+    const tone: Record<string, string> = { Weak: 'text-error', Fair: 'text-warning', Good: 'text-primary', Strong: 'text-success' };
+    strengthLabel.className = 'w-14 text-right text-xs font-medium ' + (v ? tone[lvl.l] : 'text-on-surface-variant');
+  }
+  pw.addEventListener('input', updatePw);
+
+  // validation (the invariant method — unchanged across frameworks)
+  const form = document.getElementById('signup') as HTMLFormElement;
+  const summary = document.getElementById('summary')!;
+  const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const validators: Record<string, (v: string) => string> = {
+    name: (v) => v.trim() ? '' : 'Enter your name.',
+    email: (v) => !v.trim() ? 'Enter your email.' : (EMAIL.test(v) ? '' : 'Enter a valid email address.'),
+    password: (v) => v.length >= 8 ? '' : 'Use at least 8 characters.',
+    confirm: (v) => !v ? 'Re-enter your password.' : (v === pw.value ? '' : 'Passwords don’t match.'),
+  };
+  function setError(id: string, msg: string) {
+    const input = document.getElementById(id) as HTMLInputElement;
+    const err = document.getElementById(id + '-err')!;
+    const field = input.closest('.field');
+    if (msg) {
+      field?.classList.add('field-invalid');
+      input.setAttribute('aria-invalid', 'true'); input.setAttribute('aria-describedby', id + '-err');
+      err.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">error</span>' + msg;
+      showRow(err);
+    } else {
+      field?.classList.remove('field-invalid');
+      input.removeAttribute('aria-invalid'); if (id !== 'password') input.removeAttribute('aria-describedby');
+      hideRow(err); err.textContent = '';
+    }
+    return !msg;
+  }
+  Object.keys(validators).forEach((id) => {
+    const input = document.getElementById(id) as HTMLInputElement;
+    input.addEventListener('blur', () => { if (input.dataset.touched) setError(id, validators[id](input.value)); });
+    input.addEventListener('input', () => { input.dataset.touched = '1'; if (input.closest('.field')!.classList.contains('field-invalid')) setError(id, validators[id](input.value)); });
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let ok = true; let firstBad: HTMLElement | null = null;
+    Object.keys(validators).forEach((id) => {
+      const input = document.getElementById(id) as HTMLInputElement; input.dataset.touched = '1';
+      const good = setError(id, validators[id](input.value)); if (!good && !firstBad) firstBad = input; ok = ok && good;
+    });
+    const terms = document.getElementById('terms') as HTMLInputElement;
+    const termsErr = document.getElementById('terms-err')!;
+    if (!terms.checked) { termsErr.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">error</span>Please accept the Terms to continue.'; showRow(termsErr); ok = false; if (!firstBad) firstBad = terms; }
+    else hideRow(termsErr);
+
+    if (!ok) { summary.textContent = 'Please fix the highlighted fields.'; summary.classList.remove('hidden'); firstBad?.focus(); return; }
+    summary.classList.add('hidden');
+
+    const submit = document.getElementById('submit') as HTMLButtonElement;
+    const spin = document.getElementById('spin')!;
+    const lbl = document.getElementById('submit-label')!;
+    submit.disabled = true; spin.classList.remove('hidden'); lbl.textContent = 'Creating account…';
+    setTimeout(() => {
+      document.getElementById('form-view')!.classList.add('hidden');
+      const sv = document.getElementById('success-view')!;
+      document.getElementById('success-msg')!.textContent = 'We sent a verification link to ' + (document.getElementById('email') as HTMLInputElement).value + '.';
+      sv.classList.remove('hidden'); sv.focus();
+    }, 1100);
+  });
+
+  document.getElementById('reset')!.addEventListener('click', () => {
+    document.getElementById('success-view')!.classList.add('hidden');
+    document.getElementById('form-view')!.classList.remove('hidden');
+    const submit = document.getElementById('submit') as HTMLButtonElement;
+    const spin = document.getElementById('spin')!;
+    const lbl = document.getElementById('submit-label')!;
+    submit.disabled = false; spin.classList.add('hidden'); lbl.textContent = 'Create account';
+    form.reset(); updatePw();
+  });
+
+  updatePw();
+</script>
