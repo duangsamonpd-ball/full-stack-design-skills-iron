@@ -25,7 +25,7 @@ They share one spine — **layered design tokens → consistent component APIs �
 
 ## The 15 skills
 
-### Design
+### 🎨 Design
 | Skill | What it does |
 |-------|--------------|
 | **design-fundamentals** | Diagnose & fix a UI from first principles — hierarchy, grid, color, type, spacing, balance. |
@@ -33,7 +33,7 @@ They share one spine — **layered design tokens → consistent component APIs �
 | **design-tokens-system** | A layered token system (primitive → semantic → component) wired into Tailwind v4 `@theme`. |
 | **design-systems-architecture** | Scale a system past 100+ components — API contracts, theming, governance, versioning. |
 
-### Build
+### 🛠️ Build
 | Skill | What it does |
 |-------|--------------|
 | **design-to-code-workflow** | Turn Figma/mockups into production React, Astro, or Vue components. |
@@ -43,7 +43,7 @@ They share one spine — **layered design tokens → consistent component APIs �
 | **component-library-mastery** | Build & scale a component library — organization, typed variants, docs, tokens. |
 | **figma-expert-workflows** | Work fluently Figma ↔ code — Dev Mode, Code Connect, keeping the two in sync. |
 
-### Quality
+### ✅ Quality
 | Skill | What it does |
 |-------|--------------|
 | **web-accessibility-a11y** | Audit against WCAG 2.1 AA with prioritized findings + concrete fixes. |
@@ -51,7 +51,7 @@ They share one spine — **layered design tokens → consistent component APIs �
 | **qa-testing-visual-regression** | Unit/component + e2e + visual snapshots to catch UI drift. |
 | **web-performance-optimization** | Profile & fix rendering, bundle size, and Core Web Vitals (LCP/INP/CLS). |
 
-### Ship
+### 🚀 Ship
 | Skill | What it does |
 |-------|--------------|
 | **deployment-devops-workflow** | Build, CI/CD, preview deploys, quality gates, hosting, one-action rollback. |
