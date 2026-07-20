@@ -102,6 +102,7 @@ one brand and token layer, shown across design systems and a real framework buil
 | Example | What it demonstrates |
 |---------|----------------------|
 | `component-showcase.html` | All 15 skills at once — base components, dark mode, a11y, responsive |
+| `accessibility-showcase.html` | Working WCAG 2.2 demo — native dialog/details, ARIA tabs, live region, forced-colors |
 | `dashboard-prototype.html` | KPI tiles + hand-built SVG charts (validated palette), responsive layout |
 | `registration-form.html` | Forgiving-form validation, a11y, password strength — custom design system |
 | `registration-form-m3.html` | The same form rebuilt in **Material 3** (design-system-agnostic proof) |
@@ -135,6 +136,7 @@ Every styling skill follows v4's CSS-first model:
 │   └── skills/                    15 skill folders (SKILL.md + optional references/)
 │       └── README.md              skill-authoring notes & trigger rules
 ├── component-showcase.html        all-15-skills component demo
+├── accessibility-showcase.html    working WCAG 2.2 / universal-design demo
 ├── dashboard-prototype.html       KPI + SVG charts (dataviz)
 ├── registration-form.html         custom design system
 ├── registration-form-m3.html      Material 3
