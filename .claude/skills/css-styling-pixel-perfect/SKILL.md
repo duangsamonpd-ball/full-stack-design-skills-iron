@@ -15,6 +15,8 @@ Two jobs, one skill: write component styling with Tailwind that stays maintainab
 
 ## Part A — Styling architecture
 
+Deeper v4 recipes — `@theme` vs `@theme inline`, the component boundary in frameworks, and the two build-breaking gotchas (`@apply peer`, `var(--color-*)` in raw SVG) — are in `references/tailwind-v4-recipes.md`.
+
 1. **Utilities first** — Tailwind utilities mapped to tokens (from `design-tokens-system`), never raw hex/px.
 2. **`@apply` only for real repetition** — extract shared clusters into `@layer components`; premature extraction recreates CSS sprawl.
    ```css

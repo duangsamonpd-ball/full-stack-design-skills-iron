@@ -65,6 +65,8 @@ Tailwind v4 has no `tailwind.config.js` by default — the theme lives in CSS vi
 
 Now `bg-surface`, `text-content`, and `bg-brand/50` all resolve, and dark mode is a variable swap.
 
+Worked light / dark / multi-brand theming recipes (with per-theme contrast tuning and a full semantic-token set) are in `references/theming-recipes.md`.
+
 ## Workflow
 
 1. **Audit** raw values in the codebase that should be tokens.

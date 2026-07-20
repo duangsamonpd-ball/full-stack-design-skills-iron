@@ -31,14 +31,15 @@ Each skill is a **folder** with a `SKILL.md`. Longer material lives in a sibling
 ## Content status
 
 **All 15 skills are full content** — each has real workflows plus code / before-after
-examples, and 10 carry a `references/` folder for on-demand depth:
+examples, and 14 carry a `references/` folder for on-demand depth:
 
-- `anti-ai-design-patterns` (+3 refs) · `design-fundamentals` (+1) · `frontend-framework-guide` (+1) ·
-  `design-systems-architecture` (+2) · `qa-testing-visual-regression` (+1) ·
+- `anti-ai-design-patterns` (+3 refs) · `design-systems-architecture` (+2) ·
+  `design-fundamentals` (+1) · `frontend-framework-guide` (+1) · `qa-testing-visual-regression` (+1) ·
   `responsive-universal-design` (+1) · `inclusive-design-patterns` (+1) ·
-  `web-performance-optimization` (+1) · `deployment-devops-workflow` (+1) · `figma-expert-workflows` (+1)
-- Full but single-file: `design-to-code-workflow` · `web-accessibility-a11y` ·
-  `component-library-mastery` · `css-styling-pixel-perfect` · `design-tokens-system`
+  `web-performance-optimization` (+1) · `deployment-devops-workflow` (+1) · `figma-expert-workflows` (+1) ·
+  `css-styling-pixel-perfect` (+1) · `web-accessibility-a11y` (+1) · `design-tokens-system` (+1) ·
+  `component-library-mastery` (+1)
+- Full but single-file: `design-to-code-workflow`
 
 ## How triggering works
 

@@ -90,6 +90,8 @@ export function Button({ variant, size, isLoading, className, children, ...props
 }
 ```
 
+More variant recipes — compound variants, slots/anatomy, polymorphic `as`, `tailwind-merge` override safety, plus Input/Card examples and Vue/Astro equivalents — are in `references/variant-recipes.md`.
+
 ### 5. Design-token integration
 Components consume tokens from the **design-tokens-system** system (`bg-brand`, `px-md`) — never hardcoded values. A component that reaches for `bg-[#2563eb]` breaks theming.
 

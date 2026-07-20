@@ -61,6 +61,8 @@ Verify name, role, and state are announced:
 - Dynamic updates use `aria-live` regions
 - Custom widgets carry correct `role` + `aria-*` state (`aria-expanded`, `aria-selected`, …)
 
+Keyboard + ARIA patterns for common widgets (dialog, tabs, menu, combobox, disclosure, tooltip, live regions) are in `references/aria-patterns.md`.
+
 ```html
 <!-- ❌ icon-only button, no name -->
 <button><svg>…</svg></button>
