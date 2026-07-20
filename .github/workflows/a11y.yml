@@ -1,0 +1,23 @@
+name: a11y
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: scripts/package-lock.json
+      - name: Install check deps
+        working-directory: scripts
+        run: npm ci
+      - name: Accessibility-tree audit
+        working-directory: scripts
+        run: npm run a11y

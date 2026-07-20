@@ -150,6 +150,16 @@ Every styling skill follows v4's CSS-first model:
 
 There's no separate "triggers" field — Claude selects a skill from the **`description`** in each `SKILL.md`'s YAML frontmatter. Adjacent skills (styling ↔ responsive, tokens ↔ architecture, design-to-code ↔ figma) each own their own trigger phrases and point to their neighbor, so selection stays unambiguous. Details in [`.claude/skills/README.md`](.claude/skills/README.md).
 
+## Checks
+
+`scripts/a11y-audit.mjs` audits the **accessibility tree** of every example (accessible names,
+labels, landmarks, `aria-*` idref integrity, duplicate ids) and runs in CI
+(`.github/workflows/a11y.yml`) as a quality gate.
+
+```bash
+cd scripts && npm ci && npm run a11y   # 0 FAIL across all pages
+```
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

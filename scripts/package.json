@@ -1,0 +1,14 @@
+{
+  "name": "iron-skills-checks",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Repo quality checks (accessibility-tree audit of the HTML examples).",
+  "scripts": {
+    "a11y": "node a11y-audit.mjs",
+    "test": "node a11y-audit.mjs"
+  },
+  "dependencies": {
+    "jsdom": "^25.0.0"
+  }
+}
