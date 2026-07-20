@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create account — Bootstrap 5 (Iron Software Skills Test)</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- set theme before paint (no flash) — inclusive-design-patterns -->
+  <script>
+    (function () {
+      var s = localStorage.getItem('theme');
+      var dark = s === 'dark' || (!s && matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.setAttribute('data-bs-theme', dark ? 'dark' : 'light');
+    })();
+  </script>
+  <style>
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { transition-duration:.01ms!important; animation-duration:.01ms!important; } }
+    .pw-req.met { color: var(--bs-success); }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row min-vh-100">
+
+      <!-- LEFT: brand panel (lg+) — reflows away on small screens -->
+      <aside class="col-lg-6 d-none d-lg-flex flex-column justify-content-between bg-primary text-white p-5">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-box-seam-fill fs-5"></i><span class="fw-semibold">Iron Software</span>
+        </div>
+        <div style="max-width:24rem">
+          <h2 class="fw-bold lh-sm">Ship UI your whole team trusts.</h2>
+          <ul class="list-unstyled mt-4 d-grid gap-3 text-white-50">
+            <li class="d-flex gap-2"><i class="bi bi-check-circle-fill text-white"></i><span>Accessible by default — WCAG 2.1 AA states on every component.</span></li>
+            <li class="d-flex gap-2"><i class="bi bi-palette-fill text-white"></i><span>One token system — light, dark, and per-brand from a single source.</span></li>
+            <li class="d-flex gap-2"><i class="bi bi-grid-1x2-fill text-white"></i><span>React · Astro · Vue — the same components across all three.</span></li>
+          </ul>
+        </div>
+        <p class="small text-white-50 mb-0">Bootstrap 5 · same skills, swapped design system</p>
+      </aside>
+
+      <!-- RIGHT: form -->
+      <main class="col-lg-6 d-flex align-items-center justify-content-center p-4">
+        <div class="w-100" style="max-width:28rem">
+
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <span class="d-lg-none d-flex align-items-center gap-2 text-body-secondary">
+              <i class="bi bi-box-seam-fill text-primary"></i><span class="fw-semibold">Iron Software</span>
+            </span>
+            <div class="form-check form-switch ms-auto mb-0">
+              <input class="form-check-input" type="checkbox" role="switch" id="theme-toggle" />
+              <label class="form-check-label small text-body-secondary" for="theme-toggle">Dark</label>
+            </div>
+          </div>
+
+          <div class="card shadow-sm" id="form-view">
+            <div class="card-body p-4 p-sm-5">
+              <h1 class="h3 fw-bold mb-1">Create your account</h1>
+              <p class="text-body-secondary small">Already have one? <a href="#" class="link-primary">Sign in</a></p>
+
+              <div class="row g-2 mt-3">
+                <div class="col"><button type="button" class="btn btn-outline-secondary w-100"><i class="bi bi-google"></i> Google</button></div>
+                <div class="col"><button type="button" class="btn btn-outline-secondary w-100"><i class="bi bi-github"></i> GitHub</button></div>
+              </div>
+
+              <div class="d-flex align-items-center gap-2 my-4 text-body-secondary small">
+                <hr class="flex-grow-1 my-0" /> or use your email <hr class="flex-grow-1 my-0" />
+              </div>
+
+              <div id="summary" class="alert alert-danger d-none py-2 small" role="alert"></div>
+
+              <form id="signup" novalidate>
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="name" placeholder="Full name" autocomplete="name" required />
+                  <label for="name">Full name</label>
+                  <div class="invalid-feedback" id="name-err"></div>
+                </div>
+
+                <div class="form-floating mb-3">
+                  <input type="email" class="form-control" id="email" placeholder="Email" autocomplete="email" required />
+                  <label for="email">Email</label>
+                  <div class="invalid-feedback" id="email-err"></div>
+                </div>
+
+                <div class="mb-2">
+                  <div class="form-floating position-relative">
+                    <input type="password" class="form-control" id="password" placeholder="Password" autocomplete="new-password" required
+                           aria-describedby="pw-reqs" style="padding-right:3rem" />
+                    <label for="password">Password</label>
+                    <button type="button" id="pw-toggle" aria-pressed="false" aria-label="Show password"
+                            class="btn border-0 bg-transparent position-absolute end-0 top-0 h-100 px-3 text-body-secondary" style="z-index:5">
+                      <i class="bi bi-eye" id="eye"></i>
+                    </button>
+                    <div class="invalid-feedback" id="password-err"></div>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-2 mt-2">
+                    <div class="progress flex-grow-1" style="height:4px" aria-hidden="true">
+                      <div class="progress-bar bg-danger" id="pw-bar" style="width:0%"></div>
+                    </div>
+                    <span class="small fw-medium text-body-secondary" id="pw-strength" style="width:3.5rem;text-align:right" aria-live="polite">—</span>
+                  </div>
+
+                  <ul class="list-unstyled row row-cols-2 g-1 small text-body-secondary mt-2 mb-0" id="pw-reqs">
+                    <li class="col pw-req" data-req="len"><i class="bi bi-circle req-i"></i> 8+ characters</li>
+                    <li class="col pw-req" data-req="case"><i class="bi bi-circle req-i"></i> Upper &amp; lower</li>
+                    <li class="col pw-req" data-req="num"><i class="bi bi-circle req-i"></i> A number</li>
+                    <li class="col pw-req" data-req="sym"><i class="bi bi-circle req-i"></i> A symbol</li>
+                  </ul>
+                </div>
+
+                <div class="form-floating mb-3">
+                  <input type="password" class="form-control" id="confirm" placeholder="Confirm password" autocomplete="new-password" required />
+                  <label for="confirm">Confirm password</label>
+                  <div class="invalid-feedback" id="confirm-err"></div>
+                </div>
+
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" id="terms" required />
+                  <label class="form-check-label small text-body-secondary" for="terms">
+                    I agree to the <a href="#" class="link-primary">Terms</a> and <a href="#" class="link-primary">Privacy Policy</a>.
+                  </label>
+                  <div class="invalid-feedback" id="terms-err"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" id="submit">
+                  <span class="spinner-border spinner-border-sm d-none" id="spin" role="status" aria-hidden="true"></span>
+                  <span id="submit-label">Create account</span>
+                </button>
+
+                <p class="text-center text-body-secondary small mt-3 mb-0">Fields are required unless noted.</p>
+              </form>
+            </div>
+          </div>
+
+          <div class="card shadow-sm d-none text-center" id="success-view" tabindex="-1">
+            <div class="card-body p-5">
+              <i class="bi bi-envelope-check-fill text-primary" style="font-size:3rem"></i>
+              <h1 class="h3 fw-bold mt-3">Check your inbox</h1>
+              <p class="text-body-secondary small mb-0" id="success-msg">We sent a verification link to your email.</p>
+              <button type="button" class="btn btn-link mt-3" id="reset">Back to form</button>
+            </div>
+          </div>
+
+          <p class="text-center text-body-secondary small mt-3 d-lg-none">Bootstrap 5 · same skills, swapped design system</p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // theme toggle (Bootstrap 5.3 data-bs-theme)
+    var html = document.documentElement, toggle = document.getElementById('theme-toggle');
+    toggle.checked = html.getAttribute('data-bs-theme') === 'dark';
+    toggle.addEventListener('change', function () {
+      var dark = toggle.checked;
+      html.setAttribute('data-bs-theme', dark ? 'dark' : 'light');
+      localStorage.setItem('theme', dark ? 'dark' : 'light');
+    });
+
+    // show / hide password
+    var pw = document.getElementById('password'), pwToggle = document.getElementById('pw-toggle'), eye = document.getElementById('eye');
+    pwToggle.addEventListener('click', function () {
+      var show = pw.type === 'password'; pw.type = show ? 'text' : 'password';
+      pwToggle.setAttribute('aria-pressed', show ? 'true' : 'false');
+      pwToggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      eye.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+    });
+
+    // password strength + requirements
+    var bar = document.getElementById('pw-bar'), strengthLabel = document.getElementById('pw-strength');
+    var reqEls = { len:document.querySelector('[data-req="len"]'), case:document.querySelector('[data-req="case"]'), num:document.querySelector('[data-req="num"]'), sym:document.querySelector('[data-req="sym"]') };
+    var LEVELS = [
+      { l:'Weak',   bar:'bg-danger',  w:'25%',  t:'text-danger' },
+      { l:'Weak',   bar:'bg-danger',  w:'25%',  t:'text-danger' },
+      { l:'Fair',   bar:'bg-warning', w:'50%',  t:'text-warning' },
+      { l:'Good',   bar:'bg-info',    w:'75%',  t:'text-info' },
+      { l:'Strong', bar:'bg-success', w:'100%', t:'text-success' }
+    ];
+    function reqs(v){ return { len:v.length>=8, case:/[a-z]/.test(v)&&/[A-Z]/.test(v), num:/\d/.test(v), sym:/[^A-Za-z0-9]/.test(v) }; }
+    function updatePw(){
+      var v = pw.value, r = reqs(v);
+      Object.keys(reqEls).forEach(function(k){
+        var met = r[k]; reqEls[k].classList.toggle('met', met);
+        reqEls[k].querySelector('.req-i').className = 'req-i bi ' + (met ? 'bi-check-circle-fill' : 'bi-circle');
+      });
+      var score = (r.len?1:0)+(r.case?1:0)+(r.num?1:0)+(r.sym?1:0), lvl = LEVELS[score];
+      bar.className = 'progress-bar ' + (v ? lvl.bar : 'bg-danger');
+      bar.style.width = v ? lvl.w : '0%';
+      strengthLabel.textContent = v ? lvl.l : '—';
+      strengthLabel.className = 'small fw-medium ' + (v ? lvl.t : 'text-body-secondary');
+    }
+    pw.addEventListener('input', updatePw);
+
+    // validation (the invariant method — same as the Tailwind & M3 versions)
+    var form = document.getElementById('signup'), summary = document.getElementById('summary');
+    var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var validators = {
+      name:    function(v){ return v.trim()?'':'Enter your name.'; },
+      email:   function(v){ return !v.trim()?'Enter your email.':(EMAIL.test(v)?'':'Enter a valid email address.'); },
+      password:function(v){ return v.length>=8?'':'Use at least 8 characters.'; },
+      confirm: function(v){ return !v?'Re-enter your password.':(v===pw.value?'':'Passwords don’t match.'); }
+    };
+    function setError(id, msg){
+      var input = document.getElementById(id), err = document.getElementById(id+'-err');
+      if(msg){ input.classList.add('is-invalid'); input.setAttribute('aria-describedby', id+'-err'); err.textContent = msg; }
+      else { input.classList.remove('is-invalid'); if(id!=='password') input.removeAttribute('aria-describedby'); err.textContent=''; }
+      return !msg;
+    }
+    Object.keys(validators).forEach(function(id){
+      var input = document.getElementById(id);
+      input.addEventListener('blur', function(){ if(input.dataset.touched) setError(id, validators[id](input.value)); });
+      input.addEventListener('input', function(){ input.dataset.touched='1'; if(input.classList.contains('is-invalid')) setError(id, validators[id](input.value)); });
+    });
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var ok = true, firstBad = null;
+      Object.keys(validators).forEach(function(id){
+        var input = document.getElementById(id); input.dataset.touched='1';
+        var good = setError(id, validators[id](input.value)); if(!good && !firstBad) firstBad = input; ok = ok && good;
+      });
+      var terms = document.getElementById('terms');
+      if(!terms.checked){ terms.classList.add('is-invalid'); document.getElementById('terms-err').textContent = 'Please accept the Terms to continue.'; ok = false; if(!firstBad) firstBad = terms; }
+      else terms.classList.remove('is-invalid');
+
+      if(!ok){ summary.textContent = 'Please fix the highlighted fields.'; summary.classList.remove('d-none'); if(firstBad) firstBad.focus(); return; }
+      summary.classList.add('d-none');
+
+      var submit = document.getElementById('submit'), spin = document.getElementById('spin'), lbl = document.getElementById('submit-label');
+      submit.disabled = true; spin.classList.remove('d-none'); lbl.textContent = ' Creating account…';
+      setTimeout(function(){
+        document.getElementById('form-view').classList.add('d-none');
+        var sv = document.getElementById('success-view');
+        document.getElementById('success-msg').textContent = 'We sent a verification link to ' + document.getElementById('email').value + '.';
+        sv.classList.remove('d-none'); sv.focus();
+      }, 1100);
+    });
+
+    document.getElementById('reset').addEventListener('click', function(){
+      document.getElementById('success-view').classList.add('d-none');
+      document.getElementById('form-view').classList.remove('d-none');
+      var submit = document.getElementById('submit'), spin = document.getElementById('spin'), lbl = document.getElementById('submit-label');
+      submit.disabled = false; spin.classList.add('d-none'); lbl.textContent = 'Create account';
+      form.reset(); ['name','email','password','confirm','terms'].forEach(function(id){ document.getElementById(id).classList.remove('is-invalid'); }); updatePw();
+    });
+
+    updatePw();
+  </script>
+</body>
+</html>

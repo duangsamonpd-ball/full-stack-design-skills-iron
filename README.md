@@ -24,6 +24,22 @@ Claude *skills* are packaged instructions Claude loads on demand for a specific 
 
 They share one spine — **layered design tokens → consistent component APIs → accessibility & inclusion as defaults → measured quality gates → reliable shipping** — and cross-link so following one naturally hands off to the next.
 
+## How the skills compose
+
+Not a flat list — they flow from a brief to a shipped product, each phase handing off to the next.
+
+```mermaid
+flowchart LR
+    brief([Product brief]):::io --> D
+    D -->|specs + tokens| B -->|components| Q -->|verified| S -->|release| ship([Shipped product]):::io
+    D["<b>Design</b><br/>fundamentals · anti-AI<br/>tokens · architecture"]:::phase
+    B["<b>Build</b><br/>framework · css · responsive<br/>components · figma · design-to-code"]:::phase
+    Q["<b>Quality</b><br/>a11y · inclusive<br/>qa / visual · performance"]:::phase
+    S["<b>Ship</b><br/>deployment-devops"]:::phase
+    classDef phase fill:#ccfbf1,stroke:#0d9488,color:#134e4a;
+    classDef io fill:#ffffff,stroke:#0d9488,color:#0f766e;
+```
+
 ## The 15 skills
 
 ### 🎨 Design
@@ -89,6 +105,7 @@ one brand and token layer, shown across design systems and a real framework buil
 | `dashboard-prototype.html` | KPI tiles + hand-built SVG charts (validated palette), responsive layout |
 | `registration-form.html` | Forgiving-form validation, a11y, password strength — custom design system |
 | `registration-form-m3.html` | The same form rebuilt in **Material 3** (design-system-agnostic proof) |
+| `registration-form-bootstrap.html` | …and again in **Bootstrap 5** — three design systems, one method |
 | `astro-registration-m3/` | The M3 form ported to **Astro** — utility-first Tailwind v4, ~zero JS |
 
 ```bash
@@ -121,6 +138,7 @@ Every styling skill follows v4's CSS-first model:
 ├── dashboard-prototype.html       KPI + SVG charts (dataviz)
 ├── registration-form.html         custom design system
 ├── registration-form-m3.html      Material 3
+├── registration-form-bootstrap.html  Bootstrap 5
 ├── astro-registration-m3/         Astro port (utility-first, production build)
 ├── LICENSE                        MIT
 └── README.md                      you are here
