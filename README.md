@@ -63,7 +63,7 @@ flowchart LR
 ### ✅ Quality
 | Skill | What it does |
 |-------|--------------|
-| **web-accessibility-a11y** | Audit against WCAG 2.1 AA with prioritized findings + concrete fixes. |
+| **web-accessibility-a11y** | Audit against WCAG 2.2 AA with prioritized findings + concrete fixes. |
 | **inclusive-design-patterns** | Beyond conformance — reduced motion, i18n/RTL, cognitive load, diverse inputs. |
 | **qa-testing-visual-regression** | Unit/component + e2e + visual snapshots to catch UI drift. |
 | **web-performance-optimization** | Profile & fix rendering, bundle size, and Core Web Vitals (LCP/INP/CLS). |

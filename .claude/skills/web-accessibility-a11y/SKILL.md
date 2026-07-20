@@ -1,22 +1,22 @@
 ---
 name: web-accessibility-a11y
-description: Audit a component or page for WCAG 2.1 AA accessibility compliance with findings and concrete fixes. Use when the user says "audit accessibility", "check wcag compliance", "is this accessible", "a11y testing", or "accessibility audit".
+description: Audit a component or page for WCAG 2.2 AA accessibility compliance with findings and concrete fixes. Use when the user says "audit accessibility", "check wcag compliance", "is this accessible", "a11y testing", "wcag 2.2", or "accessibility audit".
 ---
 
 # Web Accessibility Audit
 
-Audit a component or page against **WCAG 2.1 AA** and return prioritized findings, each with a concrete code fix. Works for React, Astro, and Vue output.
+Audit a component or page against **WCAG 2.2 AA** and return prioritized findings, each with a concrete code fix. Works for React, Astro, and Vue output.
 
 ## When to use this skill
 
 - Auditing a component or page for accessibility
-- Verifying WCAG 2.1 AA compliance before shipping
+- Verifying WCAG 2.2 AA compliance before shipping
 - Getting specific, code-level fixes for a11y issues
 
 ## Workflow
 
 ### 1. Scope
-Confirm what's being audited (single component vs. full page/flow), the target level (default WCAG 2.1 AA), and whether automated tooling is available in the repo.
+Confirm what's being audited (single component vs. full page/flow), the target level (default WCAG 2.2 AA), and whether automated tooling is available in the repo.
 
 ### 2. Automated pass
 Catch the obvious issues first with tooling, then do the manual work machines can't:
@@ -86,13 +86,27 @@ Severity order: **Critical** (blocks a user) → **Serious** → **Moderate** �
 ### 8. Remediate & verify
 Apply fixes, then re-run the automated pass **and** re-test keyboard + screen reader on the changed elements. Don't mark resolved on the automated score alone.
 
-## WCAG 2.1 AA quick checklist
+## New in WCAG 2.2 (also check)
+
+WCAG 2.2 (W3C Recommendation, Oct 2023) is the current bar: 2.2 AA = all of 2.1 AA **plus** the below. (2.2 also *removed* 4.1.1 Parsing — malformed markup is no longer its own failure.)
+
+- **3.3.8 Accessible Authentication (AA)** — no step that forces memorizing or transcribing (image puzzles, un-pasteable codes). Let password managers work (`autocomplete="new-password"` / `"current-password"`) and **never block paste** on password or one-time-code fields.
+- **3.3.7 Redundant Entry (A)** — don't re-ask information already given in the same process; auto-fill it or offer "same as…".
+- **2.5.8 Target Size Minimum (AA)** — pointer targets ≥ **24×24 CSS px**, or spaced so a 24px circle doesn't overlap a neighbor. (44×44 stays the stronger AAA / touch target — see `inclusive-design-patterns`.)
+- **2.4.11 Focus Not Obscured (AA)** — the focused element isn't fully hidden behind a sticky header/footer or overlay.
+- **2.5.7 Dragging Movements (AA)** — every drag has a single-pointer alternative (a reorder list also offers up/down buttons).
+- **3.2.6 Consistent Help (A)** — help / contact links stay in the same relative place across pages.
+- **2.4.13 Focus Appearance (AAA — worth adopting)** — focus indicator big and contrasty enough to find at a glance.
+
+## WCAG 2.2 AA quick checklist
 
 ```
 Perceivable   — contrast ≥ 4.5:1, alt text, no color-only meaning, captions
-Operable      — full keyboard access, visible focus, no traps, skip link
-Understandable— labels, lang attribute, predictable & consistent, clear errors
-Robust        — valid HTML, correct ARIA roles/states, works with assistive tech
+Operable      — full keyboard, visible + unobscured focus, no traps, skip link,
+                targets ≥ 24×24, drag has a click alternative
+Understandable— labels, lang attribute, predictable, clear errors, no redundant entry,
+                accessible auth (paste allowed, password managers work), consistent help
+Robust        — correct ARIA roles/states, works with assistive tech
 ```
 
 ## Common issues & fixes
@@ -105,11 +119,13 @@ Robust        — valid HTML, correct ARIA roles/states, works with assistive te
 | Low-contrast gray text | Meet 4.5:1 against its background |
 | Icon-only control | Add `aria-label`; `aria-hidden` on the icon |
 | Modal doesn't trap focus | Trap focus, close on `Esc`, restore focus on close |
+| Paste blocked on password field | Remove the block; `autocomplete="new-password"` (WCAG 2.2 · 3.3.8) |
+| Tap target under 24px | Grow to ≥ 24×24 CSS px or add spacing (WCAG 2.2 · 2.5.8) |
 
 ## Tools & resources
 
 - axe DevTools · WAVE · Lighthouse · VoiceOver (macOS) / NVDA (Windows)
-- WebAIM contrast checker · WCAG 2.1 Quick Reference
+- WebAIM contrast checker · WCAG 2.2 Quick Reference
 
 ## Next steps to recommend
 

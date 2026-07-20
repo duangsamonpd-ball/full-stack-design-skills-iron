@@ -7,6 +7,8 @@ description: Design for the full range of users — motion sensitivity, cognitiv
 
 Design that works well for the widest range of people, contexts, and devices — the intent that WCAG conformance alone doesn't guarantee. `web-accessibility-a11y` checks pass/fail; this skill covers designing so people actually succeed.
 
+The canonical **7 Principles of Universal Design**, and how they map to these skills, are in `references/universal-design-principles.md` — read it to frame *why* the dimensions below matter.
+
 ## When to use this skill
 
 - Designing for motion sensitivity, cognitive load, or low literacy
@@ -58,7 +60,7 @@ Honor what the user has already told their OS/browser. Code snippets in
 
 ## Relationship to accessibility
 
-- `web-accessibility-a11y` = does it **conform** to WCAG 2.1 AA? (measurable pass/fail)
+- `web-accessibility-a11y` = does it **conform** to WCAG 2.2 AA? (measurable pass/fail)
 - `inclusive-design-patterns` = is it actually **usable** for the full range of people and contexts? (design intent)
 
 Use both — conformance is the floor, not the goal.

@@ -26,7 +26,7 @@ never the **confusable** neighbor. Re-run after editing any `description`.
 | "make it responsive across breakpoints / add container queries" | `responsive-universal-design` |
 | "build and scale a component library with typed variants" | `component-library-mastery` |
 | "set up figma code connect / keep dev mode in sync with code" | `figma-expert-workflows` |
-| "audit this component for WCAG 2.1 AA compliance" | `web-accessibility-a11y` |
+| "audit this component for WCAG 2.2 AA compliance" | `web-accessibility-a11y` |
 | "support reduced motion, RTL, and larger text" | `inclusive-design-patterns` |
 | "add visual-regression + e2e tests to catch UI drift" | `qa-testing-visual-regression` |
 | "improve Core Web Vitals / reduce the bundle size" | `web-performance-optimization` |
