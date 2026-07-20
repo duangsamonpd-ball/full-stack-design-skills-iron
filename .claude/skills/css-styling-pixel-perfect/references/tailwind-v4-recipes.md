@@ -79,6 +79,30 @@ In React/Astro/Vue, **reuse the component, not an `@apply` class** — put utili
 the component markup. Reserve `@apply`/`@layer components` for genuinely repeated clusters in
 plain HTML. This keeps styling co-located and sidesteps both gotchas above.
 
+## Forced colors / Windows High Contrast
+
+When a forced-colors mode is on (Windows High Contrast, `forced-colors: active`), the OS
+**replaces your palette** with its own. Design so meaning survives the swap:
+
+- **Lean on semantic elements + system colors.** Native `<button>`/`<a>`/`<input>` map
+  automatically; custom widgets can opt into system color keywords (`Canvas`, `CanvasText`,
+  `ButtonText`, `Highlight`, `LinkText`).
+- **Never carry meaning in a background image, gradient, or box-shadow alone** — those are
+  flattened or removed. Pair them with a border or text.
+- **Keep focus/selection visible with `outline`**, not only `box-shadow` (shadows vanish;
+  outlines are preserved and honor `Highlight`).
+- Use the Tailwind v4 **`forced-colors:`** variant for targeted fallbacks
+  (`forced-colors:outline forced-colors:border`).
+
+```css
+@media (forced-colors: active) {
+  .card { border: 1px solid CanvasText; }          /* restore meaning a shadow was carrying */
+  .btn:focus-visible { outline: 2px solid Highlight; }
+}
+```
+
+Test: Windows High Contrast, or DevTools → Rendering → *Emulate CSS forced-colors: active*.
+
 ## Verify before shipping
 
 Compile the CSS once — a clean run means no `@apply` errors:

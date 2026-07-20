@@ -124,8 +124,19 @@ Robust        — correct ARIA roles/states, works with assistive tech
 
 ## Tools & resources
 
-- axe DevTools · WAVE · Lighthouse · VoiceOver (macOS) / NVDA (Windows)
-- WebAIM contrast checker · WCAG 2.2 Quick Reference
+- **Automated** — axe DevTools · WAVE · Lighthouse · WebAIM contrast checker · WCAG 2.2 Quick Reference
+- **Screen readers** — VoiceOver (macOS/iOS) · NVDA + JAWS (Windows) · TalkBack (Android); test at least one per platform you ship
+- **Other AT** — keyboard-only · switch access · voice control (macOS/iOS Voice Control, Dragon) · 200% zoom · `forced-colors` / Windows High Contrast
+
+### Manual test matrix (what tools miss)
+
+```
+Keyboard-only   — reach + operate everything; focus visible and never obscured
+Screen reader   — name / role / state announced; headings + landmarks navigable
+Zoom / reflow   — 200% zoom (+400% reflow, 1.4.10) with no horizontal scroll or clipping
+Forced colors   — Windows High Contrast: meaning survives; focus + borders stay visible
+Voice / switch  — every control has a real accessible name so it can be targeted
+```
 
 ## Next steps to recommend
 

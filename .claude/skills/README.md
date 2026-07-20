@@ -35,7 +35,7 @@ examples, and 14 carry a `references/` folder for on-demand depth:
 
 - `anti-ai-design-patterns` (+3 refs) · `design-systems-architecture` (+2) ·
   `design-fundamentals` (+1) · `frontend-framework-guide` (+1) · `qa-testing-visual-regression` (+1) ·
-  `responsive-universal-design` (+1) · `inclusive-design-patterns` (+2) ·
+  `responsive-universal-design` (+1) · `inclusive-design-patterns` (+3) ·
   `web-performance-optimization` (+1) · `deployment-devops-workflow` (+1) · `figma-expert-workflows` (+1) ·
   `css-styling-pixel-perfect` (+1) · `web-accessibility-a11y` (+1) · `design-tokens-system` (+1) ·
   `component-library-mastery` (+1)

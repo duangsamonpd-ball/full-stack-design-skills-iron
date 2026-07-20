@@ -25,12 +25,15 @@ Honor what the user has already told their OS/browser. Code snippets in
 - `prefers-color-scheme` — support dark mode as a first-class theme.
 - `prefers-reduced-data` — avoid autoplay/large media on constrained connections.
 - OS text scaling — size in `rem`; never lock font size.
+- `forced-colors` / `prefers-contrast` — survive Windows High Contrast: lean on system colors, keep meaning out of background-only cues, add `forced-colors:` fallbacks (recipe in `css-styling-pixel-perfect` → `references/tailwind-v4-recipes.md`).
 
 ### 2. Cognitive load
 - Plain language; short sentences; front-load the point.
 - **One primary action per screen**; secondary actions visually demoted.
 - Progressive disclosure — reveal complexity only when needed.
 - Forgiving forms — clear inline errors, no data loss on error, no time pressure.
+
+Deeper COGA patterns (don't rely on memory, help users focus, prevent & recover from mistakes, manageable steps) are in `references/cognitive-accessibility.md`.
 
 ### 3. Internationalization (i18n)
 - Never hardcode strings or concatenate sentence fragments — use a message catalog with
