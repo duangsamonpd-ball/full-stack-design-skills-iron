@@ -61,3 +61,8 @@ Build → `design-to-code-workflow`, `frontend-framework-guide`, `css-styling-pi
 Quality → `web-accessibility-a11y`, `inclusive-design-patterns`,
 `qa-testing-visual-regression`, `web-performance-optimization`
 Ship → `deployment-devops-workflow`
+
+## Tests
+
+[`TESTS.md`](TESTS.md) — a single-file trigger + disambiguation matrix (plus behavior
+expectations) for all 15 skills. Re-run the rows for any skill whose `description` you edit.
