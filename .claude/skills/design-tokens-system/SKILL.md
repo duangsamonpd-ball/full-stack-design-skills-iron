@@ -36,7 +36,7 @@ Components reference **semantic/component** tokens only — never a primitive or
 
 ## Wiring into Tailwind (v4, CSS-first)
 
-Tailwind v4 has no `tailwind.config.js` by default — the theme lives in CSS via `@theme`, and opacity modifiers (`bg-brand/50`) work automatically through `color-mix()`, so the old `rgb(var(--…) / <alpha-value>)` channel trick is gone. Register **semantic** tokens with `@theme inline` so they emit utilities *and* re-theme when the underlying variable changes:
+Tailwind v4 has no `tailwind.config.js` by default — the theme lives in CSS via `@theme`, and opacity modifiers (`bg-brand/50`) work automatically through `color-mix()`, so the old `rgb(var(--…) / <alpha-value>)` channel trick is gone. Register **semantic** tokens so they emit utilities *and* re-theme when the underlying variable changes. Use `@theme inline` when components consume tokens **as utility classes** (`bg-brand`); see the inline-vs-static trade-off below if they read raw `var(--color-*)` instead:
 
 ```css
 /* app.css */
@@ -64,6 +64,23 @@ Tailwind v4 has no `tailwind.config.js` by default — the theme lives in CSS vi
 ```
 
 Now `bg-surface`, `text-content`, and `bg-brand/50` all resolve, and dark mode is a variable swap.
+
+### `@theme inline` vs plain `@theme` — pick by how components read tokens
+
+`@theme inline` inlines the value into the generated utilities but does **not** expose `--color-*` on `:root`. So utility classes (`bg-brand`) re-theme correctly, while a raw `var(--color-brand)` in your own CSS resolves to nothing.
+
+If components read tokens as **raw custom properties** — e.g. inside an Astro/Vue/`.astro` component `<style>` block, not as utility classes — register them with **plain `@theme`** (not `inline`) so the variables actually land on `:root`, and add **`static`** so a token no utility references isn't tree-shaken out:
+
+```css
+/* components read var(--color-brand) directly, so emit it to :root and keep it */
+@theme static {
+  --color-brand:   var(--brand);
+  --color-surface: var(--surface);
+  --color-content: var(--content);
+}
+```
+
+Rule of thumb: **utility-class consumers → `@theme inline`; raw-`var()` consumers → `@theme static`.** Mixing is fine — the deciding factor is whether a given token is ever read outside a Tailwind utility.
 
 Worked light / dark / multi-brand theming recipes (with per-theme contrast tuning and a full semantic-token set) are in `references/theming-recipes.md`.
 
