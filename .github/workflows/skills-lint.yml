@@ -1,0 +1,25 @@
+name: skills-lint
+
+# Structural lint for .claude/skills/* — folder/name match, frontmatter +
+# description present, and every references/…md (including cross-skill pointers)
+# resolves. Fails the build on any broken skill wiring.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: skills wiring is intact
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      # Zero dependencies — plain Node, nothing to install.
+      - name: Lint skills
+        run: node scripts/skills-lint.mjs

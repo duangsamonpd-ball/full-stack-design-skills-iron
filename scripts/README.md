@@ -1,5 +1,27 @@
 # Repo checks
 
+## Skills lint
+
+`skills-lint.mjs` statically checks that every skill under `.claude/skills/*` is
+wired correctly — the plumbing a skill needs to load and trigger at all:
+
+- the `name:` in the frontmatter **equals the folder name** (and is a valid slug)
+- a `--- … ---` frontmatter block with a non-empty `description:` (what auto-selects it)
+- every `references/…md` the SKILL.md points at **exists** — including the
+  cross-skill pointers (`<other-skill> → references/x.md`) this package uses
+
+Reference files on disk that no SKILL.md links, and over-long / trigger-phrase-less
+descriptions, are reported as **warnings** (not failures).
+
+```bash
+cd scripts
+npm run skills-lint   # no install needed — zero dependencies
+```
+
+Exit code is non-zero on any real problem, so it gates CI — see
+`.github/workflows/skills-lint.yml`. Re-run after renaming a skill folder, editing a
+`description`, or adding/moving a `references/` file.
+
 ## Accessibility-tree audit
 
 `a11y-audit.mjs` statically audits the **accessibility tree** of every HTML example — the

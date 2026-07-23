@@ -3,9 +3,10 @@
   "private": true,
   "type": "module",
   "version": "1.0.0",
-  "description": "Repo quality checks (accessibility-tree audit of the HTML examples).",
+  "description": "Repo quality checks (accessibility-tree audit of the HTML examples; skills structural lint).",
   "scripts": {
     "a11y": "node a11y-audit.mjs",
+    "skills-lint": "node skills-lint.mjs",
     "test": "node a11y-audit.mjs"
   },
   "dependencies": {
