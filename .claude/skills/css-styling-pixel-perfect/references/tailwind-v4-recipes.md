@@ -83,6 +83,32 @@ Component classes may `@apply` **plain utilities and same-element pseudo variant
 (`hover:`, `focus:`, `disabled:`, `placeholder:`). **Symptom to recognize:** entire page
 unstyled + supposedly-`hidden` elements visible.
 
+## GOTCHA 3 — automatic source detection scans your *docs* too
+
+v4 needs no `content` array: it scans the whole project, every file as plain text, skipping
+only `.gitignore`d paths, `node_modules`, binaries, CSS and lock files. Markdown is not on
+that skip list — so a class name **quoted in a README or a design doc** compiles into your
+stylesheet, and every stylesheet in a multi-page project carries every other page's
+utilities.
+
+The failure mode is nastier than the bloat: the build stops being a function of the code.
+Write a doc mentioning `truncate`, and the CSS changes. Two machines with the same commit
+produce different output if one has an unbuilt directory or an extra scratch file. A drift
+gate then fails on a diff nobody can explain.
+
+```css
+/* ✗ output depends on everything in the repo, including prose */
+@import "tailwindcss";
+
+/* ✓ output depends on exactly one file */
+@import "tailwindcss" source(none);
+@source "../pricing.html";
+```
+
+Use `source(none)` + explicit `@source` whenever the input CSS doesn't sit at the root of
+exactly the tree it should scan — per-page stylesheets, docs sites, monorepo packages.
+Reach for bare `@import "tailwindcss"` only when "scan everything here" is genuinely right.
+
 ## Opacity — no more `<alpha-value>`
 
 `bg-brand/50` works automatically via `color-mix()` for any color registered in `@theme`.
