@@ -24,6 +24,8 @@ Claude *skills* are packaged instructions Claude loads on demand for a specific 
 
 They share one spine — **layered design tokens → consistent component APIs → accessibility & inclusion as defaults → measured quality gates → reliable shipping** — and cross-link so following one naturally hands off to the next.
 
+> **Installing them?** [`USAGE.md`](USAGE.md) is the manual — install per project or globally, how a skill actually gets selected, what to say so the right one fires, and what to do when one doesn't.
+
 ## How the skills compose
 
 Not a flat list — they flow from a brief to a shipped product, each phase handing off to the next.
