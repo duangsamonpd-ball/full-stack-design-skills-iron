@@ -10,6 +10,6 @@
     "test": "node a11y-audit.mjs"
   },
   "dependencies": {
-    "jsdom": "^25.0.0"
+    "jsdom": "^29.1.1"
   }
 }
