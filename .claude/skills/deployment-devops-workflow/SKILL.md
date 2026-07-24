@@ -31,6 +31,20 @@ commit → install → build → quality gates → preview deploy (PR) → merge
 A sample GitHub Actions workflow, hosting configs, and a rollback note are in
 `references/ci-cd.md`.
 
+### Keep the runner current
+
+A pipeline rots quietly: it keeps passing green on a runtime that stopped getting security
+patches. Two things to re-check when you touch CI — nothing warns you about either:
+
+- **Node** — build on a version in **Active LTS**. Even-numbered releases get ~3 years;
+  check the [release schedule](https://nodejs.org/en/about/eol) rather than trusting the
+  number already in the file. Node 20 went EOL 2026-04-30.
+- **Actions** — pin the **major** (`actions/checkout@v5`), which still takes security
+  patches within that major. An unmaintained major eventually loses runner support.
+
+Apply the same version to *every* workflow in the repo. Pipelines added at different times
+drift apart, and the oldest one is the one nobody re-reads.
+
 ## Quality gates = definition of done
 
 The gate list is what keeps `main` shippable. Nothing merges that:
