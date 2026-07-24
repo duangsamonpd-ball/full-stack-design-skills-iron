@@ -16,10 +16,31 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '..');
 const rel = (f) => path.relative(repoRoot, f) || f;
 
+/**
+ * Pages that only exist once something is built. A missing one is a hole in the gate,
+ * not a page to quietly drop — skipping it silently is how the Astro output went
+ * unaudited in CI while passing locally.
+ */
+const BUILT_PAGES = [
+  {
+    file: path.join(repoRoot, 'astro-registration-m3', 'dist', 'index.html'),
+    build: 'cd astro-registration-m3 && npm ci && npm run build',
+  },
+];
+
 function discover() {
   const list = fs.readdirSync(repoRoot).filter((f) => f.endsWith('.html')).map((f) => path.join(repoRoot, f));
-  const dist = path.join(repoRoot, 'astro-registration-m3', 'dist', 'index.html');
-  if (fs.existsSync(dist)) list.push(dist);
+  const missing = [];
+  for (const { file, build } of BUILT_PAGES) {
+    if (fs.existsSync(file)) list.push(file);
+    else missing.push({ file, build });
+  }
+  if (missing.length) {
+    console.error(`\n\x1b[31m✖  ${missing.length} page(s) expected but not built — the audit would be incomplete\x1b[0m`);
+    for (const { file, build } of missing) console.error(`    ${rel(file)}\n      build it with:  ${build}`);
+    console.error('');
+    process.exit(1);
+  }
   return list.sort();
 }
 

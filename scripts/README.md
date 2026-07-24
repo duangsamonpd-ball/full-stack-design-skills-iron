@@ -49,6 +49,16 @@ npm ci            # or: npm install
 npm run a11y      # audits all repo HTML; add paths to audit specific files
 ```
 
+**7 pages, not 6.** Six are `.html` files at the repo root; the seventh is the Astro
+example, which only exists once it's built. It used to be skipped silently when absent —
+so CI, which never built it, quietly audited one page fewer than a local run and left the
+Astro output ungated. The audit now **fails** with the build command instead of dropping
+the page. Build it first:
+
+```bash
+cd astro-registration-m3 && npm ci && npm run build
+```
+
 Exit code is non-zero if any real **FAIL** is found, so it works as a CI gate — see
 `.github/workflows/a11y.yml`. It supports the `web-accessibility-a11y`,
 `qa-testing-visual-regression`, and `deployment-devops-workflow` skills (a11y as a

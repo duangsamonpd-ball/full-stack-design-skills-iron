@@ -14,10 +14,19 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: scripts/package-lock.json
+          cache-dependency-path: |
+            scripts/package-lock.json
+            astro-registration-m3/package-lock.json
       - name: Install check deps
         working-directory: scripts
         run: npm ci
+
+      # The Astro example is only a page once it's built. Without this the audit
+      # silently covered 6 pages here and 7 locally — see BUILT_PAGES in a11y-audit.mjs.
+      - name: Build the Astro example
+        working-directory: astro-registration-m3
+        run: npm ci && npm run build
+
       - name: Accessibility-tree audit
         working-directory: scripts
         run: npm run a11y
