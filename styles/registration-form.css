@@ -1,6 +1,8 @@
 /* Source for registration-form.html — built to assets/registration-form.css by scripts/build-css.mjs.
    Edit this file, never the generated CSS. */
-@import "tailwindcss";
+/* source(none): scan ONLY this page. Without it Tailwind scans the whole repo — including
+   the skills' markdown — and class names quoted in documentation leak into every page. */
+@import "tailwindcss" source(none);
 @source "../registration-form.html";
 
 @custom-variant dark (&:where(.dark, .dark *));
