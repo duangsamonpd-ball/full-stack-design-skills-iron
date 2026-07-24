@@ -16,7 +16,14 @@ descriptions, are reported as **warnings** (not failures).
 ```bash
 cd scripts
 npm run skills-lint   # no install needed — zero dependencies
+
+# or point it at an installed set (symlinks are followed)
+node skills-lint.mjs ~/.claude/skills
 ```
+
+With no argument it lints this repo's `.claude/skills`. Passing a directory checks a
+set as Claude actually loads it — useful when skills are symlinked into `~/.claude/skills`
+from a clone, or when a hand-installed skill lands there without frontmatter.
 
 Exit code is non-zero on any real problem, so it gates CI — see
 `.github/workflows/skills-lint.yml`. Re-run after renaming a skill folder, editing a

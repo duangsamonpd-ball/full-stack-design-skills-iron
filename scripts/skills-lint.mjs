@@ -11,7 +11,9 @@
  * This asserts all of that, so a renamed folder, a dropped reference, or a typo'd
  * description can't ship silently.
  *
- * Run:  node scripts/skills-lint.mjs
+ * Run:  node scripts/skills-lint.mjs [skills-dir]
+ *       …with no argument it lints this repo's .claude/skills; pass a path to
+ *       check an installed set instead, e.g. ~/.claude/skills (symlinks are followed).
  * Exit: 0 = clean (warnings allowed) · 1 = a real problem
  *
  * Zero dependencies — plain Node, runs in CI with no install.
@@ -19,10 +21,12 @@
 
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const SKILLS = join(ROOT, '.claude/skills');
+const SKILLS = process.argv[2]
+  ? resolve(process.argv[2].replace(/^~(?=$|\/)/, process.env.HOME ?? '~'))
+  : join(ROOT, '.claude/skills');
 
 const errors = [];
 const warnings = [];
