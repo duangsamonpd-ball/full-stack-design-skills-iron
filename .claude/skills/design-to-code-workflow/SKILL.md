@@ -32,6 +32,11 @@ If a Figma URL is provided, load the `figma:figma-design-to-code` skill and use 
 - Map raw design values to existing Tailwind tokens (see the `design-tokens-system` skill)
 - Identify variants (e.g. primary/secondary) and props up front
 
+Translating what the design *shows* into what the code should *mean* — auto-layout and
+constraints into flex/grid, and every literal value into snap-to-token / propose-a-token /
+justified one-off — is in `references/design-extraction.md`, along with the inventory to pull
+in a single pass.
+
 ### 4. Build structure first, then style
 Write semantic HTML/markup for the whole component before touching styling. Get the DOM/element tree right, then apply Tailwind classes.
 
@@ -40,6 +45,12 @@ Use Tailwind utilities mapped to design tokens rather than hardcoded values. Ext
 
 ### 6. Handle responsive & interactive states
 Cover breakpoints (`sm/md/lg`), plus `hover`, `focus`, `active`, `disabled`, and loading states shown in the design.
+
+Most of these aren't *in* the design. `references/states-and-gaps.md` is the intake checklist
+for what a static mockup never shows — the full state matrix, content the copy flatters (long
+strings, empty, translated), and behaviour nobody draws (focus order, focus after an action,
+sticky headers obscuring focus, dark mode, RTL). Anything unanswered there is a question for
+the designer, not a silent decision.
 
 ### 7. Accessibility pass
 Semantic elements, labels/`aria-*`, visible focus, and color contrast. For anything non-trivial, hand off to the `web-accessibility-a11y` skill.
@@ -52,6 +63,11 @@ Compare the rendered output to the source — spacing, colors, typography, and s
 - **React** — function components + props for variants; `clsx`/`cn` for conditional classes.
 - **Astro** — `.astro` components; keep interactivity in islands (React/Vue) only where needed.
 - **Vue** — SFCs with `<script setup>`; bind variant classes via computed/`:class`.
+
+The same component written out in all three — including where they genuinely diverge — is in
+**frontend-framework-guide** → `references/framework-patterns.md`. One catch when porting: if
+you `@apply` inside a Vue or Astro scoped `<style>` block, it needs `@reference` first or it
+silently emits nothing (**css-styling-pixel-perfect** → `references/tailwind-v4-recipes.md`).
 
 ## Common pitfalls
 
