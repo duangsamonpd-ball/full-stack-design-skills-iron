@@ -7,3 +7,6 @@ dist/
 
 # build plumbing: styles/ needs to resolve tailwindcss from scripts/node_modules
 /styles/node_modules
+
+# personal Claude Code settings (machine-specific hook paths)
+/.claude/settings.local.json

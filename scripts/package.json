@@ -9,7 +9,10 @@
     "skills-lint": "node skills-lint.mjs",
     "test": "node a11y-audit.mjs",
     "build-css": "node build-css.mjs",
-    "build-css:check": "node build-css.mjs --check"
+    "build-css:check": "node build-css.mjs --check",
+    "drift": "node check-drift.mjs",
+    "drift:gates": "node check-drift.mjs --gates",
+    "drift:versions": "node check-drift.mjs --versions"
   },
   "dependencies": {
     "jsdom": "^29.1.1"

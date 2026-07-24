@@ -29,6 +29,35 @@ Exit code is non-zero on any real problem, so it gates CI — see
 `.github/workflows/skills-lint.yml`. Re-run after renaming a skill folder, editing a
 `description`, or adding/moving a `references/` file.
 
+## Maintenance drift check
+
+`check-drift.mjs` is the radar for keeping this package current (see the `maintenance-cadence`
+memory). Two halves, on different clocks:
+
+```bash
+cd scripts
+npm run drift            # both halves
+npm run drift:gates      # local, instant — are the three gates green?
+npm run drift:versions   # network — are pinned deps behind npm's latest?
+```
+
+`--gates` runs `skills-lint`, `build-css --check` and `a11y-audit` and reports pass/fail
+without a network call; `--versions` compares the tracked deps (tailwindcss, astro, jsdom, …)
+to what npm publishes and flags majors. It always exits 0 — it reports, CI is where red fails.
+
+`--hook` emits a SessionStart JSON envelope (gates only) for a Claude Code hook. Wire it up
+per machine in `.claude/settings.local.json` (gitignored) so a session opens already knowing
+the gate status:
+
+```json
+{ "hooks": { "SessionStart": [ { "hooks": [
+  { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/scripts/check-drift.mjs\" --hook", "timeout": 15 }
+] } ] } }
+```
+
+Version drift benefits from running on the world's clock, not yours — a scheduled agent or a
+periodic `npm run drift:versions` catches a release the day it lands.
+
 ## Example-page stylesheets
 
 `build-css.mjs` compiles each root example page's Tailwind source — `styles/<page>.css`,
