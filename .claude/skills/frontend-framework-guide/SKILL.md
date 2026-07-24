@@ -61,6 +61,24 @@ Don't put on the client what the server already knows.
 | Data fetched in the browser that could be server-rendered | Fetch at build/request time; hydrate with the result |
 | Global store for everything | Use local state; store only truly shared state |
 | Prematurely memoizing everything | Measure first; memoize proven hot paths |
+| Relying on a source newline for a space before an inline tag | Emit it explicitly with `{' '}` — HTML minifiers drop it and words fuse |
+
+### Significant whitespace is not yours to keep
+
+```astro
+<p>Already have one?
+  <a href="/signin">Sign in</a>   <!-- renders "one?Sign in" once minified -->
+</p>
+<p>Already have one?{' '}
+  <a href="/signin">Sign in</a>   <!-- always "one? Sign in" -->
+</p>
+```
+
+That newline is a real space to the browser but only *incidental* whitespace to a minifier,
+and how aggressively it gets collapsed changes between build-tool versions. The bug is
+invisible in dev, survives every build, and shows up as fused words in production. Any
+space that carries meaning belongs in the markup as a character — the same rule applies to
+JSX, where this has always been the case.
 
 ## Next steps
 
