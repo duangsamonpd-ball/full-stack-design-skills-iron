@@ -79,6 +79,39 @@ In React/Astro/Vue, **reuse the component, not an `@apply` class** — put utili
 the component markup. Reserve `@apply`/`@layer components` for genuinely repeated clusters in
 plain HTML. This keeps styling co-located and sidesteps both gotchas above.
 
+### If you do `@apply` inside a scoped style block, you need `@reference`
+
+A Vue/Svelte `<style>` block, an Astro scoped `<style>`, or a CSS module is compiled on its
+own — it has never seen your theme, so `@apply` there fails or silently emits nothing. Point
+it at your stylesheet first:
+
+```vue
+<style>
+  @reference "../../app.css";   /* or "tailwindcss" if you have no theme customisations */
+  h1 { @apply text-2xl font-bold text-brand; }
+</style>
+```
+
+`@reference` only *reads* the theme — it adds no CSS to the output, so importing it in every
+block costs nothing. Without it the failure looks like a typo'd class name, which sends you
+hunting in the wrong place.
+
+## Custom utilities — `@utility`, not a plugin
+
+v4 has no JS plugin API for this. Define utilities in CSS and they pick up variants
+(`hover:`, `lg:`, `pointer-coarse:`) for free:
+
+```css
+@utility tap-target {         /* usable as tap-target, md:tap-target, pointer-coarse:tap-target */
+  min-block-size: 44px;
+  min-inline-size: 44px;
+}
+```
+
+Prefer `@utility` over `@layer components` + `@apply` when the thing is genuinely a
+*utility* (one job, composable). It survives the GOTCHA 2 trap entirely, because there is no
+`@apply` involved.
+
 ## Forced colors / Windows High Contrast
 
 When a forced-colors mode is on (Windows High Contrast, `forced-colors: active`), the OS

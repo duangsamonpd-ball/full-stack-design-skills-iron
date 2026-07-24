@@ -26,12 +26,15 @@ Honor what the user has already told their OS/browser. Code snippets in
 - `prefers-reduced-data` — avoid autoplay/large media on constrained connections.
 - OS text scaling — size in `rem`; never lock font size.
 - `forced-colors` / `prefers-contrast` — survive Windows High Contrast: lean on system colors, keep meaning out of background-only cues, add `forced-colors:` fallbacks (recipe in `css-styling-pixel-perfect` → `references/tailwind-v4-recipes.md`).
+- `inverted-colors` — macOS/iOS *Invert Colours* flips rendered output, so effects that read as depth invert into grime: drop shadows darken the wrong edge, and photos come back as negatives. Neutralise the decoration (`inverted-colors:shadow-none`), and re-invert images you inverted on purpose.
+- `scripting: none` (`noscript:`) — a genuine preference/context, not just a failure. State what needs JS rather than rendering an empty shell.
 
 ### 2. Cognitive load
 - Plain language; short sentences; front-load the point.
 - **One primary action per screen**; secondary actions visually demoted.
 - Progressive disclosure — reveal complexity only when needed.
 - Forgiving forms — clear inline errors, no data loss on error, no time pressure.
+- **Don't scold before they start.** `:invalid` matches a `required` field the moment the page loads, so a blank form arrives pre-covered in red — anxiety-inducing, and it trains people to ignore error styling. `:user-invalid` (Tailwind `user-invalid:`) waits until the user has actually interacted with the field. Style errors with `user-invalid:`, never bare `invalid:`.
 
 Deeper COGA patterns (don't rely on memory, help users focus, prevent & recover from mistakes, manageable steps) are in `references/cognitive-accessibility.md`.
 
@@ -45,6 +48,7 @@ Deeper COGA patterns (don't rely on memory, help users focus, prevent & recover 
 
 ### 4. Input & interaction diversity
 - Touch targets ≥ 44×44px; adequate spacing between them.
+- **Detect the input, don't infer it from width.** `pointer-coarse:` / `pointer-fine:` describe how the person is actually pointing; a breakpoint only describes how wide their screen is. Touchscreen laptops and mouse-paired tablets break the assumption that wide means mouse (see `responsive-universal-design`).
 - Everything works by keyboard **and** pointer **and** (ideally) voice; no hover-only affordances.
 - Don't rely on a single sense — pair color with text/icon, sound with a visual cue.
 
@@ -58,7 +62,7 @@ Deeper COGA patterns (don't rely on memory, help users focus, prevent & recover 
 1. **Preferences** — wire `prefers-reduced-motion` / `prefers-color-scheme`; confirm `rem` sizing.
 2. **Cognitive pass** — is there one clear primary action? Is the language plain? Are forms forgiving?
 3. **i18n audit** — externalized strings, expansion room, logical properties for RTL.
-4. **Input audit** — target sizes, keyboard + pointer parity, no hover-only, no sense-dependency.
+4. **Input audit** — target sizes (grown on `pointer-coarse`, not on a breakpoint), keyboard + pointer parity, no hover-only, no sense-dependency.
 5. **Context checks** — contrast in bright light, behavior on slow network / JS failure.
 
 ## Relationship to accessibility

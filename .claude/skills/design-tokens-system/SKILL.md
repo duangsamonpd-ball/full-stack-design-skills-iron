@@ -84,6 +84,22 @@ Rule of thumb: **utility-class consumers → `@theme inline`; raw-`var()` consum
 
 Worked light / dark / multi-brand theming recipes (with per-theme contrast tuning and a full semantic-token set) are in `references/theming-recipes.md`.
 
+### Tokens that aren't a colour or a length
+
+`@theme` generates utilities for token *families* Tailwind knows (`--color-*`, `--spacing-*`,
+`--font-*`…). A decision that doesn't fit one of those — a target size, an elevation recipe,
+a focus-ring treatment — is still a token; it just needs `@utility` to become a class:
+
+```css
+@utility focus-ring {           /* one decision, composable, gets variants for free */
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+```
+
+This is the v4 replacement for the JS plugin API. Reach for it before `@layer components` +
+`@apply` — see `css-styling-pixel-perfect` → `references/tailwind-v4-recipes.md`.
+
 ## Workflow
 
 1. **Audit** raw values in the codebase that should be tokens.

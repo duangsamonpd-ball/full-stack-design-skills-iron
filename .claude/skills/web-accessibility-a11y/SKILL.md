@@ -120,7 +120,8 @@ Robust        — correct ARIA roles/states, works with assistive tech
 | Icon-only control | Add `aria-label`; `aria-hidden` on the icon |
 | Modal doesn't trap focus | Trap focus, close on `Esc`, restore focus on close |
 | Paste blocked on password field | Remove the block; `autocomplete="new-password"` (WCAG 2.2 · 3.3.8) |
-| Tap target under 24px | Grow to ≥ 24×24 CSS px or add spacing (WCAG 2.2 · 2.5.8) |
+| Tap target under 24px | Grow to ≥ 24×24 CSS px or add spacing (WCAG 2.2 · 2.5.8); grow on `pointer-coarse:`, not at a breakpoint |
+| Error styling on an untouched form | `user-invalid:` not `invalid:` — `:invalid` fires on load and reds-out a blank required field |
 
 ## Tools & resources
 

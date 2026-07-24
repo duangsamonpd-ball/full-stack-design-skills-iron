@@ -21,6 +21,7 @@ Build layouts that hold up from a small phone to a wide desktop — adapting to 
 4. **Adaptive typography** — `clamp()` for fluid type; keep body line length ~45–75ch.
 5. **Reflow, don't shrink** — change the layout at breakpoints (stack → grid), don't just scale everything down until it's unreadable.
 6. **Respect the user** — layouts must survive 200% browser zoom and OS text scaling without clipping or horizontal scroll (a WCAG 1.4.10 Reflow requirement).
+7. **Query the input, not the screen size** — width has never told you how someone is pointing at the page. A touchscreen laptop is desktop-width and finger-driven; a phone paired with a mouse is the reverse. Size hit targets off `pointer-coarse` (`@media (pointer: coarse)`), not off a breakpoint.
 
 ## Breakpoints (Tailwind defaults)
 
@@ -41,7 +42,17 @@ Add breakpoints where the *content* breaks, not at device sizes — the goal is 
 
 <!-- Auto-fit grid: as many columns as fit, no breakpoints needed -->
 <div class="grid gap-md [grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))]">…</div>
+
+<!-- Comfortable target for fingers, compact for a mouse — decided by input, not width -->
+<button class="p-2 pointer-coarse:p-4">…</button>
+
+<!-- Centred, but degrades to start instead of overflowing when space runs out -->
+<div class="flex justify-center-safe items-center-safe">…</div>
 ```
+
+`pointer-*` reflects the *primary* input; `any-pointer-*` asks whether an input of that kind
+exists at all. Grow targets on `pointer-coarse`; only hide something outright on
+`any-pointer-none`.
 
 Container-query and more patterns (nav, sidebar, responsive tables) are in
 `references/responsive-recipes.md`.
@@ -50,6 +61,11 @@ Container-query and more patterns (nav, sidebar, responsive tables) are in
 
 Small phone (360px) · large phone · tablet portrait/landscape · laptop · wide desktop —
 **plus** 200% browser zoom and OS text-scaling. The body must never scroll horizontally.
+
+Widths alone won't catch input bugs: check one **touch-capable wide screen** too, where
+`pointer-coarse` applies at a desktop breakpoint. Centred flex/grid rows are worth a second
+look at 200% zoom — plain `justify-center` overflows in *both* directions, so the start of
+the content becomes unreachable.
 
 ## Common pitfalls
 
@@ -61,6 +77,8 @@ Small phone (360px) · large phone · tablet portrait/landscape · laptop · wid
 | Font size in `px` | Use `rem` so OS text scaling works |
 | Horizontal scroll at zoom | Reflow content; wide items scroll inside their own container |
 | Desktop-first with overrides | Mobile-first base, add upward |
+| Touch targets sized by breakpoint | `pointer-coarse:` — a touchscreen laptop is not a phone width |
+| Centred content clipped when it overflows | `justify-center-safe` / `items-center-safe` — falls back to start instead of cutting off both ends |
 
 ## Next steps
 
