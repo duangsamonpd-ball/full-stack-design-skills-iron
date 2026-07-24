@@ -19,6 +19,21 @@ in CSS, there is no `tailwind.config.js` by default.
 Browser build (prototyping only): `<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>`
 plus `<style type="text/tailwindcss">…</style>`. Production: the `@tailwindcss/vite` plugin (or CLI).
 
+**Moving a browser-build page to a real build is not just swapping the tag.** The browser
+build compiles against the live DOM, so it generates whatever classes JavaScript adds at
+runtime. The CLI scans *files*, so a class that only ever appears in a runtime-built string
+(`'bg-' + tone`) is simply never generated — the page loads, and one state is unstyled.
+Before you cut over, grep for `classList.add/toggle` and `className =` and confirm each
+value is a literal the scanner can see; make dynamic ones a lookup of whole class names,
+not string concatenation. A static plain-CSS build for a single page is a plain CLI call:
+
+```bash
+npx @tailwindcss/cli -i styles/page.css -o assets/page.css --minify
+```
+
+`@source "../page.html"` in the input tells the scanner which file to read when the CSS
+doesn't sit next to the markup.
+
 ## `@theme` vs `@theme inline` (theming hinges on this)
 
 - **`@theme`** emits the variable to `:root` *and* generates utilities. Use for fixed values.

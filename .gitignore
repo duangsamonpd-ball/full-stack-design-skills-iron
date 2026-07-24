@@ -4,3 +4,6 @@ dist/
 
 # extracted package bundle (a copy of the zip; regenerate via scripts/build-packages.sh)
 /iron-master-skills-architecture/
+
+# build plumbing: styles/ needs to resolve tailwindcss from scripts/node_modules
+/styles/node_modules

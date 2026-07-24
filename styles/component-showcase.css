@@ -1,0 +1,119 @@
+/* Source for component-showcase.html — built to assets/component-showcase.css by scripts/build-css.mjs.
+   Edit this file, never the generated CSS. */
+@import "tailwindcss";
+@source "../component-showcase.html";
+
+/* ── Theming mechanism (design-tokens-system / design-systems-architecture) ──
+   class-based dark mode via @custom-variant; theme = a swap at the semantic layer. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* primitives — raw palette, never consumed directly */
+  --steel-50:  oklch(0.985 0.003 250);
+  --steel-100: oklch(0.968 0.005 250);
+  --steel-200: oklch(0.922 0.007 250);
+  --steel-300: oklch(0.860 0.009 250);
+  --steel-400: oklch(0.680 0.012 250);
+  --steel-500: oklch(0.550 0.013 250);
+  --steel-700: oklch(0.372 0.013 255);
+  --steel-800: oklch(0.270 0.013 255);
+  --steel-900: oklch(0.208 0.013 258);
+  --steel-950: oklch(0.150 0.012 260);
+  --white:     oklch(1 0 0);
+
+  --teal-500:  oklch(0.680 0.105 197);
+  --teal-600:  oklch(0.600 0.108 198);
+  --teal-700:  oklch(0.520 0.100 199);
+  --teal-800:  oklch(0.460 0.092 200);
+
+  --green-600: oklch(0.620 0.140 150);
+  --amber-500: oklch(0.800 0.140 78);
+  --red-600:   oklch(0.580 0.200 22);
+  --blue-600:  oklch(0.580 0.140 250);
+
+  /* semantic assignments — LIGHT theme (contrast tuned per theme, a11y) */
+  --bg:         var(--steel-50);
+  --surface:    var(--white);
+  --surface-2:  var(--steel-100);
+  --content:    var(--steel-900);
+  --muted:      var(--steel-500);
+  --border:     var(--steel-200);
+  --brand:      var(--teal-700);
+  --brand-hover:var(--teal-800);
+  --brand-fg:   var(--white);
+  --ring:       var(--teal-600);
+  --success:    var(--green-600);
+  --warning:    var(--amber-500);
+  --danger:     var(--red-600);
+  --info:       var(--blue-600);
+}
+
+.dark {
+  --bg:         var(--steel-950);
+  --surface:    var(--steel-900);
+  --surface-2:  var(--steel-800);
+  --content:    var(--steel-50);
+  --muted:      var(--steel-400);
+  --border:     var(--steel-800);
+  --brand:      var(--teal-600);
+  --brand-hover:var(--teal-500);
+  --brand-fg:   var(--steel-950);   /* dark text on lighter teal keeps contrast */
+  --ring:       var(--teal-500);
+}
+
+/* register semantic tokens into Tailwind's theme; `inline` so the swaps above
+   re-theme AND opacity modifiers (bg-success/12) resolve via color-mix */
+@theme inline {
+  --color-bg:         var(--bg);
+  --color-surface:    var(--surface);
+  --color-surface-2:  var(--surface-2);
+  --color-content:    var(--content);
+  --color-muted:      var(--muted);
+  --color-border:     var(--border);
+  --color-brand:      var(--brand);
+  --color-brand-hover:var(--brand-hover);
+  --color-brand-fg:   var(--brand-fg);
+  --color-ring:       var(--ring);
+  --color-success:    var(--success);
+  --color-warning:    var(--warning);
+  --color-danger:     var(--danger);
+  --color-info:       var(--info);
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ── Component layer (component-library-mastery + css-styling-pixel-perfect) ──
+   shared clusters extracted with @apply; variants stay in separate classes. */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg font-medium select-none
+           transition-[background-color,box-shadow,opacity] duration-150
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+           focus-visible:ring-offset-2 focus-visible:ring-offset-bg
+           disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-sm { @apply h-8 px-3 text-sm; }
+  .btn-md { @apply h-10 px-4 text-sm; }
+  .btn-lg { @apply h-12 px-6 text-base; }
+  .btn-primary   { @apply bg-brand text-brand-fg hover:bg-brand-hover; }
+  .btn-secondary { @apply bg-surface text-content ring-1 ring-inset ring-border hover:bg-surface-2; }
+  .btn-ghost     { @apply text-content hover:bg-surface-2; }
+  .btn-danger    { @apply bg-danger text-white hover:opacity-90; }
+
+  .input {
+    @apply h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-content
+           placeholder:text-muted transition-colors
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-transparent;
+  }
+  .input-error { @apply border-danger focus-visible:ring-danger; }
+
+  .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset; }
+  .card  { @apply rounded-xl border border-border bg-surface p-6; }
+  .label { @apply block text-sm font-medium text-content; }
+}
+
+/* reduced motion — kill transitions/animations (inclusive-design-patterns) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { animation: spin 0.7s linear infinite; }

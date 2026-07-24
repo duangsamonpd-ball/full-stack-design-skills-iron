@@ -115,9 +115,18 @@ cd astro-registration-m3 && npm install && npm run dev   # the Astro app
 ```
 
 > [!NOTE]
-> The `.html` examples use the **Tailwind Play CDN** (compiles in the browser) for zero-setup
-> viewing — dev/testing only. The Astro project shows the production path: Tailwind v4 via
-> `@tailwindcss/vite`, no CDN. See `astro-registration-m3/README.md`.
+> The `.html` examples load a **real Tailwind v4 build** — no CDN, nothing compiled in the
+> browser. Each page's tokens and component layer live in `styles/<page>.css` and compile to
+> `assets/<page>.css`, which is committed so the pages still open with zero setup. Edit the
+> file in `styles/`, never the one in `assets/`, then:
+>
+> ```bash
+> cd scripts && npm ci        # once
+> node scripts/build-css.mjs  # rebuild; --check gates it in CI
+> ```
+>
+> The Astro project shows the same production path through a bundler
+> (`@tailwindcss/vite`) — see `astro-registration-m3/README.md`.
 
 ## Tailwind CSS v4 conventions
 

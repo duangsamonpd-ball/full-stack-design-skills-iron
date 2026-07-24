@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create account — Iron Software Skills Test (Tailwind v4)</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="assets/registration-form.css" />
   <script>
     (function () {
       var s = localStorage.getItem('theme');
@@ -14,61 +14,6 @@
     })();
   </script>
 
-  <style type="text/tailwindcss">
-    @custom-variant dark (&:where(.dark, .dark *));
-
-    :root {
-      --steel-50:  oklch(0.985 0.003 250); --steel-100: oklch(0.968 0.005 250);
-      --steel-200: oklch(0.922 0.007 250); --steel-400: oklch(0.680 0.012 250);
-      --steel-500: oklch(0.550 0.013 250); --steel-700: oklch(0.372 0.013 255);
-      --steel-800: oklch(0.270 0.013 255); --steel-900: oklch(0.208 0.013 258);
-      --steel-950: oklch(0.150 0.012 260); --white: oklch(1 0 0);
-      --teal-500: oklch(0.680 0.105 197); --teal-600: oklch(0.600 0.108 198);
-      --teal-700: oklch(0.520 0.100 199); --teal-800: oklch(0.460 0.092 200);
-      --green-600: oklch(0.620 0.150 150); --amber-500: oklch(0.760 0.140 70);
-      --red-600: oklch(0.585 0.205 22);   --blue-600: oklch(0.580 0.140 250);
-
-      --bg: var(--steel-50); --surface: var(--white); --surface-2: var(--steel-100);
-      --content: var(--steel-900); --muted: var(--steel-500); --border: var(--steel-200);
-      --brand: var(--teal-700); --brand-hover: var(--teal-800); --brand-fg: var(--white);
-      --ring: var(--teal-600);
-      --success: var(--green-600); --warning: var(--amber-500); --danger: var(--red-600); --info: var(--blue-600);
-    }
-    .dark {
-      --bg: var(--steel-950); --surface: var(--steel-900); --surface-2: var(--steel-800);
-      --content: var(--steel-50); --muted: var(--steel-400); --border: var(--steel-800);
-      --brand: var(--teal-600); --brand-hover: var(--teal-500); --brand-fg: var(--steel-950);
-      --ring: var(--teal-500);
-    }
-
-    @theme inline {
-      --color-bg: var(--bg); --color-surface: var(--surface); --color-surface-2: var(--surface-2);
-      --color-content: var(--content); --color-muted: var(--muted); --color-border: var(--border);
-      --color-brand: var(--brand); --color-brand-hover: var(--brand-hover); --color-brand-fg: var(--brand-fg);
-      --color-ring: var(--ring);
-      --color-success: var(--success); --color-warning: var(--warning);
-      --color-danger: var(--danger); --color-info: var(--info);
-      --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    @layer components {
-      .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg font-medium select-none
-             transition-[background-color,box-shadow,opacity] duration-150 focus-visible:outline-none
-             focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-             disabled:opacity-50 disabled:pointer-events-none; }
-      .btn-md { @apply h-11 px-4 text-sm; }
-      .btn-primary { @apply bg-brand text-brand-fg hover:bg-brand-hover; }
-      .btn-secondary { @apply bg-surface text-content ring-1 ring-inset ring-border hover:bg-surface-2; }
-      .label { @apply block text-sm font-medium text-content; }
-      .input { @apply h-11 w-full rounded-lg border border-border bg-surface px-3 text-sm text-content
-              placeholder:text-muted transition-colors focus-visible:outline-none focus-visible:ring-2
-              focus-visible:ring-ring focus-visible:border-transparent; }
-      .input-error { @apply border-danger focus-visible:ring-danger; }
-      .field-error { @apply mt-1.5 flex items-center gap-1 text-xs font-medium text-danger; }
-    }
-
-    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { transition-duration:.01ms!important; animation-duration:.01ms!important; } }
-  </style>
 </head>
 
 <body class="min-h-screen bg-bg text-content font-sans antialiased">
@@ -227,10 +172,6 @@
     </main>
   </div>
 
-  <style type="text/tailwindcss">
-    .req-dot { @apply inline-block w-3 text-center; }
-    li[data-req].met { @apply text-success; }
-  </style>
 
   <script>
     // ── theme toggle ──

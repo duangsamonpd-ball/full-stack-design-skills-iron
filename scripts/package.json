@@ -7,9 +7,15 @@
   "scripts": {
     "a11y": "node a11y-audit.mjs",
     "skills-lint": "node skills-lint.mjs",
-    "test": "node a11y-audit.mjs"
+    "test": "node a11y-audit.mjs",
+    "build-css": "node build-css.mjs",
+    "build-css:check": "node build-css.mjs --check"
   },
   "dependencies": {
     "jsdom": "^29.1.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
   }
 }

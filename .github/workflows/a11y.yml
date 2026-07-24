@@ -21,6 +21,11 @@ jobs:
         working-directory: scripts
         run: npm ci
 
+      # The root pages load committed CSS from assets/. Committing generated output is
+      # only safe with a gate: fail if it no longer matches styles/*.css.
+      - name: Stylesheets match their source
+        run: node scripts/build-css.mjs --check
+
       # The Astro example is only a page once it's built. Without this the audit
       # silently covered 6 pages here and 7 locally — see BUILT_PAGES in a11y-audit.mjs.
       - name: Build the Astro example

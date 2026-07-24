@@ -29,6 +29,27 @@ Exit code is non-zero on any real problem, so it gates CI — see
 `.github/workflows/skills-lint.yml`. Re-run after renaming a skill folder, editing a
 `description`, or adding/moving a `references/` file.
 
+## Example-page stylesheets
+
+`build-css.mjs` compiles each root example page's Tailwind source — `styles/<page>.css`,
+holding that page's primitives, `@theme` layer and component classes — into
+`assets/<page>.css`, which the page loads with a plain `<link>`. No CDN, nothing compiled
+in the browser.
+
+```bash
+cd scripts
+npm run build-css         # write assets/*.css
+npm run build-css:check   # exit 1 if any committed file is stale (CI gate)
+```
+
+The generated CSS is **committed** so the examples still open with zero setup; the `--check`
+gate is what makes that safe, and is the same stale-output pattern
+`design-systems-architecture` → `references/token-pipeline.md` prescribes. Edit
+`styles/<page>.css` and rebuild — never hand-edit `assets/`.
+
+Note the input files use the canonical `@import "tailwindcss"`, so the script links
+`styles/node_modules` → `scripts/node_modules` (gitignored) to make that resolve.
+
 ## Accessibility-tree audit
 
 `a11y-audit.mjs` statically audits the **accessibility tree** of every HTML example — the
