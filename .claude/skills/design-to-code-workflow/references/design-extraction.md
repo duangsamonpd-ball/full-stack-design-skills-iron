@@ -69,7 +69,7 @@ scale with a hole in it will keep producing this same friction.
 ## Extraction traps — when the number you read isn't the number you want
 
 Everything above assumes the value you pulled out of the file is the value the design means.
-Five times it isn't, and none of them announce themselves: the import looks clean, every gate
+Six times it isn't, and none of them announce themselves: the import looks clean, every gate
 stays green, and the UI is quietly wrong.
 
 **1 · A blur radius is not a CSS blur.** A Figma background blur of radius R renders like CSS
@@ -128,7 +128,32 @@ Two corollaries worth having before you need them:
   Neither is a spec; one is a mistake. Implement the variant you were asked for, and say
   which one you followed — silently averaging them helps nobody.
 
-**The rule underneath all five: a search that returns nothing is not evidence of absence.**
+**6 · An exported asset is not just the asset.** Ask a design tool to export one icon and
+what comes back is the icon *plus its surroundings*: a canvas-sized backdrop rectangle, the
+node's entire ancestor chain as nested groups, the fill of whatever band it was sitting on,
+the dashed selection outline that happened to be active, and — the one that bites twice —
+**any opacity set on a parent group, baked in**. Commit that as-is and you get a grey box
+behind every logo, and your own `opacity: 0.6` applies a second time on top of the one
+already in the file. Thirteen exports from one footer had all of it.
+
+Clean them, but clean them by **what the junk is, not by how big it is**:
+
+- **Never remove a white shape.** Design tools export a masked icon as a white rectangle
+  clipped to the glyph. A rule like "drop any rect that covers the viewBox" deletes exactly
+  those — it removed 7 of 13 icons outright, leaving valid, well-formed, empty SVGs.
+- **Target the junk by fill**: the canvas grey, the placeholder grey, the selection stroke
+  (it has a `stroke-dasharray`), and the band fill. Those are identifiable colors; the
+  artwork's colors are not among them.
+- **Drop paths whose coordinates start far outside the viewBox** — that is the ancestor
+  frame's own background, drawn at its original offset.
+- **Then look at every asset.** Render them all on the background they will actually sit
+  on, in one contact sheet, and *look*. `img.naturalWidth` is not a check: a gutted 16×16
+  SVG and a working one both report 16, while the first paints 0 pixels and the second
+  paints 172. If you want it automated, draw each to a canvas and count non-transparent
+  pixels — and serve the page from the **same origin** as the images, or `getImageData`
+  throws on a tainted canvas and you will be tempted to go back to the check that lies.
+
+**The rule underneath all six: a search that returns nothing is not evidence of absence.**
 Local, unpublished variables are invisible to design-system search, so "the tool finds no blur
 collection" supports the confident, reasonable, wrong conclusion that only the one stop you can
 see is real. Ask the designer to look at the variable panel. A question costs a message; a
