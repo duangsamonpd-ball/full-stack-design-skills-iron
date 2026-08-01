@@ -95,7 +95,50 @@ More variant recipes — compound variants, slots/anatomy, polymorphic `as`, `ta
 ### 5. Design-token integration
 Components consume tokens from the **design-tokens-system** system (`bg-brand`, `px-md`) — never hardcoded values. A component that reaches for `bg-[#2563eb]` breaks theming.
 
-### 6. Documentation & stories
+### 6. The public surface — barrel + exports map
+
+A component nobody can import isn't in the library. Two hand-kept things decide that: the
+barrel (`index.ts`) and the package's `exports` map — and both fail *late*. A missing barrel
+line surfaces as `[MISSING_EXPORT]` inside whatever app consumes the library, long after the
+commit that caused it; a stale `exports` target breaks only the one import path that uses it,
+so it can sit wrong for months.
+
+```jsonc
+// package.json
+{
+  "exports": {
+    ".": "./index.ts",
+    "./tokens.css": "./styles/tokens.css",
+    "./package.json": "./package.json"
+  }
+}
+```
+
+Export `./package.json` on purpose — tooling reads it, and once an `exports` map exists,
+anything not listed in it is unreachable.
+
+**The trap worth knowing before you debug it: an `exports` map is consulted only for
+_name-based_ resolution.** A relative import (`from '../../components'`) walks the filesystem
+and never sees the map, so the barrel is simply not found. The package has to resolve as
+`node_modules/<name>` — a workspace member, `npm link`, or a symlink. And when testing that
+with a throwaway consumer, symlink to a path **inside** the test project rather than to an
+absolute path elsewhere on disk: Vite mangles the resolved path and fails with "No cached
+compile metadata", which reads like a bug in the component and is nothing of the sort.
+
+Gate it. The check is a short zero-dependency script asserting four things:
+
+```
+□ every components/*.<ext> is re-exported from the barrel
+□ every barrel export resolves to a file that exists
+□ barrel exports stay alphabetical — if the file claims to be, keep diffs small
+□ every exports target in every package.json exists on disk
+   (for a wildcard subpath like "./styles/*", assert the directory)
+```
+
+Add one **warning**, not an error: a component with no docs page. Parity and docs checks
+skip what they can't find, so that gap is silent precisely where it matters most.
+
+### 7. Documentation & stories
 Each component ships a Storybook story showing every variant/state, plus a short usage note (when to use it, props, do/don't):
 
 ```tsx
@@ -136,10 +179,10 @@ the second means the output churns on every build and the gate cries wolf. And *
 demo with a script that imitates the component's markup**: it will look right and drift exactly
 like the hand-typed version it replaced. Render the real thing or don't generate it.
 
-### 7. Contribution guidelines
+### 8. Contribution guidelines
 Define how a new component gets in: the checklist below must pass, it must use tokens, ship a story + test, and follow naming conventions. This is what keeps quality flat as contributors multiply.
 
-### 8. Scale & maintain
+### 9. Scale & maintain
 Roll out in phases and manage change deliberately:
 - **Phase 1** — primitives (Button, Input, Label, Text)
 - **Phase 2** — composed (Form fields, Card, Modal, Dropdown)
@@ -155,7 +198,7 @@ Roll out in phases and manage change deliberately:
 □ Keyboard accessible + visible focus + accessible name
 □ Storybook story for every variant
 □ Unit test for behavior/props
-□ Exported from the barrel (index.ts)
+□ Exported from the barrel (index.ts) + reachable through the exports map
 □ Follows naming conventions
 ```
 
