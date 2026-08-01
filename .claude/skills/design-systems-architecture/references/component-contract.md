@@ -63,6 +63,21 @@ icon.color     → color.{tone}.fg
 padding        → space.inset.md
 ```
 
+**States bind to their own tokens — an opacity shortcut is not a state.** When the
+palette ships a pair (`text.link-menu` / `text.link-menu-hover`, `button.bg` /
+`button.bg-hover`), the hover rule must read the paired token. Dimming the resting
+colour with `opacity` looks close enough in a dark mock-up and is wrong three ways: it
+discards whatever hue the pair exists to introduce — a brand accent on hover is a
+decision, not a change in brightness; it drifts silently the moment the pair is retuned;
+and it cannot be themed, because opacity has no mode. **Before reaching for `opacity` on
+a state, grep the token layer for a `-hover` / `-active` / `-selected` sibling.** If one
+exists, the shortcut is drift with a plausible excuse.
+
+```css
+/* ✗ same shape, loses the accent  */   .link:hover { opacity: 0.8; }
+/* ✓ */                                 .link:hover { color: var(--color-text-link-menu-hover); }
+```
+
 ## 6. Layout ownership — what the component does *not* decide
 
 Half a contract is what the component refuses to control. The recurring violation is a

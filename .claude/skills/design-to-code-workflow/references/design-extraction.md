@@ -69,7 +69,7 @@ scale with a hole in it will keep producing this same friction.
 ## Extraction traps — when the number you read isn't the number you want
 
 Everything above assumes the value you pulled out of the file is the value the design means.
-Four times it isn't, and none of them announce themselves: the import looks clean, every gate
+Five times it isn't, and none of them announce themselves: the import looks clean, every gate
 stays green, and the UI is quietly wrong.
 
 **1 · A blur radius is not a CSS blur.** A Figma background blur of radius R renders like CSS
@@ -106,7 +106,29 @@ const alias = Array.isArray(raw) ? raw[0] : raw;
 // paint fills are different again: node.fills[0].boundVariables.color.id
 ```
 
-**The rule underneath all four: a search that returns nothing is not evidence of absence.**
+**5 · A component's own size is not the size it was placed at.** The tool that returns
+reference code describes each component **in itself** — its own frame, its internal padding,
+its default dimensions. The tool that returns the node tree reports what the **instance** on
+that screen actually is. They disagree more often than you would expect, and the reference
+code is the one you are reading, so its number is the one you copy. In one footer, an icon
+component whose own frame is 24px was placed at 16px; the code shipped 50% too large and
+looked deliberate. **Read the layout numbers off the node tree, and treat the reference code
+as a description of structure, not of size.**
+
+Two corollaries worth having before you need them:
+
+- **A hidden auto-layout child keeps stale coordinates.** It was laid out once, then taken
+  out of the flow and never recomputed — so its x/y/size describe a layout that no longer
+  exists. If a component has variants, measure the element in the variant where it is
+  *visible*, never in the one where it is switched off. Sanity-check by adding up: padding +
+  content + gap should equal the reported container width. If it doesn't, you are reading a
+  ghost.
+- **Variants of the same component disagree with each other.** Two variants of one footer
+  specified the same row as a 16px icon in a 20px row and as a 24px icon in a 24px row.
+  Neither is a spec; one is a mistake. Implement the variant you were asked for, and say
+  which one you followed — silently averaging them helps nobody.
+
+**The rule underneath all five: a search that returns nothing is not evidence of absence.**
 Local, unpublished variables are invisible to design-system search, so "the tool finds no blur
 collection" supports the confident, reasonable, wrong conclusion that only the one stop you can
 see is real. Ask the designer to look at the variable panel. A question costs a message; a
