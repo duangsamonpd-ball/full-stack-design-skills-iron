@@ -49,9 +49,46 @@ Unplug the mouse and tab through:
 - `Esc` closes overlays; `Enter`/`Space` activate controls
 
 ### 5. Color & contrast
-- Body text ≥ **4.5:1**, large text (≥24px or 19px bold) ≥ **3:1**
+- Body text ≥ **4.5:1**, large text (≥24px, or ≥18.66px bold) ≥ **3:1**
 - UI components & focus indicators ≥ **3:1**
 - Information never conveyed by color alone (add icon/text/pattern)
+
+Bold does **not** lower the bar until 18.66px — a 12px/700 badge label is ordinary text and
+owes the full 4.5:1. This is the threshold people get wrong most often.
+
+#### Make contrast a computed gate, not a review item
+
+A manual check passes once and proves nothing about tomorrow. Any component that paints text
+onto a token-driven fill has a finite, enumerable set of pairs — so compute the real ratios in
+CI. In one design system, three solid badges sat below AA while every other gate stayed green:
+the parity check only asked whether the docs matched the CSS, and the drift check only asked
+whether the token layers agreed with each other. Neither has an opinion about readability.
+
+```js
+const channel = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+const luminance = (hex) => {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+};
+const contrast = (a, b) => {
+  const [x, y] = [luminance(a), luminance(b)].sort((m, n) => n - m);
+  return (x + 0.05) / (y + 0.05);
+};
+```
+
+The arithmetic is the easy part. Four things decide whether the gate stays honest:
+
+- **Derive the pairs from the component itself**, then resolve each `var()` chain through the
+  token layer. Parse the component's own style block for the background/color it declares per
+  variant — a hand-copied list of pairs stops moving the moment the component does.
+- **Resolve once per theme.** Run each chain against `:root`, then again against the `.dark`
+  overrides merged on top. A pair that clears AA in light mode routinely fails in dark.
+- **Assert the count.** If the component changes shape and the script derives 8 pairs where 12
+  were expected, it reports green on a subset — worse than no gate. Fail on the mismatch and
+  say the script needs updating.
+- **Make exceptions expire.** For a pair that is a deliberate design decision, allow a warn-only
+  entry — but report an entry that *starts passing* as an error. Otherwise the allowlist quietly
+  becomes the place failures go to be forgotten.
 
 ### 6. Screen reader check
 Verify name, role, and state are announced:

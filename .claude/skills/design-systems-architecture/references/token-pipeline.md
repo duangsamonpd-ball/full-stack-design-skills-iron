@@ -133,7 +133,7 @@ these theme blocks from Style Dictionary too (one build target per theme) or han
 edit tokens.json → build → tokens.css → @theme layer → Tailwind + components
 ```
 
-"Never hand-edit the generated file" only holds if something checks. Three gates make a
+"Never hand-edit the generated file" only holds if something checks. Four gates make a
 token pipeline trustworthy in practice:
 
 **1 · Stale-output check.** Give the generator a `--check` mode that regenerates in memory
@@ -158,9 +158,61 @@ tokens.json ──┬──▶ tokens.css     (plain CSS vars — any project)
 ```
 
 **3 · No hardcoded values in components.** grep component styles for raw colors and fail
-the build — a hardcoded color is drift from the token layer by definition. Match **3- and
-6-digit hex** (`#fff` slips a 6-only regex), and steer to the semantic token instead.
+the build — a hardcoded color is drift from the token layer by definition. Three forms have
+to be matched, and it is the second one that gets missed:
 
-Wire all three into a push/PR workflow. Plain Node keeps them dependency-free, so CI runs
+- **hex** — `#fff` slips a 6-only regex, and the 8-digit `#aabbccdd` an alpha ramp uses
+  slips a pattern that ends in `\b` after six digits: the two alpha digits that follow are
+  word characters, so there is no boundary there to match.
+- **`rgb()` / `rgba()` / `hsl()` / `hsla()`** — the real blind spot. A hex-only gate reports
+  a clean build while twelve of these sit across four components, which is how one tint was
+  free to drift to 4% against the design's 5% with every check still green.
+- **nothing else** — `transparent`, `currentColor` and `color-mix()` over a token carry no
+  literal channel values and are fine.
+
+```js
+const RAW_COLOR = /#[0-9A-Fa-f]{3}(?:[0-9A-Fa-f]{3}(?:[0-9A-Fa-f]{2})?)?\b|\b(?:rgba?|hsla?)\([^)]*\)/g;
+```
+
+Steer the fix to the semantic token — and for a tint, to `color-mix(in srgb, var(--token)
+8%, transparent)` rather than a literal `rgba()`. The `color-mix` form follows the token
+into dark mode; a hardcoded rgba cannot, so it is drift waiting to happen even when its
+light-mode value is correct today.
+
+**4 · Every variable a component reads is actually defined.** This gate only applies when
+components consume tokens as raw custom properties (`var(--brand)` inside an Astro/Vue
+`<style>` block) rather than utility classes — but that is exactly the case `@theme static`
+exists for, and this is what proves `static` is still doing its job. Tailwind's scanner
+cannot see a `var()` inside a component's own style block, so a token it decides to drop is
+invisible until something renders wrong. The failure is silent by design: `var(--x)` with no
+declaration and no fallback makes the whole property invalid, and the browser discards the
+rule — which is how pages end up with no border at all and a hover color that never applies.
+
+Assert against the **compiled** stylesheet, not the source — the source is what the scanner
+is about to prune:
+
+```bash
+tailwindcss -i styles/app.css -o .tmp/app.compiled.css
+node scripts/check-component-vars.mjs .tmp/app.compiled.css
+```
+
+```js
+const defined = new Set([...compiled.matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1]));
+
+// A component may declare its own custom properties; those resolve locally and
+// never need to come from the theme, so they are not usages the theme must satisfy.
+const localDefs = new Set([...src.matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1]));
+for (const [, name] of src.matchAll(/var\((--[\w-]+)/g)) {
+  if (!localDefs.has(name) && !defined.has(name)) report(file, name);
+}
+```
+
+Two refinements worth building in from the start: treat `var(--x, fallback)` as safe, since
+only the bare form is a hard dependency; and run the same check over any standalone docs or
+demo page that carries its own hand-kept `:root`, because the compiled theme proves nothing
+about those — a component can start reading a new token, the page can copy the rule across,
+and the variable behind it is simply never declared.
+
+Wire all four into a push/PR workflow. Plain Node keeps them dependency-free, so CI runs
 them with no install. The payoff: the generated files are provably in sync with the source
 on every commit, and the "single source of truth" claim is actually true.

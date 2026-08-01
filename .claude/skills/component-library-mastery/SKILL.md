@@ -111,6 +111,31 @@ export const Secondary: StoryObj<typeof Button> = { args: { variant: 'secondary'
 export const Loading: StoryObj<typeof Button> = { args: { isLoading: true, children: 'Saving' } }
 ```
 
+**Never hand-type demo markup into a docs page.** A story renders the real component, so it
+can't lie; a docs page with hand-written example markup drifts the moment the component's DOM
+changes — a new wrapper element, a renamed class, an added `aria-*` — and every gate stays
+green while the page shows structure that no longer exists. The worst version is a docs page
+advertising a feature the component never had, because nothing ever forced the two together.
+
+Generate that markup from a real render instead:
+
+1. A small app renders the real components inside marked regions — `<div data-demo="region">`.
+2. A build script builds it, extracts each region from the **rendered HTML output**, and writes
+   it into matching sentinels in the docs page:
+   ```html
+   <!-- demo:preview -->
+   …generated, do not edit by hand…
+   <!-- /demo:preview -->
+   ```
+3. Give the script a `--check` mode that fails when the docs are not already current — same
+   relationship a token generator has to its drift gate — and wire it into CI.
+
+Two traps worth knowing before you build it. **Strip framework scope markers before diffing**
+— Astro's `data-astro-cid-*` is emitted in both a bare and a value-carrying form, and missing
+the second means the output churns on every build and the gate cries wolf. And **never fake a
+demo with a script that imitates the component's markup**: it will look right and drift exactly
+like the hand-typed version it replaced. Render the real thing or don't generate it.
+
 ### 7. Contribution guidelines
 Define how a new component gets in: the checklist below must pass, it must use tokens, ship a story + test, and follow naming conventions. This is what keeps quality flat as contributors multiply.
 

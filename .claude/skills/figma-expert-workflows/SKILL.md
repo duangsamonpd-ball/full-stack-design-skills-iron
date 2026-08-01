@@ -32,6 +32,30 @@ work; this skill is the process/checklist wrapper that decides *which* to use wh
 3. Reuse existing components; implement via `design-to-code-workflow`.
 4. Verify against the frame (`css-styling-pixel-perfect`).
 
+**Reconciling against an existing system? Audit before you edit.** When a fresh Variables
+export or an updated component arrives for an already-built system, do a **read-only audit
+first** and present it. Classify every token or property into four buckets — **match ·
+value-drift · new · naming-rename** — report the counts plus the specific deltas, and only
+then propose the edit set.
+
+Skipping this is expensive in a specific way: editing the token source ripples through the
+entire generate → CSS → theme → component chain and every gate behind it, so a wrong guess
+is far harder to unwind than to prevent. In practice the audit is what catches the three
+things a blind import propagates straight into the source of truth:
+
+- **source-side typos** — a variable literally named `netural` or `tertiaryy`
+- **stale values on one side** — a documented `#90A1B9` against a real `#45556C`
+- **genuine naming forks** — `surface` → `bg`, `error` → `danger`; a rename read as a
+  new token leaves both, and the dead one outlives everyone who remembers why
+
+The audit is also where the decisions worth asking about surface — a surprising value, a
+dark-mode mechanism, a variant axis that didn't exist before. Ask them once, there, instead
+of discovering them mid-edit with half the pipeline rewritten.
+
+A throwaway Node script is enough: resolve both sides to comparable units (hex for color, px
+for dimension) and diff. Prove the result the same way afterward — recompile the theme,
+confirm the new tokens resolve, and look at anything visual before calling it done.
+
 ### B. Code → Figma (authoring/sync)
 Use `figma:figma-generate-design` / `figma:figma-use` to build or update frames from code
 or a description — assembling with design-system components and variables, not hardcoded values.
