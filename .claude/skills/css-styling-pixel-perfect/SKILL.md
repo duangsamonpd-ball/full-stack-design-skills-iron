@@ -27,6 +27,14 @@ Deeper v4 recipes — `@theme` vs `@theme inline`, the component boundary in fra
    ```
 3. **Responsive, mobile-first** — style the base case, layer `sm/md/lg` upward; never desktop-first with overrides.
 4. **Organize files** — `tokens.css` (source of truth) · `global.css` (`@import "tailwindcss"` + base + `@layer components`) · rare page overrides only.
+5. **One stylesheet, linked — never a copy per page.** Standalone pages (docs, demos, prototypes) are where this rots: each one gets its own hand-kept `:root` and shared chrome "just for this page", and from then on they diverge in silence. A fix made on one page never reaches the others, and nothing is visible from any single page — which is what makes it late-stage expensive. One such set had grown **four** versions of `.hamburger`, three of `.sidebar`, and 14 resolved token values that no longer matched the real tokens.
+
+   Link the shared stylesheet everywhere, then gate the ownership — because the copies come back exactly the way they arrived, one honest "just this page" at a time:
+
+   ```
+   □ no page re-declares a selector the shared stylesheet already owns
+   □ a page that genuinely must differ gets a selector of its own, not a copy
+   ```
 
 ## Part B — Pixel perfect
 
@@ -37,6 +45,7 @@ Deeper v4 recipes — `@theme` vs `@theme inline`, the component boundary in fra
 
 ## Common drift sources
 
+- A per-page copy of the tokens (`:root` re-declared in a standalone page) drifting from the real ones
 - Line-height / letter-spacing left at browser defaults
 - `rem` vs `px` rounding at breakpoints
 - Sub-pixel border/shadow differences

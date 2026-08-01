@@ -213,6 +213,54 @@ demo page that carries its own hand-kept `:root`, because the compiled theme pro
 about those — a component can start reading a new token, the page can copy the rule across,
 and the variable behind it is simply never declared.
 
-Wire all four into a push/PR workflow. Plain Node keeps them dependency-free, so CI runs
+**5 · A token nothing reads is drift too.** The four gates above all ask whether the values
+that exist still agree. None of them notices a token that lost its last consumer — a rename
+that left the old name behind, an alias nobody adopted, a color whose component was deleted.
+Report those, but as a **warning, not a failure**, and phrase it as a question rather than a
+verdict.
+
+The reason for the soft touch: "absent from the design export" is not the same as "absent
+from the source of truth", and a count from one side is a hypothesis, not a finding. Nine
+tokens once looked dead on exactly that evidence. Checking the source before deleting showed
+five of them *were* sourced — four `-hover` colors on a documented ramp and one `-on` color —
+and only four were genuinely code-invented with no source entry, no gate mapping, no docs and
+no reader. Deleting on the first number would have removed five live tokens.
+
+Wire all five into a push/PR workflow. Plain Node keeps them dependency-free, so CI runs
 them with no install. The payoff: the generated files are provably in sync with the source
 on every commit, and the "single source of truth" claim is actually true.
+
+## Before you trust a gate, try to break it
+
+A gate that returns a plausible wrong answer is indistinguishable from a real finding. There
+is no error and no stack trace — just a confident table. Four "findings" from checkers in a
+single day once turned out to be bugs in the checkers themselves, each one ready to send
+someone off to fix work that was already correct:
+
+- a **dead-token list** built from what was missing in a design export rather than from the
+  source of truth (5 of 9 were live);
+- **"not bound to a variable"**, because the code indexed `[0]` into a field that is sometimes
+  an array and sometimes a single object;
+- **"6 drifts"**, every one of them `0.25rem` against `4px` — the same value, never normalized
+  before comparing;
+- a **parser that matched its own documentation** instead of the section it was written to
+  read, and failed *silent*.
+
+So before a gate is allowed to make claims about anyone's work:
+
+1. **Fault-inject it.** Break the thing on purpose — hand-edit a generated value, delete a
+   token a component reads, drop a raw `rgba()` into a component — and watch it fail. A gate
+   never observed failing is a gate that passes for unknown reasons.
+2. **Feed it a known-good case too.** A check that fails on everything is as useless as one
+   that passes on everything, and much more annoying.
+3. **Check both sides are in the same unit** before believing any diff: rem vs px, `0` vs
+   `0px`, hex case, shadow whitespace.
+4. **Check the shape of the data matches what the code assumes**, especially for any field
+   that is sometimes a list and sometimes a scalar.
+5. **Fail loud, never silent.** A checker that exits 0 when it cannot parse its input reports
+   "all clear" for as long as nobody looks — the worst failure mode a gate has. Assert what
+   you expected to *find*, not only what you expected to be true: the number of tokens
+   checked, the number of pairs derived. A count of zero is a broken checker, not a clean bill
+   of health.
+
+When a finding survives all five, report it with the numbers.

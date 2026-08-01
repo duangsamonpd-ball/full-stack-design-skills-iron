@@ -63,14 +63,36 @@ icon.color     → color.{tone}.fg
 padding        → space.inset.md
 ```
 
-## 6. Accessibility contract (part of the API)
+## 6. Layout ownership — what the component does *not* decide
+
+Half a contract is what the component refuses to control. The recurring violation is a
+component sizing or spacing **itself**, in its parent's coordinate space:
+
+- **Outer width / height** — no `width`, `max-width` or fixed height on the root. A control
+  fills what it is given; how much that is belongs to the parent.
+- **Outer margin** — never. Margin on a root element leaks into every layout that uses the
+  component, and the consumer can only remove it by overriding, which starts a specificity
+  war. Space *between* siblings is the parent's `gap`.
+- **The gap between a field, its label and its message** — that is form-layout spacing, on
+  the spacing scale, defined once. Four components hand-typing the same `6px` is how a value
+  becomes house style by repetition while sitting off the scale entirely — in one system the
+  scale went 4 → 8 and nothing was ever 6, but four components had agreed it was.
+
+What the component **does** own: its internal padding, the gap between its own parts, and the
+intrinsic min-height implied by its size variant.
+
+The test: drop the component into three different layouts. If any of them needs a wrapper
+whose only job is to undo the component's own margin or width, the contract is wrong — fix
+the component, not the third layout.
+
+## 7. Accessibility contract (part of the API)
 Decide these here, not after the build:
 - **Role** — e.g. `role="alert"` for an assertive alert; `status` for polite.
 - **Keyboard model** — what keys do what; focus order; focus-visible styling.
 - **Names/labels** — required `aria-label`/`aria-labelledby`; icon-only controls need a name.
 - **Live behavior** — does it announce? `aria-live` politeness.
 
-## 7. Spec output
+## 8. Spec output
 A short doc the implementer builds against:
 - anatomy (list/diagram)
 - variant × state matrix
@@ -85,6 +107,7 @@ A short doc the implementer builds against:
 □ Uses shared API grammar (variant/size/tone names)
 □ Full state matrix designed & token-bound
 □ Typed props + sensible defaults; slots over prop bloat
+□ Declares no outer width/height/margin — the parent owns placement
 □ Accessibility contract implemented (role, keyboard, labels)
 □ Story per variant/state + unit test
 □ Exported from the barrel; follows naming conventions
