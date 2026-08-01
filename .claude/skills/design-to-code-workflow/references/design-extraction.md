@@ -66,6 +66,54 @@ scale with a hole in it will keep producing this same friction.
 
 ---
 
+## Extraction traps — when the number you read isn't the number you want
+
+Everything above assumes the value you pulled out of the file is the value the design means.
+Four times it isn't, and none of them announce themselves: the import looks clean, every gate
+stays green, and the UI is quietly wrong.
+
+**1 · A blur radius is not a CSS blur.** A Figma background blur of radius R renders like CSS
+`blur(R/2)`. The file's own export is the proof — an effect bound to `blur/xs = 4` converts to
+`blur(2px)`. Import the raw radii and every stop in the family is twice as strong as designed.
+Store the **halved, CSS-px** value in the token source, the way every other family stores what
+the CSS should be, and record the Figma radius in the token's description — otherwise the next
+person to compare the source against the Figma variable panel will "fix" them all back.
+
+**2 · Alpha hex rounds half UP.** Transparency ramps export as 8-digit hex whose alpha byte is
+`floor(pct / 100 * 255 + 0.5)`. Any generator using banker's rounding (Python's `round()`,
+`Math.round` on negatives, most "round to even" helpers) disagrees on exactly the stops that
+land on `.5` above an **even** number — and only those, which is why the bug hides so well. On
+a 1/5/10/20/30/40/50 ramp that is a single stop: 30% is `#FFFFFF4D` in Figma and `#FFFFFF4C`
+from banker's, while the other six agree. One wrong alpha in a border colour is invisible in
+review and permanent. Generate the ramp, then
+**assert it against the values the file actually returned** before writing it into the source.
+
+**3 · A variable read returns ONE mode — whichever the queried node resolves in.** There is no
+mode parameter. To read the dark theme you must query a node that physically sits on a dark
+surface. The consequence people miss: **if a component has no dark-mode sample on the canvas,
+its dark values cannot be audited from the design file at all.** Say that plainly instead of
+reporting the light values and letting the silence imply the dark ones passed. The fix is a
+request to the designer — a band with both variants on it, placed once, readable forever.
+
+**4 · Variable bindings come in two shapes.** Text properties and `fills` are **arrays**
+(text can vary per segment); padding, radius, item spacing and everything else on a frame are a
+**single alias object**. Index `[0]` into the second kind and you get `undefined`, which reads
+exactly like "not bound to a variable" — a false drift finding that looks completely credible.
+
+```js
+const raw = node.boundVariables?.[prop];
+const alias = Array.isArray(raw) ? raw[0] : raw;
+// paint fills are different again: node.fills[0].boundVariables.color.id
+```
+
+**The rule underneath all four: a search that returns nothing is not evidence of absence.**
+Local, unpublished variables are invisible to design-system search, so "the tool finds no blur
+collection" supports the confident, reasonable, wrong conclusion that only the one stop you can
+see is real. Ask the designer to look at the variable panel. A question costs a message; a
+wrong import costs a family of tokens and the trust in the ones next to them.
+
+---
+
 ## Inventory before you build
 
 Pull these out of the design in one pass. Missing one means rework after the structure exists,
