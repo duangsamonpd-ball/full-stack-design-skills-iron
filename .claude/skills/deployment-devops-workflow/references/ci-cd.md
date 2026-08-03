@@ -17,8 +17,8 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with: { node-version: 24, cache: 'npm' }   # 24 = Active LTS; 20 is EOL (2026-04-30)
       - run: npm ci                       # reproducible install from lockfile
       - run: npm run typecheck            # tsc --noEmit
@@ -33,8 +33,8 @@ jobs:
   a11y:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with: { node-version: 24, cache: 'npm' }   # 24 = Active LTS; 20 is EOL (2026-04-30)
       - run: npm ci && npm run build
       - run: npm run test:a11y            # e.g. @axe-core/playwright assertions

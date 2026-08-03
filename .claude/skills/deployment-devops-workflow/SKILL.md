@@ -39,7 +39,7 @@ patches. Two things to re-check when you touch CI — nothing warns you about ei
 - **Node** — build on a version in **Active LTS**. Even-numbered releases get ~3 years;
   check the [release schedule](https://nodejs.org/en/about/eol) rather than trusting the
   number already in the file. Node 20 went EOL 2026-04-30.
-- **Actions** — pin the **major** (`actions/checkout@v5`), which still takes security
+- **Actions** — pin the **major** (`actions/checkout@v7`), which still takes security
   patches within that major. An unmaintained major eventually loses runner support.
 
 Apply the same version to *every* workflow in the repo. Pipelines added at different times
