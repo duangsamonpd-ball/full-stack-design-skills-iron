@@ -15,7 +15,7 @@
     "drift:versions": "node check-drift.mjs --versions"
   },
   "dependencies": {
-    "jsdom": "^29.1.1"
+    "jsdom": "^30.0.1"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.3",
