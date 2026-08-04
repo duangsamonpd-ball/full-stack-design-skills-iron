@@ -51,6 +51,27 @@ Deeper v4 recipes — `@theme` vs `@theme inline`, the component boundary in fra
 - Sub-pixel border/shadow differences
 - Web font not loaded → fallback metrics shift layout
 
+### Boxes that are taller than their content
+
+Two of these are near-invisible until a layout stacks, because a row's height is set by
+its tallest item — so a few stray pixels on a short child cost nothing, then land
+directly on the section height the moment the same child becomes a row of its own.
+**After any change that turns a row into a column, re-measure every band**; a gap that
+was absorbed for months starts showing.
+
+- **An inline-level child inside a block wrapper sits on a baseline** and the line box
+  adds descender space under it. A 24px `inline-flex` logo in a plain `<span>` measures
+  28. `line-height: 0` on the wrapper hides it; `display: flex` removes it. Being a
+  flex *item* does not help — flex blockifies the item, not what is inside it.
+- **Two font sizes on one line make the line box the union of both inline boxes**, which
+  is taller than either `line-height`. 14px and 12px both at `line-height: 20px` give
+  20.74, because the smaller run's half-leading puts its baseline lower. Cap the smaller
+  run (`line-height: 1`) — glyphs sit on the baseline either way, so nothing moves.
+
+Both are why a card specified 124×48 renders 49. Measure with
+`getBoundingClientRect()` on the real element rather than trusting the declared
+`line-height`.
+
 ## Troubleshooting
 
 | Issue | Fix |

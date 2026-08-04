@@ -29,7 +29,18 @@ Build layouts that hold up from a small phone to a wide desktop — adapting to 
 sm 640  ·  md 768  ·  lg 1024  ·  xl 1280  ·  2xl 1536
 ```
 
-Add breakpoints where the *content* breaks, not at device sizes — the goal is layouts that look intentional at every width, not just on named devices.
+Add breakpoints where the *content* breaks, not at device sizes — the goal is layouts that look intentional at every width, not just on named devices. "Where it breaks" is a number you can measure: render the wide layout, shrink until it overflows or collides, and use that. A design file showing frames at 1440/768/375 tells you what each layout looks like, not which widths to switch at.
+
+**A custom property cannot be a media query condition.** In a project with a `--breakpoint-*` scale this is the first thing you will reach for, and it fails silently:
+
+```css
+@media (max-width: var(--breakpoint-lg)) { … }   /* never matches — no error, no styles */
+@media (max-width: 1023.98px)            { … }   /* write the number, cite the token in a comment */
+```
+
+Media features are resolved before the cascade, so there is no variable to substitute yet. The token is still reachable through a framework *variant* — Tailwind's `--breakpoint-lg` in `@theme` is what generates `lg:`, which compiles to a real media query — so `lg:` works and `var()` does not. Hand-authored `@media` in a component `<style>` gets the literal.
+
+Pick `.98` (or `min-width` and mobile-first) deliberately: `max-width: 768px` and `min-width: 768px` both match at exactly 768.
 
 ## Core recipes
 
@@ -53,6 +64,26 @@ Add breakpoints where the *content* breaks, not at device sizes — the goal is 
 `pointer-*` reflects the *primary* input; `any-pointer-*` asks whether an input of that kind
 exists at all. Grow targets on `pointer-coarse`; only hide something outright on
 `any-pointer-none`.
+
+**The auto-fit floor and the gap spend the same pixels.** A track count is
+`n × floor + (n−1) × gap ≤ width`, so the two numbers are one decision, and raising
+the floor "to be safe" can silently cost a column:
+
+| width | floor | gap | fits |
+|---|---|---|---|
+| 720 | 150 | 32 | **4** (696) |
+| 720 | 160 | 32 | **3** — 4 needs 736 |
+| 720 | 160 | 16 | **4** (688) |
+| 343 | 150 | 32 | **2** (332) |
+| 343 | 160 | 32 | **1** — 2 needs 352 |
+| 343 | 160 | 16 | **2** (336) |
+
+Set the floor from the widest thing that must fit — measure it, don't estimate — then
+spend what is left on the gap. This matters most when the items are `nowrap`: a track
+narrower than its own text overflows instead of wrapping, and inside an
+`overflow: hidden` parent it is *clipped rather than scrolled*, so a page-level
+"no horizontal scroll" check reports clean. Assert per item
+(`scrollWidth > clientWidth`, or a `Range` around the text), not per document.
 
 Container-query and more patterns (nav, sidebar, responsive tables) are in
 `references/responsive-recipes.md`.
@@ -79,6 +110,10 @@ the content becomes unreachable.
 | Desktop-first with overrides | Mobile-first base, add upward |
 | Touch targets sized by breakpoint | `pointer-coarse:` — a touchscreen laptop is not a phone width |
 | Centred content clipped when it overflows | `justify-center-safe` / `items-center-safe` — falls back to start instead of cutting off both ends |
+| `var(--breakpoint-*)` inside `@media` | Literal number in the condition; reach the token through the framework variant (`lg:`) instead |
+| `auto-fit` floor raised "to be safe" | Recount `n × floor + (n−1) × gap`; buy the headroom out of the gap, not the column count |
+| Overflow checked per document | `overflow: hidden` clips instead of scrolling — assert per item, not on `document.scrollWidth` |
+| Layout only proven at the design's frame widths | Also test between them, and one width below the smallest frame |
 
 ## Next steps
 
