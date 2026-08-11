@@ -65,6 +65,51 @@ Tailwind v4 has no `tailwind.config.js` by default — the theme lives in CSS vi
 
 Now `bg-surface`, `text-content`, and `bg-brand/50` all resolve, and dark mode is a variable swap.
 
+### Not every surface follows the theme, and text on those needs its own pair
+
+Some surfaces are a fixed colour in both modes: a footer that is always dark, a
+solid status badge whose fill is a brand colour the theme never remaps, a
+section band painted a specific light tint. Paint `text-content` on one of those
+and it flips underneath you — a `#F5F5F5` heading on a `#F8FAFC` band is
+**1.04:1**, which is invisible, and no gate that only compares token layers to
+each other will say a word.
+
+Give those surfaces their own text pair, and name it for **what decides the
+value — how light the background is** — not for the mode:
+
+```css
+--color-text-on-dark-heading:  #FFFFFF;   --color-text-on-light-heading: var(--neutral-900);
+--color-text-on-dark-body:     var(--neutral-200);  --color-text-on-light-body: var(--neutral-800);
+```
+
+None of them is remapped under `.dark`, and that is the point. Beware the
+tempting name **`on-color`**: it promises to work on any fill and cannot. White
+clears AA on a deep violet (15:1) but not on the same system's warning yellow
+(1.99:1) or success green (2.17:1) — measured across ten in-scale backgrounds,
+seven failed. If one value cannot serve every case, the name must not claim it
+does.
+
+### Dark surfaces step the opposite way from light ones
+
+In light, bands recede by getting **darker** than a white page. The reflex is to
+carry that direction into dark — a band darker than an already-dark page — and
+it contradicts the rest of the system, because elevation in dark almost always
+reads as **lighter** (a card on a dark page is lighter than it). Mirror instead:
+
+```
+light   page #FFFFFF → band #F8FAFC → band-alt #F2F9FE → shade #F1F5F9   stepping down
+dark    page #260F27 → band #391C39 → band-alt #372647 → shade #462244   stepping up
+card    #522950 sits above every band in dark, as white does in light
+```
+
+Two things this exposes. **Check the rung you land on is not already spoken
+for** — putting the dark shade band on the same rung as `card` *and* `border`
+made a card on that band disappear at 1.000 contrast, fill and outline together;
+the fix was one new rung between two existing ones. And **a derived value has to
+be recomputed when what it derives from moves**: a tinted band defined as
+"brand at 8% over rung 950" silently inverted its own relationship once its
+neighbour moved to rung 900.
+
 ### `@theme inline` vs plain `@theme` — pick by how components read tokens
 
 `@theme inline` inlines the value into the generated utilities but does **not** expose `--color-*` on `:root`. So utility classes (`bg-brand`) re-theme correctly, while a raw `var(--color-brand)` in your own CSS resolves to nothing.

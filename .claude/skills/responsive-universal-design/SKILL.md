@@ -29,7 +29,19 @@ Build layouts that hold up from a small phone to a wide desktop — adapting to 
 sm 640  ·  md 768  ·  lg 1024  ·  xl 1280  ·  2xl 1536
 ```
 
-Add breakpoints where the *content* breaks, not at device sizes — the goal is layouts that look intentional at every width, not just on named devices. "Where it breaks" is a number you can measure: render the wide layout, shrink until it overflows or collides, and use that. A design file showing frames at 1440/768/375 tells you what each layout looks like, not which widths to switch at.
+Add breakpoints where the *content* breaks, not at device sizes — the goal is layouts that look intentional at every width, not just on named devices. "Where it breaks" is a number you can measure. A design file showing frames at 1440/768/375 tells you what each layout looks like, not which widths to switch at.
+
+**Measure where the content stops FITTING, not where it starts overflowing — they are different numbers.** Shrinking until something leaves its box finds the width where the layout becomes *broken*, and switching there leaves a band above it where the layout is merely *bad*: nothing overflows, and a label is stacked three lines deep with its icon stranded beside it. A real case — a file-upload row spilled 8.7px at 320, a breakpoint at 329.98 silenced every overflow check across nineteen components, and a screenshot at 360 showed the fix had not worked. Re-measured for the width where the title and its link each sit on ONE line, the answer was 438.
+
+So sweep for the layout you intend, not for the absence of a symptom:
+
+```
+for w in 300…600 step 4:
+    render at w
+    ok = title.height <= oneLine && link.height <= oneLine && nothing overflows
+```
+
+The first `w` where `ok` holds is the breakpoint, minus `.02`. **An overflow checker answers a narrower question than its green output suggests** — pair it with a screenshot at a width just above the one you picked, and look at it.
 
 **A custom property cannot be a media query condition.** In a project with a `--breakpoint-*` scale this is the first thing you will reach for, and it fails silently:
 

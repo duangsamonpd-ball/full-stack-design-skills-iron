@@ -84,6 +84,43 @@ breakpoint, theme regressions, and CSS changes with unexpected blast radius.
 □ Tests query by role/label/text, not CSS classes
 ```
 
+## A green checker is not the same as a checked thing
+
+The failure that costs the most is not a gate that fails — it is a gate that
+**skips**, or that answers a narrower question than its output implies, and
+prints a confident tick either way. Four shapes, all met in one real day:
+
+- **It skipped its subject.** A generator decided "is this component converted?"
+  with "does any line start with `<style`". A wrapped sentence in a closing
+  comment read as markup, so that component was skipped entirely and its
+  generated region went unwritten and unchecked, while the run reported
+  `✔ 10 converted components`. **Nobody notices a count that is one too low** —
+  so make the skip loud: if something is skipped but still carries the marker
+  that says it should have been processed, that is an error, not silence.
+- **It parsed nothing.** A checker that reads hand-written HTML fails by
+  matching zero elements, which is indistinguishable from a clean page. Give
+  every parser a **floor** and fail below it, and add a `--self-test` that
+  plants one error per parser and requires every one to react.
+- **It answered a neighbouring question.** An overflow sweep went green on a fix
+  that still rendered a broken label — "nothing left its box" was true and
+  irrelevant. Ask what the user would *see*, then look at it.
+- **The pipe ate the verdict.** `node check.mjs | tail -5` then `echo $?`
+  reports **tail's** exit code. It printed `exit=0` directly under its own
+  `✖ 1 out of date`. Redirect to a file, echo `$?`, then read the file.
+
+**Gate whatever restates a fact.** Docs that write out token values by hand are
+a second source of truth: two reference pages held ~150 colour values, nothing
+compared them to the tokens, and sixteen were wrong — including two rows for a
+token deleted in an earlier refactor. Either generate the page from the source,
+or check it; the choice is whether the presentation is hand-tuned enough to be
+worth keeping.
+
+**Build the checker before the fix.** Facing an unknown number of defects, write
+the checker first, let it produce the list, then fix until green — going green
+is proof the fix is complete, whereas fixing from a hand-made list only proves
+the list was followed. Doing it in that order turned seven found by eye into
+sixteen real ones.
+
 ## Next steps
 
 - Pair with **web-accessibility-a11y** as a CI gate (role/label queries already help)
