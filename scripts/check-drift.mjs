@@ -196,6 +196,114 @@ async function actions() {
   return { text: `${head}\n${lines.join('\n')}`, behind: behind.length };
 }
 
+/* ── node: is the pinned major still the LTS we think it is? ────────────────
+ *
+ * This was the last "eyeball it each pass" item, and eyeballing it means the
+ * bump happens whenever someone remembers, not when the calendar says. The
+ * release schedule is published as JSON, so ask it.
+ *
+ * Phases come from dates, not from a hand-kept note: a major is Current, then
+ * Active LTS (even majors only), then Maintenance, then EOL. The pins in
+ * .claude/skills matter more than our own workflows — they get copied into
+ * other people's CI, where a maintenance-phase Node quietly becomes their
+ * problem too.
+ */
+const NODE_SCHEDULE = 'https://raw.githubusercontent.com/nodejs/Release/main/schedule.json';
+const NODE_PIN = /node-version:\s*['"]?(\d+)/g;
+// ISO dates compare correctly as strings. DRIFT_TODAY=YYYY-MM-DD overrides "now"
+// so the phase transitions can be tested on demand instead of waited for.
+const today = process.env.DRIFT_TODAY ?? new Date().toISOString().slice(0, 10);
+
+function pinnedNode() {
+  const found = new Map(); // major → call sites
+  for (const src of ACTION_SOURCES) {
+    const dir = join(ROOT, src);
+    if (!existsSync(dir)) continue;
+    for (const file of walk(dir)) {
+      for (const [, maj] of readFileSync(file, 'utf8').matchAll(NODE_PIN)) {
+        found.set(+maj, (found.get(+maj) ?? 0) + 1);
+      }
+    }
+  }
+  return [...found].sort(([a], [b]) => a - b);
+}
+
+function phaseOf(entry) {
+  if (today >= entry.end) return { label: `EOL since ${entry.end}`, bad: true };
+  if (entry.maintenance && today >= entry.maintenance) {
+    return { label: `maintenance until ${entry.end}`, stale: true };
+  }
+  if (entry.lts && today >= entry.lts) return { label: `Active LTS until ${entry.maintenance ?? entry.end}` };
+  if (today >= entry.start) {
+    // odd majors never become LTS; even ones are just early
+    return entry.lts
+      ? { label: `Current — LTS from ${entry.lts}`, stale: true }
+      : { label: `Current — an odd major, never becomes LTS`, stale: true };
+  }
+  return { label: `unreleased until ${entry.start}`, stale: true };
+}
+
+async function node() {
+  const pins = pinnedNode();
+  if (!pins.length) return { text: dim('node: no version pinned'), behind: 0 };
+
+  let schedule;
+  try {
+    const res = await fetch(NODE_SCHEDULE, {
+      headers: { 'user-agent': 'iron-skills-check-drift' },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) throw new Error(String(res.status));
+    schedule = await res.json();
+  } catch {
+    return { text: dim('node: schedule unreachable — skipped'), behind: 0 };
+  }
+
+  // what the calendar says the right pin is, today
+  const active = Object.entries(schedule)
+    .filter(([, entry]) => entry.lts && today >= entry.lts && today < entry.maintenance)
+    .map(([key]) => major(key));
+  const upcoming = Object.entries(schedule)
+    .filter(([, entry]) => entry.lts && entry.lts > today)
+    .sort((a, b) => a[1].lts.localeCompare(b[1].lts))[0];
+
+  const width = Math.max(...pins.map(([maj]) => String(maj).length));
+  const rows = pins.map(([maj, uses]) => {
+    const entry = schedule[`v${maj}`];
+    const where = dim(`· ${uses} call site${uses > 1 ? 's' : ''}`);
+    const name = String(maj).padEnd(width);
+    if (!entry) return { line: `  ${dim('?')} ${name}  ${dim('(not in the schedule)')} ${where}`, stale: 0, bad: 0 };
+    const { label, bad, stale } = phaseOf(entry);
+    const mark = bad ? r('✗') : stale ? y('⚠') : g('✓');
+    const paint = bad ? r : stale ? y : dim;
+    return { line: `  ${mark} ${name}  ${paint(label)} ${where}`, stale: bad || stale ? 1 : 0, bad: bad ? 1 : 0 };
+  });
+
+  const behind = rows.reduce((n, row) => n + row.stale, 0);
+  const dead = rows.reduce((n, row) => n + row.bad, 0);
+  const lines = rows.map((row) => row.line);
+
+  // A stale pin is only actionable with a target, so always name one. Note the
+  // gap: an LTS goes to maintenance ~8 days before its successor becomes LTS,
+  // so "today's Active LTS" can legitimately be nobody.
+  const nextLts = upcoming ? `${major(upcoming[0])} becomes Active LTS ${upcoming[1].lts}` : null;
+  if (behind) {
+    const target = active.length ? active.join(' or ')
+      : nextLts ? `nothing yet — ${nextLts}`
+      : 'nothing — the published schedule names no Active LTS for today';
+    lines.push(dim(`      → move to ${target}`));
+  } else if (nextLts) {
+    lines.push(dim(`      next: ${nextLts}`));
+  }
+
+  let head;
+  if (dead) head = r(`node: ${dead} pin${dead > 1 ? 's' : ''} EOL`);
+  else if (behind) head = y(`node: ${behind} pin${behind > 1 ? 's' : ''} off the LTS line`);
+  else head = g(`node: pinned ${pins.map(([maj]) => maj).join(', ')} · Active LTS today ${active.join(', ') || '—'}`);
+
+  return { text: `${head}\n${lines.join('\n')}`, behind };
+}
+
 /* ── audit: ask npm whether what we already have is vulnerable ──────────────
  *
  * The version half asks "has something newer shipped?". It never asks "is what
@@ -313,6 +421,7 @@ if (want.gates) blocks.push(gates().text);
 if (want.versions) {
   blocks.push(versions().text);
   blocks.push((await actions()).text);
+  blocks.push((await node()).text);
 }
 if (want.audit) blocks.push(audit().text);
 

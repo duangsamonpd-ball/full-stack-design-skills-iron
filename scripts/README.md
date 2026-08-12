@@ -44,8 +44,15 @@ npm run drift:audit      # network — is what's already installed vulnerable?
 
 `--gates` runs `skills-lint`, `build-css --check` and `a11y-audit` and reports pass/fail
 without a network call; `--versions` compares the tracked deps (tailwindcss, astro, jsdom, …)
-to what npm publishes and flags majors, and does the same for the `actions/*` majors pinned in
-the workflows *and* in the skills. It always exits 0 — it reports, CI is where red fails.
+to what npm publishes and flags majors, does the same for the `actions/*` majors pinned in
+the workflows *and* in the skills, and checks every pinned `node-version` against the official
+release schedule — Current / Active LTS / maintenance / EOL is derived from today's date, so
+the bump is prompted by the calendar rather than by someone remembering. It always exits 0 —
+it reports, CI is where red fails.
+
+Set `DRIFT_TODAY=YYYY-MM-DD` to run the Node check against another date. That is how the
+phase transitions get tested (`DRIFT_TODAY=2026-10-21` shows 24 falling to maintenance)
+instead of waiting a year to find out the branch was wrong.
 
 `--audit` runs `npm audit` in every workspace that `--versions` tracks a pin in. It exists
 because "is there a newer release?" and "is what I have vulnerable?" are different questions:
