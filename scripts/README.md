@@ -73,9 +73,11 @@ the gate status:
 ] } ] } }
 ```
 
-Version and advisory drift benefit from running on the world's clock, not yours — a scheduled
-agent or a periodic `npm run drift:versions && npm run drift:audit` catches a release, or a
-disclosure against a version you already have, the day it lands.
+Version, Node, WCAG and advisory drift all move on the world's clock rather than on a commit,
+so `.github/workflows/drift.yml` runs those halves weekly and opens (or updates) a `drift`
+issue when something moved, closing it again once the radar is clean. `--fail-on-drift` is
+what makes that possible: it flips the exit code when anything is flagged, while a plain run
+keeps the exit-0 contract. Colour is emitted only to a TTY, so the issue body stays readable.
 
 ## Example-page stylesheets
 

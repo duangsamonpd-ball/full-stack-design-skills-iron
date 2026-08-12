@@ -35,10 +35,14 @@ const want = {
 };
 if (!want.gates && !want.versions && !want.audit) { want.gates = want.versions = want.audit = true; }
 
-const g = (s) => `\x1b[32m${s}\x1b[0m`;
-const y = (s) => `\x1b[33m${s}\x1b[0m`;
-const r = (s) => `\x1b[31m${s}\x1b[0m`;
-const dim = (s) => `\x1b[2m${s}\x1b[0m`;
+// Escape codes are noise in a CI log or a pasted issue body, and a terminal is
+// the only place they help. NO_COLOR is the honoured convention for opting out.
+const colour = Boolean(process.stdout.isTTY) && !process.env.NO_COLOR;
+const paint = (code) => (s) => (colour ? `\x1b[${code}m${s}\x1b[0m` : String(s));
+const g = paint(32);
+const y = paint(33);
+const r = paint(31);
+const dim = paint(2);
 
 /* ── gates: run the existing checks, report pass/fail, never throw ─────────── */
 function runGate(label, file, gateArgs = []) {
@@ -492,17 +496,21 @@ if (hook) {
 
 /* ── report ───────────────────────────────────────────────────────────────── */
 const blocks = [];
-if (want.gates) blocks.push(gates().text);
+let drift = 0;
+if (want.gates) { const res = gates(); blocks.push(res.text); drift += res.bad; }
 if (want.versions) {
-  blocks.push(versions().text);
-  blocks.push((await actions()).text);
-  blocks.push((await node()).text);
-  blocks.push((await wcag()).text);
+  for (const res of [versions(), await actions(), await node(), await wcag()]) {
+    blocks.push(res.text);
+    drift += res.behind;
+  }
 }
-if (want.audit) blocks.push(audit().text);
+if (want.audit) { const res = audit(); blocks.push(res.text); drift += res.flagged; }
 
 console.log(`\n${blocks.join('\n\n')}\n`);
 if (want.versions || want.audit) {
   console.log(dim('  upgrade path & the drift-audit method: memory maintenance-cadence\n'));
 }
-process.exit(0);
+
+// Default stays exit 0 — this reports, it does not gate. --fail-on-drift is for
+// the scheduled run, which needs a signal something acted on rather than a log.
+process.exit(args.includes('--fail-on-drift') && drift ? 1 : 0);
