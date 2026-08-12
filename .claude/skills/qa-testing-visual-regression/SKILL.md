@@ -107,6 +107,38 @@ prints a confident tick either way. Four shapes, all met in one real day:
 - **The pipe ate the verdict.** `node check.mjs | tail -5` then `echo $?`
   reports **tail's** exit code. It printed `exit=0` directly under its own
   `✖ 1 out of date`. Redirect to a file, echo `$?`, then read the file.
+- **It could not have failed where it was written.** A layout sweep armed itself
+  with `document.fonts.check('700 16px Montserrat')`. On the author's machine
+  Montserrat is installed, so that is true for every page whatever it renders —
+  unfalsifiable there, while underneath it ten of nineteen components were being
+  measured in the browser's default serif, ~21% narrower than the real font, in
+  the direction that hides overflow. The first run on a machine without the font
+  said so immediately.
+
+  This is the hardest shape to see, because everything is green and the check is
+  *about* something the machine happens to have — a font, a locale, a timezone,
+  a certificate, a binary on `$PATH`. Two defences. **Assert on the plumbing as
+  well as the result:** a row checking the stylesheet link was actually injected
+  fails anywhere, beside a row checking the font renders, which can only fail
+  where the font is absent. And **run it somewhere else early** — a foreign
+  machine is an instrument too, and it sees what yours is built not to.
+
+**Repeating a measurement is not reproducing it.** Before keying allowlist
+entries to a sampled colour, that sweep was run three times and returned
+identical values — which showed stability on *one* machine. CI sampled the same
+text one shade different, because glyph rectangles rasterise differently per
+platform and a different rectangle takes a different slice of a gradient.
+Anything **sampled** rather than declared is a property of the machine as much
+as of the design: match it with a tolerance, and give the tolerance a refusal
+case in the self-test, or it is only a wider hole.
+
+**A harness that reaches the network is a coin toss, not a gate.** Three browser
+harnesses fetched their webfont from a CDN mid-run; the morning the first became
+a gate, that CDN failed four times, on a different page each time, every failure
+a red build saying nothing about the code. Vendor the asset and serve it
+locally — then *enforce* it: abort every request leaving the local origin and
+fail on any that tries, or "it no longer needs the network" is a sentence in a
+commit message that nothing checks.
 
 **Gate whatever restates a fact.** Docs that write out token values by hand are
 a second source of truth: two reference pages held ~150 colour values, nothing

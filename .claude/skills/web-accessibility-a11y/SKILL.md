@@ -90,6 +90,45 @@ The arithmetic is the easy part. Four things decide whether the gate stays hones
   entry — but report an entry that *starts passing* as an error. Otherwise the allowlist quietly
   becomes the place failures go to be forgotten.
 
+#### The composed colour is not always the painted one
+
+Everything above composes a pair out of `background-color` values. That is exact until something
+is painted **over** them, and then it is fiction. A `background-image` — a photo, a gradient, an
+SVG band — paints *above* `background-color`, so an opaque colour underneath tells you nothing
+about what the reader sees. One harness excused this case explicitly ("an image over an opaque
+colour uses the colour"), which held for a faint canvas grid and failed completely for a
+full-bleed illustration: every ratio it reported for that section was measured against a colour
+nobody could see. Three runs came back 2.36, 3.91 and 4.06 where it had claimed 2.84, 4.11 and
+2.84 — two worse, one better, none right.
+
+When an image is anywhere on the ancestor chain, stop composing and **measure what was
+painted**: hide the glyphs, screenshot the rectangle they occupied, and read the pixels back.
+Three details decide whether that number is worth anything:
+
+- **Sample the glyph rectangles, not the element's box.** `Range.getClientRects()` over the
+  element's own text nodes is the only region a glyph can occupy. A box also contains whatever
+  else sits in it — a `justify-end` paragraph holding both a caption and a white logo reported
+  1.00:1 white-on-white for text that was plainly legible on dark beside it.
+- **Judge on the worst colour covering a real share of the area**, not the single worst pixel;
+  photos have antialiased edges no glyph sits on. Report the absolute worst alongside it.
+- **Report how much of the run fails.** "26% of the glyph area is below the bar" is a different
+  problem from "100% is", and points at a different fix — the first is text crossing a bright
+  patch, the second is the wrong colour.
+
+#### Check the colour's ceiling before hunting for a fix
+
+Before redesigning anything, ask what the foreground can do *at best*. A colour's maximum
+possible contrast is its ratio against black or against white, and both fall straight out of its
+luminance — `(L + 0.05) / 0.05` against black, `1.05 / (L + 0.05)` against white.
+
+This turns an open-ended design argument into a one-line answer. A brand pink at `#E01A59` has
+luminance 0.173, so it reaches **4.46:1 against pure black** — under the 4.5 bar. No scrim, no
+darker backdrop, no treatment of the image behind it can make that colour pass as body text on
+*any* dark surface; it only clears 4.5 on white, at 4.71. Knowing that before proposing fixes
+saves measuring a scrim at every opacity to discover it never arrives, and it reframes the
+decision honestly: the choice is to change the colour, change the size to reach the large-text
+bar, or record the exemption — not to keep hunting for a backdrop that does not exist.
+
 ### 6. Screen reader check
 Verify name, role, and state are announced:
 - Every input has a programmatic label (`<label for>`, `aria-label`, or `aria-labelledby`)
