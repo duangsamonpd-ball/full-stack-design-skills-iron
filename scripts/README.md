@@ -32,18 +32,27 @@ Exit code is non-zero on any real problem, so it gates CI — see
 ## Maintenance drift check
 
 `check-drift.mjs` is the radar for keeping this package current (see the `maintenance-cadence`
-memory). Two halves, on different clocks:
+memory). Three halves, on different clocks:
 
 ```bash
 cd scripts
-npm run drift            # both halves
+npm run drift            # all three
 npm run drift:gates      # local, instant — are the three gates green?
 npm run drift:versions   # network — are pinned deps behind npm's latest?
+npm run drift:audit      # network — is what's already installed vulnerable?
 ```
 
 `--gates` runs `skills-lint`, `build-css --check` and `a11y-audit` and reports pass/fail
 without a network call; `--versions` compares the tracked deps (tailwindcss, astro, jsdom, …)
-to what npm publishes and flags majors. It always exits 0 — it reports, CI is where red fails.
+to what npm publishes and flags majors, and does the same for the `actions/*` majors pinned in
+the workflows *and* in the skills. It always exits 0 — it reports, CI is where red fails.
+
+`--audit` runs `npm audit` in every workspace that `--versions` tracks a pin in. It exists
+because "is there a newer release?" and "is what I have vulnerable?" are different questions:
+on 2026-08-12 a high (nanoid) and a moderate (postcss) advisory sat in `astro-registration-m3`
+behind three green gates and a green version row, because both pins were inside their caret
+ranges and so nothing looked stale. A workspace it cannot audit (no lockfile, npm unreachable)
+is reported as unchecked and never counted as clean.
 
 `--hook` emits a SessionStart JSON envelope (gates only) for a Claude Code hook. Wire it up
 per machine in `.claude/settings.local.json` (gitignored) so a session opens already knowing
@@ -55,8 +64,9 @@ the gate status:
 ] } ] } }
 ```
 
-Version drift benefits from running on the world's clock, not yours — a scheduled agent or a
-periodic `npm run drift:versions` catches a release the day it lands.
+Version and advisory drift benefit from running on the world's clock, not yours — a scheduled
+agent or a periodic `npm run drift:versions && npm run drift:audit` catches a release, or a
+disclosure against a version you already have, the day it lands.
 
 ## Example-page stylesheets
 

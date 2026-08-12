@@ -12,7 +12,8 @@
     "build-css:check": "node build-css.mjs --check",
     "drift": "node check-drift.mjs",
     "drift:gates": "node check-drift.mjs --gates",
-    "drift:versions": "node check-drift.mjs --versions"
+    "drift:versions": "node check-drift.mjs --versions",
+    "drift:audit": "node check-drift.mjs --audit"
   },
   "dependencies": {
     "jsdom": "^30.0.1"

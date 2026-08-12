@@ -2,7 +2,7 @@
 /**
  * Maintenance radar for this workspace — see the maintenance-cadence note.
  *
- * Two independent halves, because they belong on different clocks:
+ * Three independent halves, because they belong on different clocks:
  *
  *   --gates     Local, instant, no network. Are the three gates green right now?
  *               Wired to SessionStart so a session opens already knowing.
@@ -10,8 +10,11 @@
  *               pinned GitHub Actions behind their latest release?
  *               Run on demand (`npm run drift`) or from a scheduled agent —
  *               releases land on the world's clock, not when you open the repo.
+ *   --audit     Network. Is what we already have vulnerable? Separate from
+ *               --versions because an advisory is not a release: it can land
+ *               against a version that is current, and did (see below).
  *
- * No argument runs both (the full `npm run drift`).
+ * No argument runs all three (the full `npm run drift`).
  *
  * Always exits 0: this reports, it doesn't gate. CI is where red fails a build.
  * Zero dependencies.
@@ -25,8 +28,12 @@ import { dirname, join, extname } from 'node:path';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
 const hook = args.includes('--hook'); // emit a SessionStart JSON envelope instead of a report
-const want = { gates: args.includes('--gates') || hook, versions: args.includes('--versions') };
-if (!want.gates && !want.versions) { want.gates = want.versions = true; }
+const want = {
+  gates: args.includes('--gates') || hook,
+  versions: args.includes('--versions'),
+  audit: args.includes('--audit'),
+};
+if (!want.gates && !want.versions && !want.audit) { want.gates = want.versions = want.audit = true; }
 
 const g = (s) => `\x1b[32m${s}\x1b[0m`;
 const y = (s) => `\x1b[33m${s}\x1b[0m`;
@@ -189,6 +196,104 @@ async function actions() {
   return { text: `${head}\n${lines.join('\n')}`, behind: behind.length };
 }
 
+/* ── audit: ask npm whether what we already have is vulnerable ──────────────
+ *
+ * The version half asks "has something newer shipped?". It never asks "is what
+ * is installed vulnerable?" — and those are different questions. On 2026-08-12
+ * that gap hid a high (nanoid GHSA-2v37-7h3g-55p8) and a moderate (postcss
+ * GHSA-fxqj-rqcc-2cmp) advisory in astro-registration-m3 behind three green
+ * gates and a green version row: both pins sat inside their caret ranges, so
+ * nothing anywhere looked stale.
+ *
+ * Workspaces are derived from TRACKED, so pinning a package in a new workspace
+ * can't quietly create one the audit never visits.
+ *
+ * Not wired to the hook: it needs the network, and SessionStart must stay instant.
+ */
+const WORKSPACES = [...new Set(TRACKED.map(({ from }) => dirname(from)))].sort();
+const SEVERITIES = ['critical', 'high', 'moderate', 'low', 'info'];
+const rank = (s) => SEVERITIES.length - SEVERITIES.indexOf(s);
+
+// npm exits non-zero both when it finds advisories and when it can't audit at
+// all; the JSON report lands on stdout either way, so read stdout, not status.
+function auditWorkspace(dir) {
+  let raw;
+  try {
+    raw = execFileSync('npm', ['audit', '--json'], {
+      cwd: join(ROOT, dir), stdio: 'pipe', timeout: 60000,
+    }).toString();
+  } catch (e) {
+    raw = `${e.stdout ?? ''}`;
+  }
+  let report;
+  try { report = JSON.parse(raw); } catch { return { dir, blocked: 'npm unreachable' }; }
+  if (report.error) {
+    return { dir, blocked: report.error.code === 'ENOLOCK' ? 'no lockfile' : report.error.code };
+  }
+
+  const counts = report.metadata?.vulnerabilities ?? {};
+  const found = Object.values(report.vulnerabilities ?? {}).map((v) => {
+    // `via` holds advisory objects for a direct hit, and package names when the
+    // vulnerability arrives through a dependency.
+    const advisories = v.via.filter((x) => typeof x === 'object');
+    const top = advisories.sort((a, b) => rank(b.severity) - rank(a.severity))[0];
+    const chain = v.via.filter((x) => typeof x === 'string');
+    return {
+      name: v.name,
+      severity: v.severity,
+      title: top?.title ?? `reached through ${chain.join(', ')}`,
+      fix: v.fixAvailable,
+    };
+  }).sort((a, b) => rank(b.severity) - rank(a.severity) || a.name.localeCompare(b.name));
+
+  return { dir, counts, found, severe: (counts.critical ?? 0) + (counts.high ?? 0) };
+}
+
+function audit() {
+  const rows = WORKSPACES.map(auditWorkspace);
+  const width = Math.max(...rows.map((row) => row.dir.length));
+  const lines = [];
+
+  for (const row of rows) {
+    const name = row.dir.padEnd(width);
+    if (row.blocked) { lines.push(`  ${dim('?')} ${name}  ${dim('(' + row.blocked + ')')}`); continue; }
+    if (!row.found.length) { lines.push(`  ${g('✓')} ${name}  ${dim('no advisories')}`); continue; }
+
+    const tally = SEVERITIES.filter((s) => row.counts[s]).map((s) => `${row.counts[s]} ${s}`).join(' · ');
+    lines.push(`  ${row.severe ? r('✗') : y('⚠')} ${name}  ${row.severe ? r(tally) : y(tally)}`);
+
+    for (const v of row.found.slice(0, 6)) {
+      lines.push(`      ${v.name} ${dim(v.severity)} — ${v.title}`);
+    }
+    if (row.found.length > 6) lines.push(dim(`      … and ${row.found.length - 6} more`));
+
+    const unfixable = row.found.filter((v) => v.fix === false);
+    const major = row.found.filter((v) => v.fix?.isSemVerMajor);
+    let hint = `npm audit fix in ${row.dir}/`;
+    if (major.length) hint += ` (${major.map((v) => v.name).join(', ')} need --force — semver-major)`;
+    if (unfixable.length) hint += ` · no fix published for ${unfixable.map((v) => v.name).join(', ')}`;
+    lines.push(dim(`      → ${hint}`));
+  }
+
+  const audited = rows.filter((row) => !row.blocked);
+  const blocked = rows.length - audited.length;
+  const flagged = audited.filter((row) => row.found.length);
+  const severe = audited.reduce((n, row) => n + row.severe, 0);
+  const total = audited.reduce((n, row) => n + row.found.length, 0);
+  // "no advisories" from a workspace that was never audited is not a clean bill
+  // of health, and must never read as one.
+  const unchecked = blocked ? ` · ${blocked} workspace${blocked > 1 ? 's' : ''} not audited` : '';
+
+  let head;
+  if (!audited.length) head = dim('audit: npm unreachable — skipped');
+  else if (severe) head = r(`audit: ${total} advisor${total > 1 ? 'ies' : 'y'}, ${severe} high or critical${unchecked}`);
+  else if (total) head = y(`audit: ${total} advisor${total > 1 ? 'ies' : 'y'}${unchecked}`);
+  else if (blocked) head = y(`audit: no advisories where it could look${unchecked}`);
+  else head = g('audit: no advisories');
+
+  return { text: `${head}\n${lines.join('\n')}`, flagged: flagged.length };
+}
+
 /* ── SessionStart hook: gates only, emit JSON for additionalContext ────────── */
 if (hook) {
   const res = gates();
@@ -204,15 +309,15 @@ if (hook) {
 
 /* ── report ───────────────────────────────────────────────────────────────── */
 const blocks = [];
-let flagged = 0;
-if (want.gates) { const res = gates(); blocks.push(res.text); flagged += res.bad; }
+if (want.gates) blocks.push(gates().text);
 if (want.versions) {
-  const res = versions(); blocks.push(res.text); flagged += res.behind;
-  const act = await actions(); blocks.push(act.text); flagged += act.behind;
+  blocks.push(versions().text);
+  blocks.push((await actions()).text);
 }
+if (want.audit) blocks.push(audit().text);
 
 console.log(`\n${blocks.join('\n\n')}\n`);
-if (want.versions) {
+if (want.versions || want.audit) {
   console.log(dim('  upgrade path & the drift-audit method: memory maintenance-cadence\n'));
 }
 process.exit(0);
