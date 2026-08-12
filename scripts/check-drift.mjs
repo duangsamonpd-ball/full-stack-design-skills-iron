@@ -132,11 +132,11 @@ function versions() {
 const ACTION_SOURCES = ['.github/workflows', '.claude/skills'];
 const PIN = /(?:uses:\s*|`)([\w.-]+\/[\w.-]+)@v(\d+)/g;
 
-function* walk(dir) {
+function* walk(dir, exts = ['.yml', '.yaml', '.md']) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name);
-    if (entry.isDirectory()) yield* walk(path);
-    else if (['.yml', '.yaml', '.md'].includes(extname(entry.name))) yield path;
+    if (entry.isDirectory()) yield* walk(path, exts);
+    else if (exts.includes(extname(entry.name))) yield path;
   }
 }
 
@@ -304,6 +304,81 @@ async function node() {
   return { text: `${head}\n${lines.join('\n')}`, behind };
 }
 
+/* ── wcag: is the standard we cite still the current Recommendation? ────────
+ *
+ * The skills teach against a named version, so this citation is a claim with a
+ * shelf life in a way "use good contrast" is not. W3C publishes which spec in
+ * the series is current, so the claim can be checked instead of remembered.
+ *
+ * Both directions are drift: citing an older REC leaves the guidance behind,
+ * and citing a *newer* draft (3.0 has been a Working Draft for years, REC not
+ * expected before 2028) teaches something nobody is required to meet yet.
+ *
+ * The lookahead is what makes this usable: "WCAG 1.4.10" and "WCAG 2.1.1" are
+ * success criteria, not versions, and the repo is full of them.
+ */
+const WCAG_SERIES = 'https://api.w3.org/specification-series/wcag';
+const WCAG_CITE = /WCAG ?(\d\.\d)(?!\.\d)/g;
+const vnum = (v) => Number(String(v).replace('.', ''));
+
+function wcagCitations() {
+  const files = [
+    ...walk(join(ROOT, '.claude', 'skills'), ['.md']),
+    // the example pages make the same claim in marketing copy, and drifted
+    ...readdirSync(ROOT).filter((f) => extname(f) === '.html').map((f) => join(ROOT, f)),
+  ];
+  const found = new Map(); // version → Set of files
+  for (const file of files) {
+    for (const [, version] of readFileSync(file, 'utf8').matchAll(WCAG_CITE)) {
+      if (!found.has(version)) found.set(version, new Set());
+      found.get(version).add(file.slice(ROOT.length + 1));
+    }
+  }
+  return [...found].sort(([a], [b]) => vnum(a) - vnum(b));
+}
+
+async function wcag() {
+  const cited = wcagCitations();
+  if (!cited.length) return { text: dim('wcag: no version cited'), behind: 0 };
+
+  let current;
+  try {
+    const res = await fetch(WCAG_SERIES, {
+      headers: { accept: 'application/json', 'user-agent': 'iron-skills-check-drift' },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) throw new Error(String(res.status));
+    const href = (await res.json())._links?.['current-specification']?.href ?? '';
+    // .../specifications/WCAG22 → 2.2
+    const digits = href.match(/WCAG(\d)(\d)$/);
+    if (!digits) throw new Error('unrecognised shape');
+    current = `${digits[1]}.${digits[2]}`;
+  } catch {
+    return { text: dim('wcag: w3.org unreachable — skipped'), behind: 0 };
+  }
+
+  const width = Math.max(...cited.map(([v]) => v.length));
+  let behind = 0;
+  const lines = [];
+  for (const [version, files] of cited) {
+    const name = version.padEnd(width);
+    const where = dim(`· ${files.size} file${files.size > 1 ? 's' : ''}`);
+    if (version === current) { lines.push(`  ${g('✓')} ${name}  ${dim('the current REC')} ${where}`); continue; }
+    behind++;
+    const why = vnum(version) < vnum(current)
+      ? `behind — the current REC is ${current}`
+      : `ahead of the REC (${current}) — not required of anyone yet`;
+    lines.push(`  ${y('⚠')} ${name}  ${y(why)} ${where}`);
+    lines.push(dim(`      ${[...files].sort().join(', ')}`));
+  }
+
+  const head = behind
+    ? y(`wcag: ${behind} version${behind > 1 ? 's' : ''} cited that is not the current REC (${current})`)
+    : g(`wcag: cites ${current} · the current REC`);
+
+  return { text: `${head}\n${lines.join('\n')}`, behind };
+}
+
 /* ── audit: ask npm whether what we already have is vulnerable ──────────────
  *
  * The version half asks "has something newer shipped?". It never asks "is what
@@ -422,6 +497,7 @@ if (want.versions) {
   blocks.push(versions().text);
   blocks.push((await actions()).text);
   blocks.push((await node()).text);
+  blocks.push((await wcag()).text);
 }
 if (want.audit) blocks.push(audit().text);
 

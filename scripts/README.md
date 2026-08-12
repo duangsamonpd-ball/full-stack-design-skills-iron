@@ -47,8 +47,10 @@ without a network call; `--versions` compares the tracked deps (tailwindcss, ast
 to what npm publishes and flags majors, does the same for the `actions/*` majors pinned in
 the workflows *and* in the skills, and checks every pinned `node-version` against the official
 release schedule — Current / Active LTS / maintenance / EOL is derived from today's date, so
-the bump is prompted by the calendar rather than by someone remembering. It always exits 0 —
-it reports, CI is where red fails.
+the bump is prompted by the calendar rather than by someone remembering — and checks the WCAG
+version the skills and example pages cite against the current W3C Recommendation, flagging a
+citation that is behind *or* ahead of it (3.0 is a Working Draft; teaching it early teaches
+something nobody must meet yet). It always exits 0 — it reports, CI is where red fails.
 
 Set `DRIFT_TODAY=YYYY-MM-DD` to run the Node check against another date. That is how the
 phase transitions get tested (`DRIFT_TODAY=2026-10-21` shows 24 falling to maintenance)
