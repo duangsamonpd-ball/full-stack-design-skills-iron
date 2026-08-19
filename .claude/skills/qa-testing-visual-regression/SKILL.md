@@ -123,6 +123,32 @@ prints a confident tick either way. Four shapes, all met in one real day:
   where the font is absent. And **run it somewhere else early** — a foreign
   machine is an instrument too, and it sees what yours is built not to.
 
+- **It read the INPUT and reported it as the output.** A script computed a
+  panel's arrow offset and wrote it to a CSS custom property; the probe read that
+  property back and reported `notch centre 223, trigger centre 223, aligned yes`
+  at four widths in a row. The arrow was 380px away the whole time — the
+  property's default had been declared *inside the `::before` rule that consumes
+  it*, and a pseudo-element's own declaration beats the value it would inherit,
+  so the script's write never arrived. The probe was reading the value going in,
+  not the pixel coming out. **When a probe reports on something a script
+  computes, read the thing that paints** — `getComputedStyle(el, '::before')`, or
+  better, scan the render for the mark's own colour and report the run. A human
+  found this in a screenshot after the instrument had said "aligned" all
+  afternoon.
+
+- **It was assembled from today's output, so it could only re-find today's
+  faults.** A check meant to stop docs pages from declaring a class that collides
+  with a utility compared page classes against the names already in the compiled
+  stylesheet. It found **nothing** — because the collision had just been worked
+  around by renaming the component's class, so the name was no longer emitted and
+  the fault that had cost a day was invisible. A gate built from the current
+  output is a gate against the current output. The durable question was not "is
+  this name in the file" but **"would the tool emit this name at all"**, and the
+  only thing that can answer it is the tool: compile once with an empty source,
+  once with a file wearing every candidate, and take the difference. It has to be
+  a differential — the theme layer contributes names of its own, and some of them
+  a page is *supposed* to declare.
+
 **Repeating a measurement is not reproducing it.** Before keying allowlist
 entries to a sampled colour, that sweep was run three times and returned
 identical values — which showed stability on *one* machine. CI sampled the same
@@ -131,6 +157,28 @@ platform and a different rectangle takes a different slice of a gradient.
 Anything **sampled** rather than declared is a property of the machine as much
 as of the design: match it with a tolerance, and give the tolerance a refusal
 case in the self-test, or it is only a wider hole.
+
+**The self-test is an instrument too, and it needs its own refusal case.** The
+discipline of proving a checker can fail gets applied to the checker and then
+skipped for the thing that proves it. A self-test written as a closing formality
+planted a rule it *believed* would escape, reported `0 findings`, and was
+committed as passing — on a tree where the real fault was live. It had borrowed a
+scope marker that every element on that page already carried, so there was
+nothing for it to find. **A plant that cannot be seen proves nothing.** Give the
+self-test two rows, not one: the fault shape must be REPORTED, and the same
+check must go SILENT on a control that differs only in the one property that
+makes it safe. One row alone is a coin that always lands heads.
+
+**When a fix does not move the number, stop fixing.** Six measurement rounds went
+into one component across two separate causes: a docs page declaring its own
+`.grid`, which outranked the component's utility because an inline `<style>`
+beats every linked sheet; and a stale inline copy of that component's CSS left
+behind when the component moved folders. Each time the edit was correct, the
+measurement was unchanged, and the conclusion was "the fix did not take" — so
+another edit followed. **The second identical reading is the signal**: stop
+editing and ask what *else* is acting on that element. Walking
+`document.styleSheets` and testing `el.matches(rule.selectorText)` found both in
+one pass, after reasoning had failed on each.
 
 **A harness that reaches the network is a coin toss, not a gate.** Three browser
 harnesses fetched their webfont from a CDN mid-run; the morning the first became

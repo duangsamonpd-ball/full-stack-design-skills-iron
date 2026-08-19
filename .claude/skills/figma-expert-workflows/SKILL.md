@@ -56,6 +56,35 @@ A throwaway Node script is enough: resolve both sides to comparable units (hex f
 for dimension) and diff. Prove the result the same way afterward — recompile the theme,
 confirm the new tokens resolve, and look at anything visual before calling it done.
 
+**Read values from the node; never sample them off a render.** A screenshot is
+antialiased, and 18px text reports a *lightened* version of its own colour — of
+ten product names keyed to four brand accents, three would have been assigned to
+the wrong one from pixels. `get_variable_defs` on each individual node answers in
+one call per node and returns the binding, not an approximation. Sample pixels
+only for the things no node states — how artwork composites, what a gradient
+actually paints behind a glyph — and say so when you do.
+
+**A frame that was detached from its component drifts from it, silently.** A
+hover state drawn as a separate top-level frame rather than a variant received a
+colour rebinding and a weight change in one editing session — and did NOT receive
+the icons that were outlined in the same pass. Nothing in the file says the two
+are two states of one thing, so nothing can notice. When you find states drawn as
+separate frames, say so in the audit: **no variant axis means a state can go
+missing without a trace**, which is exactly how whole states have been lost here
+before.
+
+**Two more things the canvas will not tell you:**
+
+- **A style's description can be stale against its own fields.** One read
+  `14px / 700 / lh 16 / ls 1.6` beside a Letter-spacing field showing `0.4`. The
+  field is the value; the description is prose someone typed once. Take the field
+  and mention the mismatch.
+- **Icons set in a licensed icon FONT are not implementable.** `family/icon` =
+  a Pro weight means text nodes with private-use codepoints you cannot ship. Ask
+  for them outlined and exported as vectors. Substituting a lookalike from a free
+  set is worse than shipping without them: it is a different mark, drawn
+  confidently, that no one will re-check.
+
 ### B. Code → Figma (authoring/sync)
 Use `figma:figma-generate-design` / `figma:figma-use` to build or update frames from code
 or a description — assembling with design-system components and variables, not hardcoded values.

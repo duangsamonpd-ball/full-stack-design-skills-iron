@@ -55,6 +55,38 @@ The gate list is what keeps `main` shippable. Nothing merges that:
 
 Run these in CI, not just locally — local runs get skipped under deadline pressure.
 
+## CI jobs are deliberately unequal — put a check where its cost is already paid
+
+A pipeline usually has jobs with very different equipment: one that runs plain
+Node with no install, one that installs a single tool, one that runs the full
+`npm ci` and a browser. That is a feature — the cheap jobs stay fast. It is also
+a trap, because a check added to the wrong job fails for a reason that has
+nothing to do with the code it checks.
+
+Two red builds on `main` in one day, same shape both times:
+
+- **A check that needed a compiler was added to the no-install job.** It created a
+  temp directory inside `node_modules` — which does not exist on a bare checkout —
+  and threw `ENOENT` before reading a single file. The workflow already carried a
+  comment saying which job owned compiler-dependent checks, right beside that job.
+- **A harness was shipped failing because it was not in the aggregate script.**
+  "Not in `npm run check`" was read as "not gated". It was a CI step of its own.
+
+Two habits that would have caught both:
+
+```
+□ before adding work to a check, read the WORKFLOW STEP that runs it —
+  not the npm script name, and not the script's own header
+□ prove it on a bare checkout: copy only what that job gets into an empty
+  directory and run it there. It takes a minute and separates "it works"
+  from "it works anywhere"
+```
+
+The aggregate script is not the list of what must be green. Grep the workflow for
+every checker it invokes, and keep the aggregate honest about what it does NOT
+cover — a script named `check` that is only part of the gate is a name that
+misleads on exactly the day it matters.
+
 ## Hosting notes
 
 - **Astro** — static output (any static/edge host) or an SSR adapter (Node/edge) when you need server rendering; both deploy cleanly to Vercel/Netlify/Cloudflare.

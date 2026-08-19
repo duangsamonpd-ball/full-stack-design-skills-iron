@@ -138,6 +138,72 @@ Gate it. The check is a short zero-dependency script asserting four things:
 Add one **warning**, not an error: a component with no docs page. Parity and docs checks
 skip what they can't find, so that gap is silent precisely where it matters most.
 
+### 6b. The ownership boundary — a component may not style what it does not render
+
+The moment a component gains a `<slot />` or starts composing another, its own
+selectors can reach markup that belongs to someone else. This is the failure that
+recurs, because each instance looks local and correct when it is written.
+
+- **A descendant combinator crosses the boundary; a child combinator usually
+  does not.** `.menu li { display: flex }` was a nav's own rule and right for
+  years. Then a nav item gained a flyout, so a panel — and everything a consumer
+  slots into it — came to live inside one of those `<li>`s, and every row in that
+  panel became a flex ITEM and shrank to its content. `.menu > li` bounds it to
+  the one level the component demonstrably owns.
+- **`>` is not automatic safety either.** `.right > a` still escaped, because
+  what sits there is a *composed child component*, not the component's own markup.
+  The question is never the combinator; it is whether the subtree can hold
+  another component's elements.
+- **To style a child you compose, do it deliberately.** Publish a `[data-part]`
+  hook from the child and target that from a global block, so the crossing is
+  written down. Reaching for the child's internal classes is the version that
+  breaks silently when the child is refactored.
+
+**Scoped CSS stops being scoped the moment you flatten it.** Frameworks like
+Astro rewrite each selector with a scope attribute — and on more compounds than
+you expect, so `.menu > li` compiles to `.menu[cid] > li[cid]`. Inside the app
+that makes the rule unable to leave the component. But a static docs page has no
+build step, so the styles get concatenated **unscoped** and the scope attributes
+get stripped from the markup — and every selector the framework had bounded is
+suddenly unbounded. Two consequences, both real:
+
+- a rule that is safe in the app misfires on the docs pages (the flyout case above
+  was *only* ever a docs-page fault), and
+- a rule the author intended can be a **no-op in the app** while appearing to work
+  in the docs — a `position: relative` meant to make a composed button a
+  containing block had never once applied outside the docs pages.
+
+Gate it against the RENDERED TREE rather than by reading selectors, because the
+selector's shape does not decide it: `.brand-text b` has the same shape and is
+safe, since nothing but that component can put a `<b>` there. Take each scoped
+rule, strip the scope attributes to get what the flat file will use, ask the page
+what that matches, and flag any hit not carrying the rule's own scope.
+
+```
+□ no component rule matches an element from another component once flattened
+□ a rule that must reach a composed child is global and says so
+□ children are targeted by published [data-part], never by their classes
+```
+
+### 6c. Taking a component OFF the public surface
+
+Demoting a component — it turned out to be one component's internal machinery,
+not a library primitive — is a bigger edit than moving the file, and the gates
+only catch some of it:
+
+```
+□ barrel export removed; every consumer switched to the internal path
+□ the "N components" heading AND every other sentence stating a count
+□ its demo/story keeps rendering, from wherever it now lives
+□ the docs page's inline copy of its CSS — DELETE it
+```
+
+That last one is the quiet one. If parity requires a component's stylesheet to be
+copied onto its docs page, moving the component stops parity asking — and nobody
+deletes the copy. An inline `<style>` outranks every linked sheet, so the page
+goes on serving the version from before the move. Three consecutive fixes to that
+component were correct and appeared to do nothing.
+
 ### 7. Documentation & stories
 Each component ships a Storybook story showing every variant/state, plus a short usage note (when to use it, props, do/don't):
 

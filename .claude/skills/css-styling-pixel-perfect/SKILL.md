@@ -72,6 +72,40 @@ Both are why a card specified 124×48 renders 49. Measure with
 `getBoundingClientRect()` on the real element rather than trusting the declared
 `line-height`.
 
+### Translating a design tool's "inside" stroke
+
+Figma's `Position: Inside` stroke costs its frame nothing — a card stays 1200×376
+with the line painted within it. CSS has no single property that does that, and
+the two obvious answers each fail in a different way. All three were measured on
+the same card:
+
+| | result |
+|---|---|
+| `border` + `box-sizing: border-box` | all four edges, but the box became **378** tall. The height came from the CONTENT, so border-box had nothing to subtract from and the 1px landed outside. |
+| `outline` + `outline-offset: -1px` | box stayed 376, but only **three** edges drew. An outline paints in the parent's own layer, and one child had a background of its own, which covered the fourth. |
+| `::after` ring — `absolute inset-0 rounded-[inherit] border` | 376, all four edges, over plain surfaces and over child artwork alike. |
+
+Border-box only holds the size when the size is EXPLICIT. And when checking an
+inset ring, **look at the edge that sits over a child's background**, not only the
+ones over the parent's — that is the difference between the second attempt and
+the third.
+
+### Two ways an offset silently re-bases itself
+
+- **`top: calc(100% + …)` is measured from the containing block, and an ancestor
+  can move it.** A panel offset from its trigger sat correctly until the trigger's
+  wrapper was changed to `position: static` — a change made for an unrelated
+  reason, to let the panel centre on the page. The containing block jumped to a
+  40px bar, `100%` stopped meaning "below the trigger", and a 12px gap opened
+  where the design has none. Re-measure every offset after changing any
+  ancestor's `position`.
+- **Declare a custom property on the ELEMENT, not on the pseudo-element that
+  reads it.** `--x` declared inside a `::before` rule beats the value the
+  pseudo-element would have inherited — including one a script sets on the host.
+  Declaring it at all is right (a `var()` whose name appears nowhere reads to a
+  variable checker as a missing token); declaring it in the consumer is what
+  breaks it.
+
 ## Troubleshooting
 
 | Issue | Fix |
