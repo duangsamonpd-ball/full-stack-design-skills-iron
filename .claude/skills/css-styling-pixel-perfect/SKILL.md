@@ -106,6 +106,55 @@ the third.
   variable checker as a missing token); declaring it in the consumer is what
   breaks it.
 
+### A `whitespace-nowrap` copied off the frame
+
+A design tool draws one width. `whitespace-nowrap` read off a 1440 frame is a
+statement about **that frame**, not about the text — and it survives into every
+narrower width, where it stops the wrap that would have saved the layout. Four
+separate findings in one day had this single cause.
+
+Either make it true where it is true (`lg:whitespace-nowrap`), or drop it. A
+label that must not break is a real requirement; "it did not break in the
+mockup" is not one.
+
+### Astro trims the whitespace around an element
+
+`Iron Software<br class="max-[640px]:hidden">instead` ships as a single text run:
+the compiler removes the whitespace either side of the `<br>`. Above the
+breakpoint the line break hides it; below it, every phone read
+**"Iron Softwareinstead"** on a page that had been audited all week.
+
+The reason nothing caught it is the part worth keeping: **the fused word FITS
+its box.** No overflow sweep, no box-escape sweep and no scroll check can ever
+see it — the layout is correct, the words are wrong. `{' '}` survives the trim
+and is the fix.
+
+### Assert the words, not just the boxes — as a SUBSEQUENCE
+
+Read the rendered text at a wide width and at a narrow one, and require every
+word the narrow read produces to appear, in order, in the wide one.
+
+Subsequence and not equality, deliberately. A narrow layout may legitimately
+show FEWER words — a chart axis keeping only its first and last label rather
+than truncating twelve — and that is a rule someone wrote on purpose. What it
+may never do is show a word that exists at no other width. `Softwareinstead` is
+exactly that, and the distinction is what separates the deliberate rule from
+the bug.
+
+(Normalise digits away first if anything on the page counts or animates, or two
+reads of a rising number fail every run for no reason.)
+
+### Ask the component for a prop before reaching for a class
+
+A design-system `Button` ships a `wrap` prop, and the reason is emission order:
+`whitespace-nowrap` inside the component and `whitespace-normal` written by the
+caller are both one class deep, so the framework's output order decides which
+wins — and `nowrap` lands later. The caller's class silently loses, on a build
+that is green and a page that looks nearly right.
+
+A prop is a contract the component can honour; a class is a bet on specificity
+and ordering. Read the component's props before overriding it from outside.
+
 ## Troubleshooting
 
 | Issue | Fix |

@@ -145,6 +145,43 @@ a focus-ring treatment — is still a token; it just needs `@utility` to become 
 This is the v4 replacement for the JS plugin API. Reach for it before `@layer components` +
 `@apply` — see `css-styling-pixel-perfect` → `references/tailwind-v4-recipes.md`.
 
+### A colour baked into exported artwork is a token nothing can reach
+
+A hex inside an SVG is a **copy** of a token, living outside the system, that no
+gate on the consuming side reads. It does not participate in dark mode, it does
+not follow a rename, and it does not move when the decision moves.
+
+Measured: a ruling moved a set of review stars onto `brand/accent-1`. The design
+system was already correct and the design file followed the same day — and two
+exported artwork files kept the previous partner's red for **four days**,
+shipping the whole time. It surfaced when the designer opened the frame and
+asked whether the change had been seen. Nothing in the pipeline could have said
+so, because a fill inside a file is not a token usage anything scans.
+
+**The pattern: mask the artwork, paint it from the token.**
+
+```css
+.mark {
+  background-color: var(--color-brand-accent-1);
+  mask-image: url("mark.svg");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+}
+```
+
+Then set the file's own fill to `currentColor`. That second half is the part
+people skip, and it is the half that decides how the NEXT mistake fails: if
+anyone points a plain `<img>` at that file again it renders **black** — a fault
+someone sees in the first screenshot — instead of a plausible wrong brand
+colour, which is a fault that waits four days for a designer to notice.
+
+**Gate the painted colour, not the source.** A grep over the stylesheet says
+what was written; only the render says what won. Three states look identical to
+a source scan and different on screen: a rule that is present and LOSES to
+another, a mask that fails and leaves a filled box, and `var(--gone)` which
+computes to nothing at all. Read the painted pixel — or at minimum the computed
+value on the element — and assert the token's own colour is what came out.
+
 ## Workflow
 
 1. **Audit** raw values in the codebase that should be tokens.

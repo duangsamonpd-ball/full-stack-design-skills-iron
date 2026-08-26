@@ -93,6 +93,50 @@ misleads on exactly the day it matters.
 - **React/Vue SPA** — static host **with SPA fallback routing** (rewrite all paths to `index.html`); or SSR/edge if the app needs server rendering.
 - **Set caching right** — long-cache hashed assets (`immutable`), short/no-cache HTML.
 
+## Green on `main` is not published
+
+A direct-upload host deploys nothing on a push. Nothing is broken, nothing is
+red, and the pipeline is doing exactly what it was configured to do — which is
+gate, not publish.
+
+Measured: a live site ran **four days and seventeen commits behind** while every
+commit on `main` was green. It was still serving 11.5MB of unoptimised images
+that had been replaced, and still scrolling sideways in a band nobody had
+measured, because none of the work that fixed those had ever left the repo.
+
+Two things to settle explicitly, and to write down where a reader will find
+them:
+
+- **What publishes, and when.** If the answer is "a person runs a command",
+  that is a legitimate answer — but it has to be an answer, not an assumption.
+- **How staleness becomes visible.** Print the build date and the commit of any
+  sibling dependency into the page itself, in a footer or a meta tag. Then the
+  live site can be asked how old it is instead of being trusted.
+
+**Order the deploy command so the gates cannot be skipped:**
+
+```sh
+npm run check && npm run build && npm run upload   # one command, one order
+```
+
+Three separate commands invite the day someone runs the third alone.
+
+## CI for a repo that depends on a sibling by path needs BOTH repos installed
+
+Two checkouts, laid out at the depth the path dependency expects, is the obvious
+half. The half that fails on the first run is the other one: **the sibling needs
+its own `npm ci` too.**
+
+Its `tsconfig.json` extends a config from ITS `node_modules`, and its stylesheet
+does `@import "tailwindcss"` resolved from ITS folder. Without the install, the
+build dies with `Failed to load tsconfig` naming a file the repo you are
+building does not contain — an error that points at the wrong repo entirely.
+
+It is invisible on a developer's machine, where the sibling is a working copy
+with its dependencies already there. That is precisely the class of fault worth
+simulating locally before pushing: two directories at the runner's layout,
+`npm ci` in each, run the gate.
+
 ## Principles
 
 - **Reproducible builds** — commit the lockfile; pin tool versions.

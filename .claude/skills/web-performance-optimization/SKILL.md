@@ -47,6 +47,32 @@ Optimizing without a profile wastes effort on things that don't matter. Always b
 - **React** — `React.lazy` + `Suspense` for route splitting; `memo`/`useMemo`/`useCallback` on **proven** hot paths only; virtualize long lists; prefer server components to cut client JS.
 - **Vue** — `defineAsyncComponent` for route chunks; `v-once`/`v-memo` for static/expensive subtrees; async components to split.
 
+## `astro:assets` — four that shipped bytes nobody wanted
+
+- **`densities`, not `widths`, when the slot is one size.** `widths` makes Astro
+  keep a full-size variant as the no-srcset fallback: an 1800px source feeding a
+  369px slot shipped a **301KB** webp that no modern browser would ever choose.
+  `widths` is for a slot whose width actually varies; `densities={[1, 2]}` is for
+  one that does not.
+
+- **`.src` on an `astro:assets` image is the ORIGINAL's URL.** Referencing it —
+  in JSON-LD, in an OG tag, anywhere — makes the build emit the original file.
+  **6.3MB of PNG** went on shipping beside the webp that replaced it, in the
+  commit whose entire purpose was removing it. Use `getImage()` when a processed
+  URL is what you want.
+
+- **Measure the built tree, not the files you changed.** The claim
+  "6.2MB → 188KB" was written while the bullet above was true, because the
+  measurement was taken over the files the change aimed at. **Any size claim
+  comes from a total over `dist/`** — that is the only number a visitor
+  downloads.
+
+- **State `width`/`height` when the markup already did.** Left to resolve from
+  the file, an image takes its box from the intrinsic ratio: a 452×468 avatar in
+  a 48px circle came out **48×49.7**, and a 1457-wide mark at `h-48` resolved to
+  **198.6** where the markup had always said 199. Sub-pixel — and it cascades
+  into page height, which is what a layout diff reports at you the next morning.
+
 ## Common mistakes
 
 | Mistake | Fix |

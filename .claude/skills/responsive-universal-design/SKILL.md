@@ -110,6 +110,41 @@ Widths alone won't catch input bugs: check one **touch-capable wide screen** too
 look at 200% zoom — plain `justify-center` overflows in *both* directions, so the start of
 the content becomes unreachable.
 
+**Sweep every 8px; do not sample widths.** 320 → 1920 in 8px steps is about 201
+measurements of a page and about two seconds — cheap enough that there is no
+reason to choose widths at all. The sweep it replaced was seven hand-picked
+ones, and a page audited repeatedly at those seven turned out to scroll sideways
+across **901–909**: a nine-pixel band sitting in the gap between 768 and 1024.
+Nobody picks 905. The matrix above is what a person opens; the sweep is what
+decides.
+
+## Three shapes a breakpoint gets wrong
+
+**`min-w-px` is not "let it shrink", it is "let it vanish".** It lets a flex item
+shrink past its own content instead of making the row wrap. Two findings hours
+apart had the same cause: a stat strip squeezed to **6px** beside a text block
+holding its 454, and a testimonial author block given **135.19** where its
+content needs 192. `min-w-min` is almost always what was meant — it stops at the
+content instead of at nothing.
+
+**When a thing is narrow in two unrelated places, a viewport breakpoint is the
+wrong tool.** A card is narrow on a phone AND at half width inside a two-column
+band, and those are the same problem wearing two viewport widths. A
+`max-[440px]` rule fixed the phone and left the **981–1080** band spilling
+**56.2px**, because the second case was never about the viewport. A container
+query at the element's own measured min-content fixes both at once — and the
+tell that you need one is exactly this: the same component, narrow twice, for
+reasons that have nothing to do with each other.
+
+**A conditional scroll container must be conditional on the CONTENT, not on a
+number.** `max-[1100px]:overflow-x-auto` switched scrolling OFF above 1100 while
+the row was still wider than that, so the document went from 1100 to **1175** —
+the rule turned itself off exactly where it was still needed. `overflow-x: auto`
+unconditionally, plus `justify-content: safe center`, states the actual
+intention: centre it when it fits, start-align it when it has to scroll. No
+width appears in either declaration, which is why neither can be wrong at a
+width nobody measured.
+
 ## Common pitfalls
 
 | Pitfall | Fix |

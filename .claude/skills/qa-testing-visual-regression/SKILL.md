@@ -86,6 +86,58 @@ breakpoint, theme regressions, and CSS changes with unexpected blast radius.
 
 ## A green checker is not the same as a checked thing
 
+**Arm the harness before you believe a single reading from it.** Three things
+have to be true, asserted in the page, before a sweep is allowed to report:
+
+1. **A design-system token resolves to a real value.** An unresolved `var()`
+   reads back as the browser's default rather than as an error, so an unstyled
+   page answers every question confidently and wrongly.
+2. **The real typeface is rendering, measured as a DIFFERENTIAL** — the same
+   string laid out in the family you expect and in a family that cannot exist,
+   required to come out different widths. Not asked of the Font Loading API:
+   see "It could not have failed where it was written" below.
+3. **The detector sees a planted fault and stops seeing it when removed.** Both
+   halves. One row alone cannot tell a working detector from one that fires on
+   everything.
+
+The cost of skipping this: a sweep that loaded nothing reports a clean sweep,
+and so does one whose stylesheet never compiled. Wrong Tailwind `@source` globs
+leave every shared component unstyled while the build stays green — the markup
+still carries the classes, the rules simply are not in the file, and every
+measurement is of a different page than the one that ships.
+
+**Establish the harness's noise floor before trusting a diff, and do not assume
+it is zero.** Capture the SAME build twice and diff it. One homepage reports
+~111 element differences unchanged, because two marquees animate — so a later
+run showing "112 differences" is not evidence of anything. Pixel diffing has the
+same rule and an easier floor: prove the harness reads 0.000% against an
+unchanged capture first. The element-geometry case needs saying separately
+precisely because its floor is a number nobody would guess.
+
+**A known-findings list is a fault on a list, not a licence — and it must fail
+when an entry STOPS firing.** Findings you have seen and not fixed go in a file,
+each naming the item that tracks it. The enforcement direction is the whole
+point: a known fault that quietly disappears means either the fix landed or the
+detector went blind, and only one of those is good news.
+
+That is the floor, not the ceiling. `why` is prose, and prose is checked by
+nothing: one entry named the wrong cause AND claimed "at every width" when the
+truth was "below 1024 only", firing on exactly the right element the whole time.
+So make each entry declare things a run can refuse — **the widths it fires at,
+checked in BOTH directions** (silent where it says it fires is a finding; firing
+where it does not say is a finding too, and that half is the one an ordinary
+allowlist gets wrong), and **what makes it not a fault, in a form the run can
+check** — "this escape IS the child's negative margin" is checkable against
+`getComputedStyle`; "overlaps by design" is not, and an exemption in those words
+has hidden a live bug.
+
+**A narrowed run may not judge that list.** CI ran a layout gate's self-test at
+one width to stay fast. None of the known entries lived at that width, so the
+"stopped firing" rule failed the build for findings that were exactly where they
+had been left. Only a full run — every page, every width — may decide that an
+entry has gone silent, because "nobody looked there" and "it is no longer
+happening" are different sentences.
+
 The failure that costs the most is not a gate that fails — it is a gate that
 **skips**, or that answers a narrower question than its output implies, and
 prints a confident tick either way. Four shapes, all met in one real day:
@@ -200,6 +252,20 @@ the checker first, let it produce the list, then fix until green — going green
 is proof the fix is complete, whereas fixing from a hand-made list only proves
 the list was followed. Doing it in that order turned seven found by eye into
 sixteen real ones.
+
+## Simulate CI locally instead of pushing and watching it go red
+
+Two directories laid out the way the runner lays them out, `npm ci` in each, then
+run the gate. It is cheaper than a push-and-wait cycle and it catches the class
+of fault that only exists on a clean checkout — the ones a developer's machine
+hides because the sibling repo is a working copy with its dependencies already
+installed.
+
+It caught two blocking faults before the first push. It did NOT catch a third,
+and the reason is worth saying out loud: **run the individual steps the workflow
+runs, not the composite command you use locally.** The workflow's self-test step
+narrowed the sweep in a way the composite never did, and the difference is
+exactly where the fault lived.
 
 ## Next steps
 
