@@ -59,6 +59,33 @@ What keeps quality flat as contributors multiply:
 - **Versioning** — semantic versioning, a changelog, codemods + migration guides for breaking changes, a documented deprecation policy.
 - **Adoption** — a living docs site (Storybook + usage guidelines) and usage metrics so you know what's actually consumed.
 
+#### The generated manifest is a CONTRACT, and consumers diff it
+
+Semver tells a consumer that the API changed. Nothing in that list tells them
+the *rendering* changed while the API did not — and that is the common case: a
+band three pixels shorter, a colour moved onto a token, an internal partial
+rewritten. A machine-readable manifest generated from the components (name,
+props, types, defaults, the design nodes each was built from) is the channel
+that can carry it, and consumers really do build on it: one keeps a snapshot and
+reports what moved since it last looked.
+
+Which makes its SHAPE a contract, not an implementation detail. **Read how the
+consumer reads it before changing it.** In one case the consumer's differ walked
+`manifest.components` by name and headlined `manifest.count`; adding a new
+top-level key was therefore invisible to it — verified by RUNNING that differ,
+not by reading its source. Folding three newly-described internal components
+into the existing array instead would have announced three "new components" to a
+room that is forbidden to import them, and inflated the number it prints. Same
+information, two shapes, and only one of them is a lie.
+
+**Internal components need a home in it too.** A component that is rendered by a
+public one but not exported by name is usually described nowhere machine-readable
+— so a change to what the public component actually renders reaches every
+consumer with no signal at all, while a change to its props would have been
+reported. Describe them, under their own key, separate from the array consumers
+diff. "Internal" is a publishing decision about who may import it, not a reason
+for the system to stop knowing it exists.
+
 ## Architecture workflow
 
 1. **Token layers** — define primitive → semantic → component; wire the generation pipeline.
@@ -91,6 +118,8 @@ What keeps quality flat as contributors multiply:
 | Per-component theme conditionals | Unmaintainable; themes multiply code | Swap at the semantic layer only |
 | No quality gates | Quality drifts as contributors grow | a11y + visual + bundle in CI |
 | Breaking changes with no migration path | Consumers stuck / forked | Codemods + changelog + deprecation window |
+| A render change ships with no signal | Consumers discover it by looking, or never | Generate a manifest consumers can diff — and describe internal components in it too |
+| The manifest's shape changed without asking how it is read | A silent false signal on the one channel consumers trust | Run the consumer's own differ against the change before shipping it |
 
 ## Next steps
 

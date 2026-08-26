@@ -100,6 +100,16 @@ have to be true, asserted in the page, before a sweep is allowed to report:
    halves. One row alone cannot tell a working detector from one that fires on
    everything.
 
+**And plant it in the SUBJECT, not on the page.** A gate that measures an
+element's height injects 10px of padding into that very element and requires the
+height to move by exactly 10, then come back. A page-level arm cannot do this
+work. The reason is a fix that appeared not to take: source corrected, every
+generator re-run, probe re-run — and each band reported its old number, because
+the docs page inlines its own copy of the component's CSS and the probe had been
+reading a stale duplicate the whole time. **The tell was not a wrong number; it
+was a number that refused to change.** Only an arm aimed at the box about to be
+measured can catch that.
+
 The cost of skipping this: a sweep that loaded nothing reports a clean sweep,
 and so does one whose stylesheet never compiled. Wrong Tailwind `@source` globs
 leave every shared component unstyled while the build stays green — the markup
@@ -113,6 +123,16 @@ run showing "112 differences" is not evidence of anything. Pixel diffing has the
 same rule and an easier floor: prove the harness reads 0.000% against an
 unchanged capture first. The element-geometry case needs saying separately
 precisely because its floor is a number nobody would guess.
+
+**When two candidates agree, comparing them is not a test.** Fifteen skill
+symlinks were repointed from one clone of a repository to another. The two
+clones were `diff -r` identical, so every checksum matched before and after and
+proved precisely nothing about which one was live — the comparison could not
+have come out any other way. What proved it was a differential: a marker planted
+in the new target was visible through the symlink, and a marker planted in the
+old one was not. **Change one side and see which answer moves.** The same
+instinct as arming, one level up: if an assertion cannot distinguish the two
+states you care about, it is decoration.
 
 **A known-findings list is a fault on a list, not a licence — and it must fail
 when an entry STOPS firing.** Findings you have seen and not fixed go in a file,
@@ -221,6 +241,20 @@ self-test two rows, not one: the fault shape must be REPORTED, and the same
 check must go SILENT on a control that differs only in the one property that
 makes it safe. One row alone is a coin that always lands heads.
 
+**And there is an earlier failure than a plant that cannot be seen: a plant that
+was never MADE.** Twice in one day an injection matched nothing and the run
+returned a confident `exit=0` — which reads exactly like "this gate cannot
+fail". Once because the replacement was written as `&#39;` against an HTML table
+whose cells carry real apostrophes; once because it targeted `</style>` in a
+component that has no `<style>` block at all. Both gates were fine. Both arming
+steps were no-ops.
+
+**Count the replacements, or assert the file changed, before believing the exit
+code.** One line — `print('replacements available:', src.count(needle))` — turns
+a silent no-op into a stop. An injection is a measurement like any other, and an
+unarmed measurement of your arming is exactly the recursion this section is
+about.
+
 **When a fix does not move the number, stop fixing.** Six measurement rounds went
 into one component across two separate causes: a docs page declaring its own
 `.grid`, which outranked the component's utility because an inline `<style>`
@@ -246,6 +280,38 @@ compared them to the tokens, and sixteen were wrong — including two rows for a
 token deleted in an earlier refactor. Either generate the page from the source,
 or check it; the choice is whether the presentation is hand-tuned enough to be
 worth keeping.
+
+**A COUNT is a restatement, and it rots the same way.** In one day: the sentence
+"two scripts must know this folder exists" was wrong in five files at once, the
+answer having become four; a room's workflow document credited a sibling repo
+with sixteen skills when it ships fifteen; and a count carried from a stale
+session banner reached a commit message that had already been pushed. None of
+them broke anything, and no gate could have failed.
+
+The rule that survives all three is sharper than "do not write numbers":
+
+> **A count is safe when the file stating it can SEE what it counts.**
+
+`19 components` written beside the manifest that lists them is checkable, and a
+parser can be pointed at it in an afternoon. The identical sentence written in
+another repository is checkable by nobody — that repo cannot see the other's
+contents — and that is the one that was wrong. So: count what this repo owns,
+and check it; **never write a count of what another repo owns.** Link to it
+instead.
+
+**A checkbox is a claim, and the channel that reads it aloud is the one that
+must not lie.** A `- [ ]` in a room's TODO said six skills were waiting to be
+updated, hours after that work had landed and its issue had been closed. A
+`SessionStart` hook reads those boxes out at the beginning of every session, so
+the one channel built to be believed was reporting work that did not exist —
+which is worse than having no channel, because nobody discounts it.
+
+Reconcile them: **for every still-open box naming an `owner/repo#N`, ask whether
+that issue is closed.** Put it in the ADVISORY channel and not in the gate,
+because answering needs the network and a gate that reaches the network is a
+coin toss — the same reason the webfont had to be vendored above. An advisory
+line that is missing costs a line; a red build costs the morning. Make every
+path fail open: no CLI, no section; no answer, no line.
 
 **Build the checker before the fix.** Facing an unknown number of defects, write
 the checker first, let it produce the list, then fix until green — going green

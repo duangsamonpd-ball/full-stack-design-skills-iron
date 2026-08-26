@@ -93,6 +93,45 @@ or a description — assembling with design-system components and variables, not
 Wire Figma components to real code so Dev Mode shows the true snippet + prop mapping instead
 of generic CSS. Full `Button.figma.tsx` example and setup in `references/code-connect.md`.
 
+### D. Keeping the SIZE honest — let the component declare, don't hardcode a gate
+
+Code Connect keeps the API in sync. Nothing in it keeps the component the size
+its node draws, and that gap is quiet: a footer band rendered **227** against the
+node's **224** for months. The two faults behind it were arithmetic that had been
+written into comments rather than asserted — one of them a comment stating the
+correct answer beside the wrong value since the component's first commit. No gate
+could see it, because every gate asked about SOURCE, and a band three pixels
+wrong is a correct-looking picture that a screenshot diff also accepts, having
+never seen it any other way.
+
+**The fix is not a gate with that component's three numbers in it.** That gate
+checks one component and goes green on every band nobody thought to hardcode —
+a gate built from the shape of the bug it already knows. Put the numbers where
+the claim is:
+
+```
+@figma-size menu-bar
+  node   2373:4247        frame  footer-lg
+  page   component-footerbar.html   region  freetools
+  select .fb-menu-bar     at 1440   height 56
+  count  9                          (optional — assert ALL of them)
+```
+
+The component declares its own bands; the gate measures **everything that has
+declared** and refuses a declaration it cannot parse rather than skipping it. And
+it **prints how many components declare nothing**, so "unchecked" stays a visible
+state instead of being quietly assumed fine.
+
+Three things make it a measurement rather than a hope: a token must resolve, the
+typeface must be proven by differential, and **10px of padding injected into the
+element about to be measured must move it by exactly 10 and come back** — see
+`qa-testing-visual-regression`. That last row is the one that matters, because a
+probe reading a stale duplicate of the CSS returns a plausible number that does
+not move at all.
+
+`count` earns its place: eight menu items agreeing at 48 is what hid the ninth
+at 50.
+
 ## Code Connect mapping cheatsheet
 
 | Figma prop | Code Connect helper |
@@ -110,6 +149,7 @@ of generic CSS. Full `Button.figma.tsx` example and setup in `references/code-co
 □ Auto-layout so intent (padding/gap/direction) is explicit
 □ Dev Mode enabled; Code Connect published for key components
 □ One naming grammar shared between Figma and code (variant/size/state)
+□ Components that own a measurable band DECLARE its node and expected size
 ```
 
 ## Next steps

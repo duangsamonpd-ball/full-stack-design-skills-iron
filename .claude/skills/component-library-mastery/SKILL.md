@@ -204,6 +204,24 @@ deletes the copy. An inline `<style>` outranks every linked sheet, so the page
 goes on serving the version from before the move. Three consecutive fixes to that
 component were correct and appeared to do nothing.
 
+**The checklist above is the symptom. Ask ONCE where the components are.**
+
+Every one of those four lines exists because scripts each decide for themselves
+which folders to walk, and a demotion changes the answer for some of them. Four
+scripts in one library knew about the internal folder; the rest read the public
+one alone — so moving a file there **silently removed it from half the gates**,
+and no line of the checklist can be relied on to be complete, because the list of
+scripts is itself a fact nobody checks. (Three components in that library carried
+a comment saying "two scripts must know this folder exists" long after the answer
+had become four.)
+
+One enumerator, imported by everything that walks components. It returns the
+folder as DATA — `{ name, file, internal }` — so no caller decides anything, and
+it **THROWS on a component sitting outside every declared folder**, which is what
+stops a future third folder from being invisible to every gate at once. Then a
+demotion is a file move plus a docs edit, and the checklist can shrink to the
+parts a human really does have to judge.
+
 ### 7. Documentation & stories
 Each component ships a Storybook story showing every variant/state, plus a short usage note (when to use it, props, do/don't):
 
@@ -244,6 +262,26 @@ Two traps worth knowing before you build it. **Strip framework scope markers bef
 the second means the output churns on every build and the gate cries wolf. And **never fake a
 demo with a script that imitates the component's markup**: it will look right and drift exactly
 like the hand-typed version it replaced. Render the real thing or don't generate it.
+
+**And the props TABLE is a second copy of the API, so check it BOTH ways.**
+Generated demo markup solves the picture; the Prop / Type / Default table beside
+it is usually still typed by hand, and it is the thing a consumer reads before
+they read the types. Compare it against the generated API — a manifest built from
+the component's own interface, or the types themselves:
+
+- **a row whose type has drifted** is the obvious fault, and the easy half;
+- **a prop the table does not mention at all** is the one a row-by-row comparison
+  can never see — and it is the likelier of the two, because a prop is added to
+  the component and the page is not reopened.
+
+Set equality first, then field by field. One survey found three wrong rows on a
+single component, all stale for weeks; a fourth surfaced the moment an internal
+component came into the checker's scope for the first time. Two conventions worth
+READING rather than exempting when you build it: a row naming two props at once
+(`ctaLabel / ctaHref`) should be split and each half checked — that is exactly
+what exposed a default documented for the wrong one of the pair — and a prop
+every component declares identically (`class`) can be derived as universal
+instead of being named in an exemption that outlives its reason.
 
 ### 8. Contribution guidelines
 Define how a new component gets in: the checklist below must pass, it must use tokens, ship a story + test, and follow naming conventions. This is what keeps quality flat as contributors multiply.
