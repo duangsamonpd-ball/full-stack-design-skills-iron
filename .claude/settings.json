@@ -1,0 +1,22 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/check-drift.mjs\" --hook",
+            "timeout": 15,
+            "statusMessage": "Checking skills gates\u2026"
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/scripts/hooks/pending-reminder.py\" || true",
+            "timeout": 10,
+            "statusMessage": "Checking outstanding work\u2026"
+          }
+        ]
+      }
+    ]
+  }
+}
