@@ -18,8 +18,21 @@ node scripts/check-drift.mjs --gates
 ```
 
 `--gates` runs all three local gates and is wired to `SessionStart`, so a
-session opens already knowing whether the tree is green. The three underneath
-it, if you need one alone:
+session opens already knowing whether the tree is green. **It exits 1 when a
+gate is red — as of 2026-08-28, and not before.** Until then it printed
+`gates: 1 failing` over `exit 0`, under this heading, so every exit code quoted
+from it was worth nothing; only the text it printed ever meant anything. The
+version and audit rows stay advisory and still need `--fail-on-drift`.
+
+A gate that RAN AND REFUSED is also no longer read as a gate that could not run.
+The aggregator decided that from the words in the output, and `a11y`'s refusal
+prints its own remedy — `cd astro-registration-m3 && npm ci && npm run build` —
+so a substring test for `npm ci` turned the loudest refusal in this repo into a
+yellow "not installed" with a hint naming the wrong directory. It is decided by
+exit code 2 and module-resolution failures now, and a failing gate quotes its
+own first verdict line instead of "run it directly to see why".
+
+The three underneath it, if you need one alone:
 
 ```sh
 node scripts/skills-lint.mjs            # zero setup, no network, instant

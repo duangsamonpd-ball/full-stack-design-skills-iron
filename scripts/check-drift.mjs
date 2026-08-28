@@ -51,9 +51,17 @@ function runGate(label, file, gateArgs = []) {
     return { label, ok: true };
   } catch (e) {
     const out = `${e.stdout ?? ''}${e.stderr ?? ''}`;
-    // exit 2 from build-css/a11y means "deps not installed", not "gate failed"
-    const missing = e.status === 2 || /Cannot find|not installed|npm ci/i.test(out);
-    return { label, ok: false, missing, hint: missing ? 'run `npm ci` in scripts/' : null };
+    // "could not run" vs "ran and refused" is decided by exit code 2 and by module
+    // resolution failing — NEVER by the words in the output. a11y prints its own
+    // remedy ("cd astro-registration-m3 && npm ci && npm run build") when it refuses
+    // a missing or stale build, and a substring test for `npm ci` read that remedy as
+    // proof the gate could not run: the loudest refusal in the repo came out as a
+    // yellow "not installed" with a hint pointing at the wrong directory.
+    const missing = e.status === 2 || /Cannot find (package|module)|ERR_MODULE_NOT_FOUND/i.test(out);
+    // when it really did fail, quote its own first verdict line rather than a generic nudge
+    const verdict = out.split('\n').map((l) => l.replace(/\x1b\[[0-9;]*m/g, '').trim())
+      .find((l) => l.startsWith('✖') || l.startsWith('✗'));
+    return { label, ok: false, missing, hint: missing ? 'run `npm ci` in scripts/' : verdict ?? null };
   }
 }
 
@@ -66,7 +74,7 @@ function gates() {
   const lines = results.map((res) => {
     if (res.ok) return `  ${g('✓')} ${res.label}`;
     if (res.missing) return `  ${y('•')} ${res.label} ${dim('(' + res.hint + ')')}`;
-    return `  ${r('✗')} ${res.label} ${dim('— run it directly to see why')}`;
+    return `  ${r('✗')} ${res.label} ${dim('— ' + (res.hint ?? 'run it directly to see why'))}`;
   });
   const bad = results.filter((res) => !res.ok && !res.missing).length;
   const skipped = results.filter((res) => res.missing).length;
@@ -497,7 +505,8 @@ if (hook) {
 /* ── report ───────────────────────────────────────────────────────────────── */
 const blocks = [];
 let drift = 0;
-if (want.gates) { const res = gates(); blocks.push(res.text); drift += res.bad; }
+let gateFail = 0;
+if (want.gates) { const res = gates(); blocks.push(res.text); drift += res.bad; gateFail = res.bad; }
 if (want.versions) {
   for (const res of [versions(), await actions(), await node(), await wcag()]) {
     blocks.push(res.text);
@@ -511,6 +520,10 @@ if (want.versions || want.audit) {
   console.log(dim('  upgrade path & the drift-audit method: memory maintenance-cadence\n'));
 }
 
-// Default stays exit 0 — this reports, it does not gate. --fail-on-drift is for
-// the scheduled run, which needs a signal something acted on rather than a log.
-process.exit(args.includes('--fail-on-drift') && drift ? 1 : 0);
+// A RED GATE IS ALWAYS FATAL. The version and audit rows stay advisory — they are
+// about the world moving, and --fail-on-drift is for the scheduled run that needs a
+// signal rather than a log. But `--gates` is the command CLAUDE.md tells a reader to
+// verify with, and it printed "gates: 1 failing" over exit 0 until 2026-08-28, so
+// every exit code quoted from it was worth nothing. The SessionStart hook returns
+// from its own branch above and is not affected.
+process.exit(gateFail || (args.includes('--fail-on-drift') && drift) ? 1 : 0);
