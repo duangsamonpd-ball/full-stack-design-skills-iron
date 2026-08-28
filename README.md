@@ -9,7 +9,7 @@
   <img alt="React" src="https://img.shields.io/badge/React-61dafb?logo=react&logoColor=black" />
   <img alt="Astro" src="https://img.shields.io/badge/Astro-ff5d01?logo=astro&logoColor=white" />
   <img alt="Vue" src="https://img.shields.io/badge/Vue-42b883?logo=vuedotjs&logoColor=white" />
-  <img alt="Skills" src="https://img.shields.io/badge/skills-15-0d9488" />
+  <img alt="Skills" src="https://img.shields.io/badge/skills-16-0d9488" />
   <img alt="License" src="https://img.shields.io/badge/license-MIT-111" />
   <img alt="Author" src="https://img.shields.io/badge/author-Ball_%40_Iron_Software-334155" />
 </p>

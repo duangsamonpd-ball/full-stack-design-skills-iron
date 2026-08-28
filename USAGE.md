@@ -43,7 +43,7 @@ Each of those contains a single skill folder with its `SKILL.md` and `references
 
 ### Confirm it worked
 
-Start a new session and ask Claude to list its available skills. You should see all 15 with a
+Start a new session and ask Claude to list its available skills. You should see all 16 with a
 real one-line description each. If a description reads like a filename or a heading, that
 skill's frontmatter didn't parse — see [Troubleshooting](#5--troubleshooting).
 
