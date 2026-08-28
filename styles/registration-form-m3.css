@@ -57,26 +57,44 @@
                  px-6 text-sm font-medium text-primary focus-visible:outline-none; }
   .m3-text     { @apply inline-flex h-9 items-center justify-center gap-2 rounded-full px-3 text-sm font-medium text-primary focus-visible:outline-none; }
 
-  /* M3 filled text field */
-  .m3-input { @apply h-14 w-full rounded-t-[4px] border-b border-outline bg-sc-highest pl-12 pr-4 pt-5 pb-1
-              text-sm text-on-surface caret-primary outline-none transition-colors
-              hover:border-on-surface focus:border-b-2 focus:border-primary
+  /* M3 OUTLINED text field. The outline is drawn with `outline`, not `border`, so the
+     1px → 2px change on focus costs no layout shift and the text never moves. The label
+     floats up to straddle the top edge and carries the card's own colour (bg-sc-high) as
+     the notch that cuts the outline — the field itself is transparent, so the same chip
+     also disappears cleanly when the label rests inside.
+
+     `block`, not the input default of inline-block: an inline-block leaves descender space
+     in the wrapper's line box, so `.field` would be ~4px taller than the input and the
+     `top-1/2` label and trailing button would centre against the wrong box. */
+  .m3-input { @apply block h-14 w-full rounded-[4px] bg-transparent px-4
+              text-sm text-on-surface caret-primary transition-colors
+              outline outline-1 -outline-offset-1 outline-outline
+              hover:outline-on-surface
+              focus:outline-2 focus:-outline-offset-2 focus:outline-primary
               placeholder:text-transparent; }
-  .m3-label { @apply pointer-events-none absolute left-12 top-1.5 text-xs text-on-surface-variant transition-all duration-150; }
-  .m3-lead  { @apply absolute left-3 top-4 text-on-surface-variant transition-colors; }
+  /* base = floated (on the outline); markup adds the peer-* variants for resting/focus.
+     left never changes: left-3 + px-1 puts the text at 16px in both states, matching px-4. */
+  .m3-label { @apply pointer-events-none absolute left-3 top-0 -translate-y-1/2 rounded-sm bg-sc-high px-1
+              text-xs text-on-surface-variant transition-all duration-150; }
   .m3-support { @apply mt-1 flex items-center gap-1 px-4 text-xs; }
 }
 
-/* state layer (M3): currentColor overlay at 8/12% */
-.state { position:relative; overflow:hidden; isolation:isolate; }
-.state::after { content:""; position:absolute; inset:0; background:currentColor; opacity:0; transition:opacity .15s; pointer-events:none; }
-.state:hover::after { opacity:.08; }
-.state:focus-visible::after { opacity:.12; }
-.state:active::after { opacity:.12; }
+/* state layer (M3): currentColor overlay at 8/12%.
+   INSIDE @layer components on purpose. Unlayered CSS outranks every @layer, so while this
+   block sat outside one its `position:relative` beat the `absolute` utility on the password
+   toggle: the button stayed in flow, .field grew to ~118px, and the top-1/2 label centred
+   against that instead of the 56px input. */
+@layer components {
+  .state { position:relative; overflow:hidden; isolation:isolate; }
+  .state::after { content:""; position:absolute; inset:0; background:currentColor; opacity:0; transition:opacity .15s; pointer-events:none; }
+  .state:hover::after { opacity:.08; }
+  .state:focus-visible::after { opacity:.12; }
+  .state:active::after { opacity:.12; }
+}
 
 /* error state on a field wrapper */
-.field-invalid .m3-input, .field-invalid .m3-input:focus { border-color:var(--error); }
-.field-invalid .m3-label, .field-invalid .m3-lead { color:var(--error); }
+.field-invalid .m3-input, .field-invalid .m3-input:hover, .field-invalid .m3-input:focus { outline-color:var(--error); }
+.field-invalid .m3-label { color:var(--error); }
 .req.met { color:var(--success); }
 
 @media (prefers-reduced-motion: reduce) { *,*::before,*::after { transition-duration:.01ms!important; animation-duration:.01ms!important; } }
