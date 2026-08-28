@@ -1,4 +1,4 @@
-# Full Token Registry — shadcn-ui-design
+# Full Token Registry — `shadcn-ui-design`
 
 > All 1,812 Figma variables across 17 collections
 > For quick reference → see `design-tokens.md`

@@ -1,4 +1,4 @@
-# Design Tokens — shadcn-ui-design
+# Design Tokens — `shadcn-ui-design`
 
 > Quick Reference (§1–6) + Notes (§24–25) from the Figma design system
 > For all 1,812 raw variables → see `full-registry.md`

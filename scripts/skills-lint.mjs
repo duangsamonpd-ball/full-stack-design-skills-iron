@@ -125,6 +125,24 @@ function staleSkillNames(src, names) {
   return out;
 }
 
+
+/* ── the trigger surface points at skills too, in plain text ───────────────
+ *
+ * A description carries the delegation boundaries ("…for viewport layout use
+ * responsive-universal-design") that keep neighbouring skills from stealing
+ * each other's triggers. They are written as plain prose, so the bold/backtick
+ * scan above cannot see them, and a rename leaves them pointing at nothing on
+ * the ONE surface that is loaded into every session.
+ *
+ * The grammar is narrow enough to read exactly: a kebab token after "use",
+ * "in" or "via". Measured across the set, that finds 12 pointers and nothing
+ * else — "into production-ready React" and "end-to-end flows" are not matched,
+ * because "into" is not "in" and no pointer word precedes them.
+ */
+function descriptionPointers(desc) {
+  return [...desc.matchAll(/\b(?:use|in|via)\s+([a-z0-9]+(?:-[a-z0-9]+)+)/g)].map((m) => m[1]);
+}
+
 /* The self-test runs on every invocation — it is pure string work, it costs
  * about a millisecond, and a refusal case that only runs when someone passes a
  * flag is a refusal case nobody runs. Both halves, as always: each PLANT must
@@ -142,11 +160,26 @@ function selfTestNameCheck(names) {
   ];
   const missed = plants.filter((p) => staleSkillNames(p, names).length === 0);
   const fired = controls.filter((c) => staleSkillNames(c, names).length > 0);
+
+  // and the description-pointer rule, same two halves
+  const ptrPlants = [
+    'for the audit use web-accessibility-wcag.',        // renamed skill
+    'author the tokens in design-token-system.',        // typo'd skill
+  ];
+  const ptrControls = [
+    'Convert mockups into production-ready React components.',
+    'unit/component tests, end-to-end flows, and visual-regression snapshots',
+    'theming, governance, and multi-brand support at scale',
+  ];
+  const unresolved = (t) => descriptionPointers(t).filter((x) => !names.has(x)).length;
+  missed.push(...ptrPlants.filter((p) => unresolved(p) === 0));
+  fired.push(...ptrControls.filter((c) => unresolved(c) > 0));
   return { missed, fired };
 }
 
 let refChecks = 0;
 let nameChecks = 0;
+let ptrChecks = 0;
 for (const name of skillNames) {
   const dir = join(SKILLS, name);
   const src = readFileSync(join(dir, 'SKILL.md'), 'utf8');
@@ -161,6 +194,13 @@ for (const name of skillNames) {
   else {
     if (fm.description.length > 1024) warn(name, `description is ${fm.description.length} chars — keep it tight (< 1024)`);
     if (!/use when|use this/i.test(fm.description)) warn(name, 'description has no "Use when …" trigger phrases — auto-selection may be unreliable');
+    // 1b — a delegation pointer in the description must name a real skill
+    for (const p of descriptionPointers(fm.description)) {
+      ptrChecks++;
+      if (!known.has(p)) {
+        err(name, `description points at \`${p}\`, which is not a skill — a rename left it behind, or reword the phrase so it does not read as a pointer`);
+      }
+    }
   }
 
   // 2 — every references/… the SKILL.md points at must resolve (own or cross-skill)
@@ -234,4 +274,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`\n\x1b[32m✔  ${skillNames.length} skills lint clean — names match folders, descriptions present, ${refChecks} references resolve, ${nameChecks} files carry no stale skill name\x1b[0m\n`);
+console.log(`\n\x1b[32m✔  ${skillNames.length} skills lint clean — names match folders, descriptions present, ${refChecks} references resolve, ${ptrChecks} description pointers resolve, ${nameChecks} files carry no stale **bold** skill name\x1b[0m\n`);

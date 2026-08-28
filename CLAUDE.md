@@ -111,6 +111,21 @@ stays silent. The refusal case runs on **every invocation**, not behind a flag:
 three planted stale names must be reported and seven controls must stay silent,
 so sabotaging the matcher fails the lint instead of turning it into a tick.
 
+That scan reads **bold and backticks only**, which is the whole reason the
+convention matters: **write a skill pointer as `**name**` or `` `name` `` and the
+gate can see it; write it bare and it is invisible.** Measured 2026-08-28 — of 57
+plain-text skill mentions in the set, 55 were the frontmatter `name:` and
+`description:`, and the last 2 were reference-file titles, now backticked. Body
+prose was already following the convention everywhere.
+
+The frontmatter half is checked separately, because a description is plain prose
+and is the one surface loaded into **every** session: a kebab token after "use",
+"in" or "via" must name a real skill. That grammar finds the 12 delegation
+pointers and nothing else — "into production-ready React" is not matched, since
+"into" is not "in". A rename that leaves `use old-name` in a description breaks
+the boundary that stops two skills stealing each other's triggers, and nothing
+else was looking at it.
+
 ## Git
 
 This repo and `my-guide-irondesign` both work **direct to `main`**. Commit, push
