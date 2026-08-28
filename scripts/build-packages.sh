@@ -2,13 +2,16 @@
 # Build distributable Skill packages into dist/ (a build artifact — gitignored).
 #   1. iron-master-skills-architecture.zip  — browsable bundle (README + skills/)
 #   2. iron-skills-claude-code.zip           — drop-in: unzip at a project root → .claude/skills/
-#   3. per-skill/<name>.zip × 15             — one skill each, for the Claude app upload
+#   3. per-skill/<name>.zip                  — one per skill folder, for the Claude app upload
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SRC="$ROOT/.claude/skills"
 DIST="$ROOT/dist"
 TMP="$(mktemp -d)"
+# Counted, never typed: this file ships the folder, so it is the one place that can
+# SEE how many skills there are. It said 15 while zipping 16 until 2026-08-28.
+COUNT="$(find "$ROOT/.claude/skills" -mindepth 2 -maxdepth 2 -name SKILL.md | wc -l | tr -d " ")"
 trap 'rm -rf "$TMP"' EXIT
 
 rm -rf "$DIST"; mkdir -p "$DIST/per-skill"
@@ -19,8 +22,10 @@ mkdir -p "$B"; cp -R "$SRC" "$B/skills"
 cat > "$B/README.md" <<'MD'
 # Iron Master Skills Architecture
 
-15 authored Claude skills for UX/UI + frontend engineering — Tailwind CSS v4,
-React · Astro · Vue. The 15 skills are in the **`skills/`** folder.
+__COUNT__ authored Claude skills for UX/UI + frontend engineering — Tailwind CSS v4,
+React · Astro · Vue. They are in the **`skills/`** folder. One of them,
+`shadcn-ui-design`, is scoped to the Next.js + shadcn/ui stack; the rest are
+stack-independent.
 
 ## Install — Claude Code
     mkdir -p /path/to/your/project/.claude
@@ -32,6 +37,7 @@ Upload one skill at a time (see the `per-skill/` zips): Settings → Capabilitie
 
 MIT · Ball @ Iron Software
 MD
+sed "s/__COUNT__/$COUNT/g" "$B/README.md" > "$B/README.tmp" && mv "$B/README.tmp" "$B/README.md"
 
 # 2 · drop-in for Claude Code (.claude/skills at the zip root)
 D="$TMP/dropin"; mkdir -p "$D/.claude"; cp -R "$SRC" "$D/.claude/skills"

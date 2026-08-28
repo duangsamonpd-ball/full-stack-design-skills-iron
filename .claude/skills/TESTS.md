@@ -1,6 +1,6 @@
 # Skill tests
 
-Lightweight, single-file test cases for the 15 skills. Two things get checked:
+Lightweight, single-file test cases for the 16 skills. Two things get checked:
 
 1. **Trigger** — a representative prompt selects the intended skill.
 2. **Disambiguation** — where two skills sit next to each other, the *right* one wins
@@ -31,6 +31,7 @@ never the **confusable** neighbor. Re-run after editing any `description`.
 | "add visual-regression + e2e tests to catch UI drift" | `qa-testing-visual-regression` |
 | "improve Core Web Vitals / reduce the bundle size" | `web-performance-optimization` |
 | "set up CI/CD with preview deploys and quality gates" | `deployment-devops-workflow` |
+| "add a shadcn button / build this page with shadcn/ui on next.js" | `shadcn-ui-design` |
 
 ## 2 · Disambiguation (the tuned pairs)
 
@@ -48,6 +49,8 @@ Each row is a prompt that could plausibly hit either skill; the description make
 | "define shared component API contracts across the system" | `design-systems-architecture` | `component-library-mastery` | cross-library contracts are architecture's |
 | "check WCAG conformance (pass/fail)" | `web-accessibility-a11y` | `inclusive-design-patterns` | measurable conformance audit |
 | "design for reduced motion, i18n, cognitive load" | `inclusive-design-patterns` | `web-accessibility-a11y` | beyond-baseline usability, not pass/fail |
+| "style this component with tailwind" | `css-styling-pixel-perfect` | `shadcn-ui-design` | stack-independent styling; shadcn only owns the Next.js + shadcn/ui stack |
+| "restyle the shadcn dialog primitive" | `shadcn-ui-design` | `css-styling-pixel-perfect` | a named shadcn primitive is inside that stack |
 
 ## 3 · Behavior expectations
 
@@ -70,8 +73,9 @@ What a correct application should produce (not just which skill fires).
 | `qa-testing-visual-regression` | Behavior tests by role/label + visual baselines across theme × breakpoint |
 | `web-performance-optimization` | Measured before/after on the worst vital; highest-leverage fix applied |
 | `deployment-devops-workflow` | Pipeline with quality gates as definition-of-done + one-action rollback |
+| `shadcn-ui-design` | Primitives added via the CLI, styled through semantic tokens rather than raw hex, dark mode from the token layer |
 
 ---
 
-*Single source of truth — one file for all 15 skills, kept in sync with each `description`.
+*Single source of truth — one file for all 16 skills, kept in sync with each `description`.
 When a description changes, update the matching Trigger / Disambiguation rows here.*

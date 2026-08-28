@@ -2,7 +2,7 @@
 
 # Full-Stack Design Skills · Iron Software
 
-**A set of 15 authored Claude skills for UX/UI + frontend engineering** — from first-principles design through tokens, components, accessibility, and shipping — tuned for **React · Astro · Vue** on **Tailwind CSS v4**.
+**A set of 16 authored Claude skills for UX/UI + frontend engineering** — from first-principles design through tokens, components, accessibility, and shipping — tuned for **React · Astro · Vue** on **Tailwind CSS v4**.
 
 <p>
   <img alt="Tailwind CSS v4" src="https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8?logo=tailwindcss&logoColor=white" />
@@ -42,7 +42,7 @@ flowchart LR
     classDef io fill:#ffffff,stroke:#0d9488,color:#0f766e;
 ```
 
-## The 15 skills
+## The 16 skills
 
 ### 🎨 Design
 | Skill | What it does |
@@ -75,6 +75,14 @@ flowchart LR
 |-------|--------------|
 | **deployment-devops-workflow** | Build, CI/CD, preview deploys, quality gates, hosting, one-action rollback. |
 
+### 🧩 Stack-specific
+The fifteen above are stack-independent and never depend on this one — it is here for
+projects that have already chosen the stack.
+
+| Skill | What it does |
+|-------|--------------|
+| **shadcn-ui-design** | Build on Next.js with shadcn/ui + Tailwind v4 — component CLI, semantic tokens, dark mode against a 1,812-variable Figma registry. |
+
 ## Learning paths
 
 The skills auto-select on demand, but if you're reading through them, these orders build up
@@ -103,7 +111,7 @@ one brand and token layer, shown across design systems and a real framework buil
 
 | Example | What it demonstrates |
 |---------|----------------------|
-| `component-showcase.html` | All 15 skills at once — base components, dark mode, a11y, responsive |
+| `component-showcase.html` | The stack-independent skills at once — base components, dark mode, a11y, responsive |
 | `accessibility-showcase.html` | Working WCAG 2.2 demo — native dialog/details, ARIA tabs, live region, forced-colors |
 | `dashboard-prototype.html` | KPI tiles + hand-built SVG charts (validated palette), responsive layout |
 | `registration-form.html` | Forgiving-form validation, a11y, password strength — custom design system |
@@ -144,9 +152,9 @@ Every styling skill follows v4's CSS-first model:
 ```
 .
 ├── .claude/
-│   └── skills/                    15 skill folders (SKILL.md + optional references/)
+│   └── skills/                    16 skill folders (SKILL.md + optional references/)
 │       └── README.md              skill-authoring notes & trigger rules
-├── component-showcase.html        all-15-skills component demo
+├── component-showcase.html        component demo across the universal skills
 ├── accessibility-showcase.html    working WCAG 2.2 / universal-design demo
 ├── dashboard-prototype.html       KPI + SVG charts (dataviz)
 ├── registration-form.html         custom design system

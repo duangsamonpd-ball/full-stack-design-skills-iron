@@ -30,8 +30,8 @@ Each skill is a **folder** with a `SKILL.md`. Longer material lives in a sibling
 
 ## Content status
 
-**All 15 skills are full content** — each has real workflows plus code / before-after
-examples, and **all 15** now carry a `references/` folder for on-demand depth (21 files):
+**All 16 skills are full content** — each has real workflows plus code / before-after
+examples, and **all 16** now carry a `references/` folder for on-demand depth (23 files):
 
 - `anti-ai-design-patterns` (+3 refs) · `inclusive-design-patterns` (+3) ·
   `design-systems-architecture` (+2) · `design-to-code-workflow` (+2) ·
@@ -69,4 +69,4 @@ Ship → `deployment-devops-workflow`
 ## Tests
 
 [`TESTS.md`](TESTS.md) — a single-file trigger + disambiguation matrix (plus behavior
-expectations) for all 15 skills. Re-run the rows for any skill whose `description` you edit.
+expectations) for all 16 skills. Re-run the rows for any skill whose `description` you edit.
