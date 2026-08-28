@@ -20,24 +20,70 @@ const rel = (f) => path.relative(repoRoot, f) || f;
  * Pages that only exist once something is built. A missing one is a hole in the gate,
  * not a page to quietly drop — skipping it silently is how the Astro output went
  * unaudited in CI while passing locally.
+ *
+ * `sources` closes the other half. A build that is PRESENT but older than what it
+ * was built from is stale bytes wearing a page's name, and the audit cannot tell:
+ * measured 2026-08-28, this dist was 16 days old and built by the astro version
+ * before the one in package.json, and every local run had been auditing it. So the
+ * newest mtime under `sources` must be older than the built file, or the gate
+ * refuses exactly as it does for a missing one. mtimes are a heuristic — they
+ * cannot prove a build is current — but they catch the case that actually happens:
+ * source moved on and nobody rebuilt.
  */
 const BUILT_PAGES = [
   {
     file: path.join(repoRoot, 'astro-registration-m3', 'dist', 'index.html'),
     build: 'cd astro-registration-m3 && npm ci && npm run build',
+    sources: ['src', 'astro.config.mjs', 'package.json', 'package-lock.json'].map((f) =>
+      path.join(repoRoot, 'astro-registration-m3', f)),
   },
 ];
 
+/** the newest-modified file at or under `p`, skipping dot-dirs and node_modules */
+function newest(p) {
+  const st = fs.statSync(p);
+  if (!st.isDirectory()) return { ms: st.mtimeMs, file: p };
+  let best = { ms: 0, file: p };
+  for (const e of fs.readdirSync(p, { withFileTypes: true })) {
+    if (e.name.startsWith('.') || e.name === 'node_modules') continue;
+    const found = newest(path.join(p, e.name));
+    if (found.ms > best.ms) best = found;
+  }
+  return best;
+}
+
+const stamp = (ms) => new Date(ms).toISOString().slice(0, 16).replace('T', ' ');
+
 function discover() {
   const list = fs.readdirSync(repoRoot).filter((f) => f.endsWith('.html')).map((f) => path.join(repoRoot, f));
-  const missing = [];
-  for (const { file, build } of BUILT_PAGES) {
-    if (fs.existsSync(file)) list.push(file);
-    else missing.push({ file, build });
+  const missing = [], stale = [];
+  for (const { file, build, sources = [] } of BUILT_PAGES) {
+    if (!fs.existsSync(file)) { missing.push({ file, build }); continue; }
+    list.push(file);
+
+    const builtAt = fs.statSync(file).mtimeMs;
+    let latest = { ms: 0, file: null };
+    for (const s of sources) {
+      if (!fs.existsSync(s)) continue;
+      const found = newest(s);
+      if (found.ms > latest.ms) latest = found;
+    }
+    if (latest.file && latest.ms > builtAt) stale.push({ file, build, builtAt, latest });
   }
   if (missing.length) {
     console.error(`\n\x1b[31m✖  ${missing.length} page(s) expected but not built — the audit would be incomplete\x1b[0m`);
     for (const { file, build } of missing) console.error(`    ${rel(file)}\n      build it with:  ${build}`);
+    console.error('');
+    process.exit(1);
+  }
+  if (stale.length) {
+    console.error(`\n\x1b[31m✖  ${stale.length} page(s) built before their source last changed — the audit would be of stale bytes\x1b[0m`);
+    for (const { file, build, builtAt, latest } of stale) {
+      console.error(`    ${rel(file)}`);
+      console.error(`      built    ${stamp(builtAt)}`);
+      console.error(`      but      ${rel(latest.file)} changed ${stamp(latest.ms)}`);
+      console.error(`      rebuild with:  ${build}`);
+    }
     console.error('');
     process.exit(1);
   }

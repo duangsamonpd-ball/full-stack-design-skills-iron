@@ -44,8 +44,21 @@ unaudited in CI while passing locally.
 cd astro-registration-m3 && npm ci && npm run build
 ```
 
-So `a11y` green means every page was read. A gate that quietly narrows its own
-scope reports the narrowed scope as a pass.
+It refuses a build that is **stale** on the same terms, since 2026-08-28: if any
+file under the example's `src/`, `astro.config.mjs`, `package.json` or
+`package-lock.json` is newer than `dist/index.html`, it exits 1 naming the file
+that moved and the rebuild command. The dist on this machine had been 16 days
+old and built by the astro version *before* the one in `package.json`, and every
+local run had been auditing those bytes — the rebuild happened to be
+byte-identical, so nothing had shipped wrong, but nothing was in a position to
+say so either. mtimes cannot prove a build is current; they catch the case that
+actually happens, which is that the source moved on and nobody rebuilt.
+
+CI is unaffected — `a11y.yml` builds in the same job before auditing, so its dist
+is always the newest thing in the tree. Verified on a clean clone in that order.
+
+So `a11y` green means every page was read, and read as it is written today. A
+gate that quietly narrows its own scope reports the narrowed scope as a pass.
 
 ## Editing a skill here is LIVE, everywhere, immediately
 
