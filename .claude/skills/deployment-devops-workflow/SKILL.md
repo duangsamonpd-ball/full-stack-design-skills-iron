@@ -87,6 +87,82 @@ every checker it invokes, and keep the aggregate honest about what it does NOT
 cover — a script named `check` that is only part of the gate is a name that
 misleads on exactly the day it matters.
 
+## A script CI never runs has never been tested
+
+Fixing a gate that had been reading stale generated images meant moving thumbnail
+generation into the gallery's own build — which made CI execute
+`scripts/build-thumbs.mjs` **for the first time ever**. It died on line 35:
+
+```
+ERR_MODULE_NOT_FOUND
+file:///Users/<user>/.nvm/versions/node/v24.15.0/lib/node_modules/
+  @playwright/cli/node_modules/playwright/index.mjs
+```
+
+An absolute path into one laptop's nvm directory, committed, in a script that
+produces a user-facing asset. It could never have worked on a second machine, on
+a runner, or for anyone else. Nothing noticed because that script only ran from a
+local publish command that CI does not run.
+
+The same 200-line file had a second one waiting behind it:
+
+```js
+execFileSync('python3', ['-c', 'from PIL import Image ...'])
+```
+
+Pillow declared in no manifest anywhere, and present on that machine. Two
+undeclared dependencies — one npm, one system — invisible for the same reason.
+
+The repo already had the answer, too: `scripts/lib/harness.mjs` exports
+`launch()`, which tries the chrome channel, then the two usual install paths,
+then chromium, and reports everything it tried. **Nine gates already used it.**
+This script imported a string instead.
+
+```
+□ every committed script is in the CI path, or is marked unverified in the file
+  itself — "it works locally" about a script CI cannot reach is a statement
+  about one filesystem
+□ grep committed scripts for `/Users/`, `/home/` and `C:\` — one line in a lint
+  step, and it would have caught this the day it was written
+□ an undeclared SYSTEM dependency (`python3 -c "import ..."`, `convert`,
+  `ffmpeg`) is the same class of fault as a hard-coded path, and hides better
+```
+
+**If a tool is already running in-process, prefer it over adding either** — here
+a browser was open two lines above, with its own image encoder. Then **verify
+what a fallback-capable API actually produced**: `canvas.toDataURL('image/webp')`
+silently falls back to PNG when it will not encode the requested type, and a PNG
+sitting in a `.webp` renders perfectly while tripling the page weight. Assert the
+prefix.
+
+## Build order is a dependency — encode it, never sort into it
+
+The root cause of that same red build:
+
+```js
+const pages = readdirSync(ROOT, ...)
+  .filter(...)
+  .sort();          // ← alphabetical
+```
+
+`gallery` is not a peer of the other pages, it is **derived** from them: every
+card carries a screenshot and the measured height of another page. Alphabetically
+it sorted **first** — ahead of all four pages it consumes.
+
+The publish command happened to spell the correct order out by hand
+(`verify && thumbs && build gallery && …`) while the check command did not. So
+the two disagreed for as long as the gallery had existed, and the one that was
+right was the one CI never ran.
+
+- **When one build output is another build's input, encode it** — sort the
+  dependent last, or give it a `prebuild` that produces what it consumes. Never
+  leave it to alphabetical order, folder order, or `readdir` order.
+- **Two commands that build the same thing in different orders is the bug**, even
+  while both appear to work. Collapse them so there is one order.
+- The fix here was both: `verify.mjs` sorts `gallery` last, and the gallery's own
+  `prebuild` generates the thumbnails. Cost: **47s added to every check run**,
+  which is the honest price of that page being gated at all.
+
 ## Hosting notes
 
 - **Astro** — static output (any static/edge host) or an SSR adapter (Node/edge) when you need server rendering; both deploy cleanly to Vercel/Netlify/Cloudflare.

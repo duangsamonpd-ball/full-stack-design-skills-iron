@@ -116,6 +116,34 @@ leave every shared component unstyled while the build stays green — the markup
 still carries the classes, the rules simply are not in the file, and every
 measurement is of a different page than the one that ships.
 
+**Arm the INPUTS as well as the browser.** The rows above prove the page loaded;
+they say nothing about where the files it read came from. A gate whose inputs are
+stale answers confidently and wrongly in exactly the way an unstyled page does,
+and nothing in the page can tell.
+
+Nine gates across five pages reported green locally. The push went red
+immediately, on the asset gate that same commit had just added:
+
+```
+✗ gallery — 4 broken (of 22 images, 0 masks)
+    /assets/thumbs/iron-suite.webp
+```
+
+Those four thumbnails are **gitignored build artefacts**, produced by a script
+that only runs from the local publish command. An earlier publish had left them
+on disk, so every local run had been reading four files that exist on exactly one
+machine. Three commits' worth of "all nine gates green" had been partly green on
+stale files — only the newest gate could see it, and only from a checkout that
+had never published.
+
+- **Delete what a gate reads and did not itself produce, then run it.** Anything
+  gitignored is a candidate: generated images, `dist/`, measured JSON, caches.
+- **Green locally and red in CI is not flaky first — it is reading state CI does
+  not have.** Reach for that before re-running the job.
+- It bites the NEWEST gate in a suite hardest. The older ones were shaped,
+  without anyone deciding to, around whatever happened to be on disk while they
+  were being written.
+
 **Establish the harness's noise floor before trusting a diff, and do not assume
 it is zero.** Capture the SAME build twice and diff it. One homepage reports
 ~111 element differences unchanged, because two marquees animate — so a later
