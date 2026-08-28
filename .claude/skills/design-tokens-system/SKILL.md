@@ -1,6 +1,6 @@
 ---
 name: design-tokens-system
-description: Define and generate a layered design-token system (color, spacing, typography, sizing) wired into Tailwind and CSS variables for theming. Use when the user says "design tokens", "token system", "set up tailwind theme", "css variables for design", or "theming tokens".
+description: Define and generate a layered design-token system (color, spacing, typography, sizing) wired into Tailwind and CSS variables for theming; for token-layer structure and governance at scale use design-systems-architecture, and for applying them in component CSS use css-styling-pixel-perfect. Use when the user says "design tokens", "token system", "set up tailwind theme", "css variables for design", or "theming tokens".
 ---
 
 # Design Tokens System

@@ -6,10 +6,13 @@
  * must equal the `name:` it selects on, the `description:` is what triggers it,
  * and any `references/…md` the SKILL.md promises for on-demand depth must exist —
  * including the cross-skill pointers ("<other-skill> → `references/x.md`") this
- * package uses to keep neighbouring skills disambiguated.
+ * package uses to keep neighbouring skills disambiguated. A skill named in PROSE
+ * has to resolve too: a rename keeps the folder and `name:` in step and leaves
+ * every **bold** mention of the old name in the other fifteen files pointing at
+ * nothing, because a bold word is not a path.
  *
- * This asserts all of that, so a renamed folder, a dropped reference, or a typo'd
- * description can't ship silently.
+ * This asserts all of that, so a renamed folder, a dropped reference, a stale
+ * pointer, or a typo'd description can't ship silently.
  *
  * Run:  node scripts/skills-lint.mjs [skills-dir]
  *       …with no argument it lints this repo's .claude/skills; pass a path to
@@ -24,8 +27,9 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const SKILLS = process.argv[2]
-  ? resolve(process.argv[2].replace(/^~(?=$|\/)/, process.env.HOME ?? '~'))
+const ARGS = process.argv.slice(2).filter((a) => !a.startsWith('--'));
+const SKILLS = ARGS[0]
+  ? resolve(ARGS[0].replace(/^~(?=$|\/)/, process.env.HOME ?? '~'))
   : join(ROOT, '.claude/skills');
 
 const errors = [];
@@ -71,7 +75,78 @@ function targetSkill(ownName, line, idx) {
   return best ? best.name : ownName;
 }
 
+
+/* ── a skill named in PROSE must resolve, the same as one named in a link ──
+ *
+ * Check 1 keeps `name:` and the folder in step through a rename. It says
+ * nothing about the fifteen other files that name that skill in prose — a
+ * "Next steps" pointer, a disambiguating aside — and those go stale silently,
+ * because a bold word is not a path and nothing was ever going to open it.
+ *
+ * So: kebab-case tokens written as **bold** or `code` are compared with the
+ * known skill names. An exact match is the normal case and is fine. A NEAR
+ * match — within 3 edits, or sharing two whole segments — is the tell that a
+ * pointer was left behind by a rename, a typo, or a shortened name. Ordinary
+ * kebab-case (`prefers-color-scheme`, `data-theme`, **mobile-first**) is near
+ * nothing and stays silent, which is what makes the check usable at all.
+ */
+function levenshtein(a, b) {
+  if (Math.abs(a.length - b.length) > 4) return 99; // can't come within 3
+  let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= b.length; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    }
+    prev = cur;
+  }
+  return prev[b.length];
+}
+
+/** the known skill a kebab token was probably meant to be, or null */
+function nearestSkill(token, names) {
+  if (names.has(token)) return null; // resolves — nothing to report
+  const segs = new Set(token.split('-'));
+  for (const n of names) {
+    const shared = n.split('-').filter((s) => segs.has(s)).length;
+    if (levenshtein(token, n) <= 3 || shared >= 2) return n;
+  }
+  return null;
+}
+
+/** every near-miss in `src`, as [token, meant] pairs */
+function staleSkillNames(src, names) {
+  const out = [];
+  for (const m of src.matchAll(/\*\*([a-z0-9]+(?:-[a-z0-9]+)+)\*\*|`([a-z0-9]+(?:-[a-z0-9]+)+)`/g)) {
+    const token = m[1] ?? m[2];
+    const meant = nearestSkill(token, names);
+    if (meant) out.push([token, meant]);
+  }
+  return out;
+}
+
+/* The self-test runs on every invocation — it is pure string work, it costs
+ * about a millisecond, and a refusal case that only runs when someone passes a
+ * flag is a refusal case nobody runs. Both halves, as always: each PLANT must
+ * be reported, and each CONTROL must stay silent. One half alone cannot tell a
+ * working check from one that fires on everything. */
+function selfTestNameCheck(names) {
+  const plants = [
+    '- Pair with **web-accessibility-wcag** as a CI gate',   // renamed skill
+    'see **design-token-system** for the layers',            // typo'd skill
+    'use `figma-expert` for sync',                           // shortened skill
+  ];
+  const controls = [
+    '`prefers-color-scheme`', '`aria-live`', '**mobile-first**',
+    '`data-theme`', '`build-thumbs.mjs`', '`min-content`', '`sr-only`',
+  ];
+  const missed = plants.filter((p) => staleSkillNames(p, names).length === 0);
+  const fired = controls.filter((c) => staleSkillNames(c, names).length > 0);
+  return { missed, fired };
+}
+
 let refChecks = 0;
+let nameChecks = 0;
 for (const name of skillNames) {
   const dir = join(SKILLS, name);
   const src = readFileSync(join(dir, 'SKILL.md'), 'utf8');
@@ -111,7 +186,27 @@ for (const name of skillNames) {
       if (!linked.has(f)) warn(name, `references/${f} is on disk but not linked from SKILL.md`);
     }
   }
+
+  // 4 — a skill named in prose must resolve (SKILL.md and its references)
+  const prose = [['SKILL.md', src]];
+  if (existsSync(refDir)) {
+    for (const f of readdirSync(refDir).filter((f) => f.endsWith('.md'))) {
+      prose.push([`references/${f}`, readFileSync(join(refDir, f), 'utf8')]);
+    }
+  }
+  for (const [where, text] of prose) {
+    nameChecks++;
+    for (const [token, meant] of staleSkillNames(text, known)) {
+      err(name, `${where} names \`${token}\`, which is not a skill — did it mean \`${meant}\`?`);
+    }
+  }
 }
+
+/* ── the name check is an instrument too — prove it can fail, every run ──── */
+
+const st = selfTestNameCheck(known);
+for (const p of st.missed) err('skills-lint', `self-test: name check did NOT report a planted stale name — ${p}`);
+for (const c of st.fired) err('skills-lint', `self-test: name check fired on an ordinary kebab-case control — ${c}`);
 
 /* ── report ──────────────────────────────────────────────────────────────── */
 
@@ -139,4 +234,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`\n\x1b[32m✔  ${skillNames.length} skills lint clean — names match folders, descriptions present, ${refChecks} references resolve\x1b[0m\n`);
+console.log(`\n\x1b[32m✔  ${skillNames.length} skills lint clean — names match folders, descriptions present, ${refChecks} references resolve, ${nameChecks} files carry no stale skill name\x1b[0m\n`);

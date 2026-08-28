@@ -86,6 +86,8 @@ breakpoint, theme regressions, and CSS changes with unexpected blast radius.
 
 ## A green checker is not the same as a checked thing
 
+### Arm the instrument before you believe a reading
+
 **Arm the harness before you believe a single reading from it.** Three things
 have to be true, asserted in the page, before a sweep is allowed to report:
 
@@ -162,6 +164,8 @@ old one was not. **Change one side and see which answer moves.** The same
 instinct as arming, one level up: if an assertion cannot distinguish the two
 states you care about, it is decoration.
 
+### A known-findings list must fail in BOTH directions
+
 **A known-findings list is a fault on a list, not a licence — and it must fail
 when an entry STOPS firing.** Findings you have seen and not fixed go in a file,
 each naming the item that tracks it. The enforcement direction is the whole
@@ -186,9 +190,11 @@ had been left. Only a full run — every page, every width — may decide that a
 entry has gone silent, because "nobody looked there" and "it is no longer
 happening" are different sentences.
 
+### The shapes a skipping gate takes
+
 The failure that costs the most is not a gate that fails — it is a gate that
 **skips**, or that answers a narrower question than its output implies, and
-prints a confident tick either way. Four shapes, all met in one real day:
+prints a confident tick either way. The shapes, each one met in a real run:
 
 - **It skipped its subject.** A generator decided "is this component converted?"
   with "does any line start with `<style`". A wrapped sentence in a closing
@@ -249,6 +255,8 @@ prints a confident tick either way. Four shapes, all met in one real day:
   a differential — the theme layer contributes names of its own, and some of them
   a page is *supposed* to declare.
 
+### Arming the arming — the self-test is an instrument too
+
 **Repeating a measurement is not reproducing it.** Before keying allowlist
 entries to a sampled colour, that sweep was run three times and returned
 identical values — which showed stability on *one* machine. CI sampled the same
@@ -293,6 +301,8 @@ another edit followed. **The second identical reading is the signal**: stop
 editing and ask what *else* is acting on that element. Walking
 `document.styleSheets` and testing `el.matches(rule.selectorText)` found both in
 one pass, after reasoning had failed on each.
+
+### What to gate, and what a gate must not depend on
 
 **A harness that reaches the network is a coin toss, not a gate.** Three browser
 harnesses fetched their webfont from a CDN mid-run; the morning the first became

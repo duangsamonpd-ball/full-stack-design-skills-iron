@@ -1,6 +1,6 @@
 ---
 name: css-styling-pixel-perfect
-description: Build maintainable Tailwind/CSS component styling and close pixel gaps between implementation and design (spacing, color, type, alignment); for viewport/breakpoint layout use responsive-universal-design. Use when the user says "organize css", "tailwind styling", "pixel perfect", "match the mockup", or "css architecture".
+description: Build maintainable Tailwind/CSS component styling and close pixel gaps between implementation and design (spacing, color, type, alignment); for viewport/breakpoint layout use responsive-universal-design, and to define the tokens themselves use design-tokens-system. Use when the user says "organize css", "tailwind styling", "pixel perfect", "match the mockup", or "css architecture".
 ---
 
 # CSS Styling & Pixel Perfect

@@ -100,6 +100,17 @@ including a cross-skill pointer. So a renamed folder needs its frontmatter
 renamed with it, and a new reference file that nothing links is not "added yet",
 it is invisible. The lint is instant; run it after any rename.
 
+Since 2026-08-28 it also holds you to **a skill named in prose**. A rename keeps
+the folder and the frontmatter in step and quietly leaves every `**old-name**`
+in the other files pointing at nothing, because a bold word is not a path and
+nothing was ever going to open it. Kebab-case tokens in `**bold**` or `` `code` ``
+are matched against the known skills: exact resolves, and a NEAR match — within
+3 edits, or two shared segments — is reported with the name it probably meant.
+Ordinary kebab-case (`prefers-color-scheme`, `data-theme`) is near nothing and
+stays silent. The refusal case runs on **every invocation**, not behind a flag:
+three planted stale names must be reported and seven controls must stay silent,
+so sabotaging the matcher fails the lint instead of turning it into a tick.
+
 ## Git
 
 This repo and `my-guide-irondesign` both work **direct to `main`**. Commit, push
