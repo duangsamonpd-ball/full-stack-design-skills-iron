@@ -128,6 +128,32 @@ A slot with no honest answer is left out, not filled. A generated page is tempte
 a fabricated value is indistinguishable from a real one at review. No subsystem can catch this —
 it is a content rule, and it holds in both cases above.
 
+## Say what the frame did not specify
+
+A frame describes markup and style. It does not describe behaviour — and the gap leaves no mark,
+because a component with no handler looks exactly like a component whose handler was never asked
+for. Two refusals, pointing the same way.
+
+**Do not invent behaviour.** Where the frame specifies no interaction, implement none, and put the
+absence in the code where the next reader will meet it:
+
+```astro
+{/* No interactive spec in the frame: no handlers implemented. */}
+```
+
+That comment is part of the deliverable. It says the absence is a finding rather than an oversight,
+and it gives the designer a specific thing to answer. A plausible-looking handler invented to fill
+the gap says nothing and cannot be questioned.
+
+**Do not invent analytics.** The same rule with money attached. Tracking appears in no design and
+cannot be inferred from one, but omitting it has consequences that surface weeks later in a report
+nobody traces back to a component. Measured on one production codebase: 102 of 602 components carry
+a `<script>`, and 32 of those carry analytics or CRM wiring. A generated component that silently
+drops a `dataLayer` push looks perfect and is wrong.
+
+Where a generated component replaces one that had wiring, say what was there and that you did not
+carry it. Silence reads as "there was nothing to carry".
+
 ## Workflow
 
 Follow these steps in order. Don't skip step 1 — the most common failure is coding before requirements are clear.
