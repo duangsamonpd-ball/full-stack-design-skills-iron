@@ -185,6 +185,12 @@ Write semantic HTML/markup for the whole component before touching styling. Get 
 ### 5. Apply styling
 Use Tailwind utilities mapped to design tokens rather than hardcoded values. Extract repeated utility clusters into `@apply` or a component only when they actually repeat.
 
+A custom property copied out of a design tool's Dev Mode is in the **tool's** vocabulary, not the
+design system's, and a `var(--x, fallback)` naming nothing renders its fallback correctly while
+tracking nothing ever again. Translate every one of them, or say it does not map —
+`references/figma-variable-translation.md` has the four shapes the gap takes and how to build the
+mapping for your own system.
+
 ### 6. Handle responsive & interactive states
 Cover breakpoints (`sm/md/lg`), plus `hover`, `focus`, `active`, `disabled`, and loading states shown in the design.
 
