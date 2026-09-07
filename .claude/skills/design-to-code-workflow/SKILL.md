@@ -39,6 +39,54 @@ and is a confident, reasonable, wrong conclusion.
 Where a convention cannot be derived — no siblings to read, no consuming template — say so and
 ask. A choice made in silence is indistinguishable from a convention that was there all along.
 
+## The output is a pair
+
+A generated section is **two files, not one**: a component that takes every string from a `data`
+prop, and the content slice that feeds it. Copy written into the template is invisible to
+translation forever, and invisible to every count until somebody goes looking for it.
+
+The props shape and the content shape are the same shape, which is what lets one structure emit
+both.
+
+```astro
+---
+// Purpose.astro — structure only, no string literals
+interface Props {
+  data: {
+    heading: string
+    body: string
+    image: { src: string; alt: string }
+  }
+}
+const { data } = Astro.props
+---
+<section>
+  <h2>{data.heading}</h2>
+  <p>{data.body}</p>
+  <img src={data.image.src} alt={data.image.alt} />
+</section>
+```
+
+```json
+{
+  "heading": "Why teams standardise on one renderer",
+  "body": "One engine, one licence, eleven languages.",
+  "image": { "src": "/assets/purpose.svg", "alt": "A document being converted to PDF" }
+}
+```
+
+**An asset's `alt` belongs in the JSON, beside its `src`.** `src` is structure and `alt` is copy,
+but they are one decision — split them and the alt text stays in the component, where it can never
+be translated. This is the commonest way a generated page quietly loses a language.
+
+The same split holds in React and Vue: a props interface and a content object, with only the syntax
+moving.
+
+**Where the slice goes and what it is called is the target repository's business.** Derive it the
+way the table above says — from the loader call in the template that will consume it — and never
+invent a path. Where the repository ships a contract document for its content layer, that document
+governs placement, naming and which fields are copy rather than structure.
+
 ## Workflow
 
 Follow these steps in order. Don't skip step 1 — the most common failure is coding before requirements are clear.
