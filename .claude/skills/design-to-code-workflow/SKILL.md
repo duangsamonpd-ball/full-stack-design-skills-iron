@@ -82,6 +82,12 @@ be translated. This is the commonest way a generated page quietly loses a langua
 The same split holds in React and Vue: a props interface and a content object, with only the syntax
 moving.
 
+Where the content is translated, the slice has four properties that only show up once somebody
+reads the page in another language — scope, listings, falsy scalars and prose. They are in
+`references/localization-traps.md`, and the third one is worth knowing before you write a single
+slice: **an empty string is a value, not an absence**, so a placeholder `""` becomes a permanent
+blank in that locale.
+
 **Where the slice goes and what it is called is the target repository's business.** Derive it the
 way the table above says — from the loader call in the template that will consume it — and never
 invent a path. Where the repository ships a contract document for its content layer, that document
