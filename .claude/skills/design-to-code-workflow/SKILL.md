@@ -87,6 +87,41 @@ way the table above says — from the loader call in the template that will cons
 invent a path. Where the repository ships a contract document for its content layer, that document
 governs placement, naming and which fields are copy rather than structure.
 
+## The `<head>` is usually not yours to write
+
+Before emitting a `<title>`, a meta tag or a schema.org node, find out whether the target
+repository already emits them. A mature codebase derives the whole `<head>` — title, description,
+canonical, `hreflang`, Open Graph, and a cross-referenced JSON-LD graph — from live sources for
+every page it builds. A generated page that writes its own gets a second, competing copy that
+drifts from the first, and nothing goes red when it does.
+
+**Where the repository emits them generically**, the page's entire contribution is a declaration:
+say what kind of page it is, hand the layout its page data, write no `<head>`.
+
+```astro
+---
+// the page declares what it IS; the layout derives the rest
+const page = { json, breadcrumbs, pageType: 'webApplication' }
+---
+<Layout page={page}>…</Layout>
+```
+
+**Where it does not** — a small repository, a new one, a prototype room — the page owns its
+`<head>`, and every node in it is built from the same source as the visible page rather than
+restated beside it. Structured data that disagrees with the page it describes is a manual-action
+risk with Google, and the only reliable way to keep the two in step is to make disagreement
+impossible: the FAQ markup and the rendered FAQ read one list, or one of them is eventually wrong.
+
+Which case you are in is derivable — look for a head, SEO or JSON-LD utility the layout already
+calls, the way the table above says. Assume neither.
+
+### Never invent a field to fill a schema
+
+A slot with no honest answer is left out, not filled. A generated page is tempted by `author`,
+`datePublished` and `aggregateRating` precisely because the schema has somewhere to put them, and
+a fabricated value is indistinguishable from a real one at review. No subsystem can catch this —
+it is a content rule, and it holds in both cases above.
+
 ## Workflow
 
 Follow these steps in order. Don't skip step 1 — the most common failure is coding before requirements are clear.
