@@ -13,6 +13,32 @@ Convert a Figma design (or mockup/spec) into production-ready component code for
 - Converting a mockup or design spec into working components
 - Porting a design across frameworks (React ↔ Astro ↔ Vue)
 
+## The target repository carries the conventions
+
+This skill carries **method**. The repository you are generating into carries **convention**, and
+it is the authority on it. **When this skill disagrees with the codebase, the codebase wins.**
+
+Never state a target repository's naming, structure or idiom from memory. A convention written
+down here is right on the day it is written and silently wrong afterwards — and the generated code
+goes on looking confident while it drifts into a dialect the codebase has left behind. Read it at
+generation time instead:
+
+| convention | derive it from |
+|---|---|
+| file naming | the modal filename shape among sibling components in the target directory |
+| props idiom | whether siblings declare a typed props interface and destructure it |
+| styling idiom | the ratio of utility classes to `<style>` blocks among siblings |
+| content path | the loader call in the template that will consume what you write |
+| the reuse catalogue | the target repository's own generated component manifest |
+| colour vocabulary | a `@theme` block **and** any semantic class layer — searching for one shape misses the other |
+
+The last one is the one that bites. A repository can carry both, and a search shaped for one
+returns nothing for the other — which reads exactly like "this codebase has no colour system"
+and is a confident, reasonable, wrong conclusion.
+
+Where a convention cannot be derived — no siblings to read, no consuming template — say so and
+ask. A choice made in silence is indistinguishable from a convention that was there all along.
+
 ## Workflow
 
 Follow these steps in order. Don't skip step 1 — the most common failure is coding before requirements are clear.
@@ -23,6 +49,7 @@ Confirm before writing code:
 - Where the design lives (Figma URL/node, image, or written spec)
 - Existing design tokens / Tailwind config to reuse
 - Component scope: single component vs. full page
+- The target repository, if generating into one — its conventions govern, and they are read at generation time rather than assumed
 
 ### 2. Extract design context
 If a Figma URL is provided, load the `figma:figma-design-to-code` skill and use the Figma MCP tools to pull layout, spacing, colors, and typography. Otherwise extract from the image/spec: layout structure, spacing scale, color values, font sizes/weights, and interactive states.
