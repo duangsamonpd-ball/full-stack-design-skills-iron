@@ -1,0 +1,18 @@
+{
+  "description": "figma-astro. On session start, compares the target repository's load-bearing surfaces against the fingerprint the generator last captured, and prints only what moved. Silent and exit-0 anywhere that is not a target repository — a hook that shouts in every unrelated project gets disabled, and a disabled hook checks nothing.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/fingerprint.mjs\" --root=\"$CLAUDE_PROJECT_DIR\" --hook",
+            "commandWindows": "node \"$env:CLAUDE_PLUGIN_ROOT\\scripts\\fingerprint.mjs\" --root=\"$env:CLAUDE_PROJECT_DIR\" --hook",
+            "timeout": 15,
+            "statusMessage": "Checking design-system surfaces…"
+          }
+        ]
+      }
+    ]
+  }
+}

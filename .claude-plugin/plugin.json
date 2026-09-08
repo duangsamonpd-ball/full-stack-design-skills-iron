@@ -1,0 +1,16 @@
+{
+  "name": "figma-astro",
+  "version": "0.1.0",
+  "description": "Figma → Astro. Turns a Figma frame into Astro code that lands in the target repository's own conventions — deriving those conventions at generation time rather than carrying them, and keeping a memory of what it learned. Built for Iron Software's iron-websites, portable to any Astro repository with a content layer.",
+  "author": { "name": "Iron Software", "url": "https://ironsoftware.com" },
+  "license": "proprietary",
+  "homepage": "https://ironsoftware.com",
+  "keywords": [
+    "figma",
+    "astro",
+    "design-system",
+    "design-to-code",
+    "iron-software",
+    "design-tokens"
+  ]
+}

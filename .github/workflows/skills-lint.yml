@@ -1,6 +1,6 @@
 name: skills-lint
 
-# Structural lint for .claude/skills/* — folder/name match, frontmatter +
+# Structural lint for skills/* — folder/name match, frontmatter +
 # description present, and every references/…md (including cross-skill pointers)
 # resolves. Fails the build on any broken skill wiring.
 on:

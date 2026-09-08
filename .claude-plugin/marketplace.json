@@ -1,0 +1,15 @@
+{
+  "name": "figma-astro",
+  "description": "Iron Software's Figma → Astro plugin, published as a single-plugin marketplace so the repository can be installed directly by path.",
+  "owner": {
+    "name": "Iron Software",
+    "url": "https://ironsoftware.com"
+  },
+  "plugins": [
+    {
+      "name": "figma-astro",
+      "source": "./",
+      "description": "Turns a Figma frame into Astro code in the target repository's own conventions, and keeps a memory of what it learned generating there."
+    }
+  ]
+}
