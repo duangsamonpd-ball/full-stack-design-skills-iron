@@ -1,6 +1,6 @@
 ---
 name: figma-astro-init
-description: Establish the generator's memory in a target Astro repository — discover where its conventions are defined, write MAP.md, and capture the first fingerprint. Run once per repository, or again after a restructure.
+description: Establish the generator's memory in a target Astro repository — discover where its conventions are defined, write MAP.md, and capture the first fingerprint. Run once per repository, or again after a restructure. Use when the user says "set up figma-astro here", "initialise the generator memory", "write MAP.md", "fingerprint this repo", or is pointing the generator at a codebase for the first time.
 ---
 
 # Initialising the generator's memory

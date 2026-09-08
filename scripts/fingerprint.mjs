@@ -20,7 +20,7 @@ import { execSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 
 const ROOT = process.argv.find((a) => a.startsWith('--root='))?.slice(7)
-  ?? 'D:/Documents/webdev-workspace/iron-websites';
+  ?? process.cwd();
 
 /**
  * Fail early and legibly on a wrong --root. Every surface reads through git, so
@@ -127,6 +127,26 @@ export const SURFACES = {
   },
 };
 
+/**
+ * A surface that captured nothing reports a stable codebase forever, which is the
+ * same shape as good news. Shared by --self-test and the emit path so both agree
+ * on what "captured nothing" means.
+ */
+const isEmptyValue = (v) => {
+  if (v == null || v === '') return true;
+  if (Array.isArray(v)) return !v.length;
+  if (typeof v === 'object') {
+    if (v.error) return true;
+    const vals = Object.values(v);
+    // An all-zero tally counted nothing, the same as an absent one. routes.paths
+    // returns {files, pairs, agree}, so a bare key check would call it populated.
+    return !vals.length || vals.every((x) => x === 0 || isEmptyValue(x));
+  }
+  return false;
+};
+
+const emptySurfaces = (snap) => Object.entries(snap).filter(([, v]) => isEmptyValue(v.value));
+
 function capture() {
   const out = {};
   for (const [k, fn] of Object.entries(SURFACES)) {
@@ -139,10 +159,7 @@ function capture() {
 // ── self-test ───────────────────────────────────────────────────────────────
 if (process.argv.includes('--self-test')) {
   const base = capture();
-  const empty = Object.entries(base).filter(([, v]) =>
-    v.value == null || (Array.isArray(v.value) && !v.value.length)
-    || (typeof v.value === 'object' && !Array.isArray(v.value) && !Object.keys(v.value).length)
-    || v.value.error);
+  const empty = emptySurfaces(base);
   let bad = 0;
   if (empty.length) {
     for (const [k, v] of empty) console.log(`FAIL ${k} captured nothing: ${JSON.stringify(v.value).slice(0, 60)}`);
@@ -181,6 +198,23 @@ if (process.argv.includes('--hook')) {
 
 // ── compare / emit ──────────────────────────────────────────────────────────
 const now = capture();
+
+/**
+ * Being IN a git repository is not the same as being in the TARGET one. Every
+ * surface empty means this is some other repository — emit nothing rather than a
+ * fingerprint that will compare clean against anything forever.
+ */
+if (emptySurfaces(now).length === Object.keys(now).length) {
+  console.error(
+    `No load-bearing surface found in: ${ROOT}\n\n`
+    + `This is a git repository, but not the target Astro one — all `
+    + `${Object.keys(now).length} surfaces captured empty. Point --root at it:\n`
+    + `  node fingerprint.mjs --root=/path/to/iron-websites\n`
+    + `or run from inside that repository.`,
+  );
+  process.exit(2);
+}
+
 const prior = process.argv.find((a) => a.startsWith('--against='))?.slice(10);
 
 if (prior && existsSync(prior)) {

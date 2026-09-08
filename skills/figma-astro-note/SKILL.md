@@ -1,6 +1,6 @@
 ---
 name: figma-astro-note
-description: Record what generating a page into the target codebase cost, as a note in the generator's memory. Use after a generation hit a conflict, required rework, or was corrected by a person — and only then.
+description: Record what generating a page into the target codebase cost, as a note in the generator's memory. Use when a generation hit a conflict, required rework, or was corrected by a person — and only then; the user says "write that down", "record this decision", "note this conflict", or "why did the generator do that".
 ---
 
 # Writing a generator note
