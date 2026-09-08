@@ -1,8 +1,67 @@
 /* Renders COLOUR-INVENTORY.md from colour-inventory.json, so the prose can
-   never disagree with the data it describes. */
+   never disagree with the data it describes.
+
+   Usage:  node render-inventory.mjs <inventory.json> <out.md>
+           node render-inventory.mjs --self-test
+
+   --self-test renders a fixture whose every derived number is known by hand and
+   checks the numbers back out of the Markdown. A renderer cannot be trusted by
+   reading it: the failure that matters is a table that comes out EMPTY or a
+   percentage computed against the wrong denominator, and both of those still
+   produce a document that looks finished. Same reason the scanner it renders
+   self-tests, stated in section 1 of its own output. */
 import { readFileSync, writeFileSync } from 'node:fs';
 
-const d = JSON.parse(readFileSync(process.argv[2], 'utf8'));
+const argv = process.argv.slice(2);
+const SELF_TEST = argv.includes('--self-test');
+
+/* Every number below is chosen so the derived ones can be checked by hand:
+   uses total 100, so a share IS a percentage; the running total reaches 95 at the
+   third colour, so the 90% cut must fall at 3; one colour is used exactly once. */
+const FIXTURE = {
+  generated: '2026-09-08',
+  corpus: { files: 829, paths: ['src'], excluded: ['src/content'] },
+  totals: {
+    distinctColours: 5, colourOccurrences: 100, customPropertiesRead: 2,
+    customPropertiesDefined: 2, definedNeverRead: 1,
+  },
+  roleLegend: {
+    text: 'colour:', background: 'background', border: 'border-*', fill: 'SVG fill',
+    shadow: 'box-shadow', stroke: 'SVG stroke',
+  },
+  colours: [
+    { hex: '#111111', total: 60, roles: { text: 58, border: 2 }, surfaces: { 'external-css': 50, markup: 10 },
+      dsExact: ['--color-text-body'], nearest: '--iron-900', deltaE: 0, fileCount: 12,
+      topFiles: [{ file: 'src/a.astro', n: 20 }] },
+    { hex: '#2a95d5', total: 25, roles: { background: 25 }, surfaces: { 'inline-style': 25 },
+      dsExact: null, nearest: '--iron-500', deltaE: 0.8, fileCount: 5,
+      topFiles: [{ file: 'src/b.astro', n: 10 }] },
+    { hex: '#ff0000', total: 10, roles: { fill: 10 }, surfaces: { markup: 10 },
+      dsExact: null, nearest: '--iron-red', deltaE: 12.5, fileCount: 2,
+      topFiles: [{ file: 'src/c.astro', n: 6 }] },
+    { hex: '#abcdef', total: 4, roles: { shadow: 4 }, surfaces: { 'external-css': 4 },
+      dsExact: null, nearest: '--slate-200', deltaE: 3.1, fileCount: 1,
+      topFiles: [{ file: 'src/d.astro', n: 4 }] },
+    { hex: '#123456', total: 1, roles: { stroke: 1 }, surfaces: { markup: 1 },
+      dsExact: null, nearest: '--neutral-700', deltaE: 7, fileCount: 1,
+      topFiles: [{ file: 'src/e.astro', n: 1 }] },
+  ],
+  customProperties: [
+    { name: '--color-text-body', reads: 40, withFallback: 3, definedHere: false, inDesignSystem: true, fileCount: 8, values: [] },
+    { name: '--local-gap', reads: 5, withFallback: 0, definedHere: true, inDesignSystem: false, fileCount: 2, values: ['8px'] },
+  ],
+  definedNeverRead: [{ name: '--unused-x', values: ['#ffffff'], definedIn: ['src/assets/styles/x.css'] }],
+};
+
+if (!SELF_TEST && argv.length < 2) {
+  console.error(
+    'usage: node render-inventory.mjs <inventory.json> <out.md>\n'
+    + '       node render-inventory.mjs --self-test',
+  );
+  process.exit(2);
+}
+
+const d = SELF_TEST ? FIXTURE : JSON.parse(readFileSync(argv[0], 'utf8'));
 const L = [];
 const p = (s = '') => L.push(s);
 
@@ -146,7 +205,7 @@ for (const v of d.customProperties.slice(0, 45)) {
   p(`| \`${v.name}\` | ${v.reads} | ${v.withFallback} | ${v.definedHere ? '✓' : '—'} | ${v.inDesignSystem ? '✓' : '—'} | ${v.fileCount} | ${val} |`);
 }
 p();
-p(`_${d.customProperties.length - 45} further properties in the JSON._`);
+if (d.customProperties.length > 45) p(`_${d.customProperties.length - 45} further properties in the JSON._`);
 p();
 const undef = d.customProperties.filter((v) => !v.definedHere);
 const undefInDs = undef.filter((v) => v.inDesignSystem);
@@ -202,5 +261,41 @@ p();
 p('`at` holds up to 400 `file:line:role` entries per colour — enough to drive an edit, and capped so');
 p('the file stays openable.');
 
-writeFileSync(process.argv[3], L.join('\n') + '\n');
-console.log('wrote ' + process.argv[3] + ' (' + L.length + ' lines)');
+const OUT = L.join('\n') + '\n';
+
+if (SELF_TEST) {
+  /* Each case names the derived value it protects. A case that only asserted the
+     document is non-empty would pass on a document with every table empty. */
+  const cases = [
+    ['the 90% cut lands on the third colour', 'Listed in full to **90% of all uses** (3 colours)'],
+    ['and says how many it left out', 'The remaining 2 are'],
+    ['role totals aggregate across colours', '| **text** | 58 | 58.0% |'],
+    ['a role appearing in two colours is summed', '| **border** | 2 | 2.0% |'],
+    ['surface totals aggregate too', '| external-css | 54 | 54.0% |'],
+    ['the colour table is not empty', '| 1 | `#111111` | 60 | text 58 · border 2 |'],
+    ['an exact design-system match is named', '`--color-text-body` | `--iron-900` |'],
+    ['the tail is measured, not listed', '2 colours account for 5 uses (5.0%)'],
+    ['ΔE banding puts 3.1 in <5', '| ΔE<5 | 1 | 4 |'],
+    ['ΔE banding puts 7 in <10', '| ΔE<10 | 1 | 1 |'],
+    ['single-use colours are counted', '**1 colours are used exactly once**'],
+    ['properties read but never defined here are found', '**1 properties are read but never defined here**'],
+    ['and the design system is credited for them', '**1 are already'],
+    ['a negative "further properties" line is not printed', '!_-'],
+  ];
+  const missing = cases.filter(([, needle]) =>
+    needle.startsWith('!') ? OUT.includes(needle.slice(1)) : !OUT.includes(needle));
+  for (const [what, needle] of missing) console.log(`FAIL ${what}\n     expected: ${needle}`);
+  // every section must render — an absent one is the silent failure this guards
+  const sections = ['## 1 · Totals', '## 2 · The colours', '## 3 · The tail',
+    '## 4 · Custom properties', '## 5 · Defined but never read', '## 6 · Using this'];
+  const absent = sections.filter((h) => !OUT.includes(h));
+  for (const h of absent) console.log(`FAIL section missing: ${h}`);
+  const bad = missing.length + absent.length;
+  console.log(bad
+    ? `SELF-TEST FAILED (${bad})`
+    : `SELF-TEST PASSED — ${cases.length} derived values and ${sections.length} sections render correctly`);
+  process.exit(bad ? 1 : 0);
+}
+
+writeFileSync(argv[1], OUT);
+console.log('wrote ' + argv[1] + ' (' + L.length + ' lines)');
