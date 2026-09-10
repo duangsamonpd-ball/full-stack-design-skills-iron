@@ -12,12 +12,14 @@
  * --self-test plants a fixture with known answers and fails if any role is
  * mis-detected. A scanner that classified everything as "other" would otherwise
  * look like a complete inventory.
+ *
+ * Usage: node inventory.mjs --root=<astro site> --ds=<design system> <out.json>
+ * Neither root has a default. This reads two unrelated repositories and can
+ * derive neither from the other, so any default would only be one machine's
+ * layout — which is what this carried until 10 Sep 2026.
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
-
-const ROOT = 'D:/Documents/webdev-workspace/iron-websites';
-const DS = 'D:/Documents/cli-tools/my-guide-irondesign';
 
 // role of a colour written in CSS, decided by the declaration it sits in
 const CSS_ROLE = [
@@ -119,6 +121,47 @@ if (process.argv.includes('--self-test')) {
   process.exit(bad ? 1 : 0);
 }
 
+// ── roots ───────────────────────────────────────────────────────────────────
+// Resolved below the self-test on purpose: --self-test runs on a planted
+// fixture and needs neither repository, so requiring them would make the one
+// check that can run without a checkout the one that refuses to.
+const flag = (name) => process.argv.find((a) => a.startsWith(`--${name}=`))?.slice(name.length + 3);
+const ROOT = flag('root');
+const DS = flag('ds');
+const OUT = process.argv.slice(2).find((a) => !a.startsWith('--'));
+
+if (!ROOT || !DS || !OUT) {
+  console.error(
+    'Usage: node inventory.mjs --root=<astro site> --ds=<design system> <out.json>\n\n'
+    + '  --root  the Astro repository to inventory\n'
+    + '  --ds    the design system to cross-reference its colours against\n'
+    + '  out     where to write the JSON\n\n'
+    + 'Neither root has a default: this reads two unrelated repositories and can\n'
+    + 'derive neither from the other.',
+  );
+  process.exit(2);
+}
+
+try {
+  execSync('git rev-parse --show-toplevel', { cwd: ROOT, stdio: 'pipe' });
+} catch {
+  console.error(`Not a git repository: ${ROOT}\n\n--root must be the Astro repository this inventories.`);
+  process.exit(2);
+}
+
+const DS_TOKENS = ['tailwind/tokens.css', 'tailwind/colors.css', 'tailwind/theme.css'];
+for (const f of DS_TOKENS) {
+  if (!existsSync(`${DS}/${f}`)) {
+    console.error(
+      `Not the design system: ${DS}\n\n`
+      + `--ds must be a checkout of my-guide-irondesign; ${f} is missing.\n`
+      + `Without it every colour would cross-reference against nothing and the\n`
+      + `inventory would report the codebase as using no design-system token.`,
+    );
+    process.exit(2);
+  }
+}
+
 // ── corpus ──────────────────────────────────────────────────────────────────
 const files = execSync(
   'git ls-files -- src/components src/render src/layouts src/assets/styles src/apps/ironsoftware/pages src/apps/ironpdf/pages',
@@ -158,8 +201,7 @@ for (const f of files) {
 }
 
 // ── design-system cross-reference ───────────────────────────────────────────
-const dsSrc = ['tailwind/tokens.css', 'tailwind/colors.css', 'tailwind/theme.css']
-  .map((f) => readFileSync(DS + '/' + f, 'utf8')).join('\n');
+const dsSrc = DS_TOKENS.map((f) => readFileSync(DS + '/' + f, 'utf8')).join('\n');
 const dsPrim = new Map(), dsAll = new Map();
 for (const m of dsSrc.matchAll(/(--[a-zA-Z0-9_-]+)\s*:\s*(#[0-9A-Fa-f]{6})\b/g)) {
   const h = m[2].toLowerCase();
@@ -218,7 +260,7 @@ const varRows = [...varRead.values()].map((v) => {
 const defOnly = [...varDef.values()].filter((d) => !varRead.has(d.name))
   .map((d) => ({ name: d.name, values: Object.keys(d.values).slice(0, 4), definedIn: Object.keys(d.files).slice(0, 6) }));
 
-writeFileSync(process.argv[2], JSON.stringify({
+writeFileSync(OUT, JSON.stringify({
   generated: '2026-09-04',
   purpose: 'Complete colour and custom-property inventory of the iron-websites Astro codebase, '
     + 'cross-referenced against the Iron Software design system, for the Figma to Astro handover.',

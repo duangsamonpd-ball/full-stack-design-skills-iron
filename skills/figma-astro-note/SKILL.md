@@ -98,8 +98,14 @@ npm run build && node scripts/check-something.mjs
 5. **Verify the checker accepts it**:
 
 ```sh
-node "${CLAUDE_PLUGIN_ROOT}/scripts/check-notes.mjs"
+# --repo is the TARGET repository, the one holding docs/web-devs/figma-to-astro/notes/ —
+# not this plugin. It defaults to the working directory, so pass it whenever you are
+# not standing in the target.
+node "${CLAUDE_PLUGIN_ROOT}/scripts/check-notes.mjs" --repo=/path/to/iron-websites
 ```
+
+It exits non-zero and says so if it cannot find that directory. A run that reports
+**no notes** where you have just written one means it is aimed at the wrong repository.
 
 Your new note must appear as **active** (for `conflict`/`drift`) or **exempt** (for
 `decision`/`correction`). If it appears as **stale** or **malformed**, fix it rather than shipping it.
