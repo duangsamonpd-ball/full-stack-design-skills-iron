@@ -1,0 +1,41 @@
+{
+  "$comment": [
+    "Configuration, NOT cached conventions. Nothing here records where components live, what",
+    "they are named, or how props are shaped — those are derived from the target repository at",
+    "generation time, because a written-down derivable fact is the one thing nothing checks.",
+    "If you find yourself adding `componentRoot` here, that is the trap; add a MAP.md row instead."
+  ],
+
+  "memory": {
+    "$comment": "Where the generator's memory lives INSIDE the target repository. A configuration choice, not a convention — it has to be told, it cannot be derived.",
+    "path": "docs/web-devs/figma-to-astro",
+    "notesMode": "ask"
+  },
+
+  "generate": {
+    "$comment": "notesMode 'ask' asks before writing a note; 'auto' writes when the gate in figma-astro-note passes; 'off' never writes. 'ask' until the gate has been observed to reject the right things.",
+    "refuseInventedBehaviour": true,
+    "declareUnimplemented": true,
+    "emitHead": false
+  },
+
+  "fidelity": {
+    "$comment": "Pixel-audit tolerances. A Figma frame is measured at its own width; anything beyond that is a responsive decision the frame does not describe.",
+    "frameWidth": 1440,
+    "gapTolerancePx": 1,
+    "positionTolerancePx": 1
+  },
+
+  "verify": {
+    "$comment": "Gates to run after generating. Names are resolved against the TARGET repo's package.json at run time and skipped with a warning if absent — the list of gates is itself a convention that moves.",
+    "afterGenerate": ["check:json", "check:i18n"],
+    "afterGenerateWithBuild": ["check:metadata"],
+    "failOnMissingGate": false
+  },
+
+  "fingerprint": {
+    "$comment": "Re-baselining is deliberately manual: a change announced once and then auto-accepted is a change nobody saw.",
+    "checkBeforeGenerate": true,
+    "autoRebaseline": false
+  }
+}

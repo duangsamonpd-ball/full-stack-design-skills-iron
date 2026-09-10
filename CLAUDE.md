@@ -76,7 +76,7 @@ gate that quietly narrows its own scope reports the narrowed scope as a pass.
 ## Editing a skill here is LIVE, everywhere, immediately
 
 `~/.claude/skills/*` are per-skill symlinks pointing into this repo's
-`.claude/skills/`. Save a `SKILL.md` and the next session on this machine — in
+`skills/`. Save a `SKILL.md` and the next session on this machine — in
 any project — loads it. There is no install step and no reinstall step.
 
 That is the point, and it is also the blast radius: a half-finished edit is a
@@ -92,10 +92,13 @@ backwards.
 
 ## `USAGE.md` is written for a consumer, not for this machine
 
-It says to unzip a bundle and `cp -R` the skills into `~/.claude/skills/`. That
-is correct for someone installing them, and **wrong to run here** — it would
-replace the symlinks above with copies, and the copies would start drifting from
-the repo the moment either changed, with nothing red anywhere.
+It says to install this repository as a plugin (`/plugin marketplace add` then
+`/plugin install figma-astro`). That is correct for someone installing them, and
+**pointless to run here** — the symlinks above already load every skill from the
+working tree, and a plugin install would shadow them with a second, versioned
+copy. Whichever route a consumer takes, never `cp -R` skills into
+`~/.claude/skills/` on this machine: copies drift from the repo the moment
+either changes, with nothing red anywhere.
 
 ## Feeding a session's lessons back
 

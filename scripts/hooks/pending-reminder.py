@@ -152,7 +152,7 @@ def wiring_drift() -> list[dict]:
     when it cannot tell (no LIVE dir, no repo skills) — never guesses. Unlike
     the clone check this replaced, an absent input is REPORTED, not silently
     treated as agreement."""
-    src = REPO_ROOT / ".claude" / "skills"
+    src = REPO_ROOT / "skills"
     if not src.is_dir():
         return []
     if not LIVE.is_dir():

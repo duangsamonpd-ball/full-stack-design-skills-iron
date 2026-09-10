@@ -6,12 +6,12 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SRC="$ROOT/.claude/skills"
+SRC="$ROOT/skills"
 DIST="$ROOT/dist"
 TMP="$(mktemp -d)"
 # Counted, never typed: this file ships the folder, so it is the one place that can
 # SEE how many skills there are. It said 15 while zipping 16 until 2026-08-28.
-COUNT="$(find "$ROOT/.claude/skills" -mindepth 2 -maxdepth 2 -name SKILL.md | wc -l | tr -d " ")"
+COUNT="$(find "$SRC" -mindepth 2 -maxdepth 2 -name SKILL.md | wc -l | tr -d " ")"
 trap 'rm -rf "$TMP"' EXIT
 
 rm -rf "$DIST"; mkdir -p "$DIST/per-skill"

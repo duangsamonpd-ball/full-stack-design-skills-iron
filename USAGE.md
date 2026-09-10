@@ -4,37 +4,39 @@ A practical manual for people who have downloaded the package: how to install it
 the right skill to fire, and what to do when one doesn't.
 
 For what each skill *contains*, see [`README.md`](README.md). For the full trigger and
-disambiguation matrix, see [`.claude/skills/TESTS.md`](.claude/skills/TESTS.md).
+disambiguation matrix, see [`skills/TESTS.md`](skills/TESTS.md).
 
 ---
 
 ## 1 · Install
 
-Pick the surface you actually work in.
+This repository is a **Claude Code plugin**. Installing it is two commands, and it brings the
+skills, the scripts and the session hook together — there is no unzip step and nothing to copy.
 
-### Claude Code — one project
-
-The skills apply only inside this project. Best when the package is relevant to one codebase.
-
-```bash
-unzip iron-skills-claude-code.zip -d /path/to/your/project
-```
-
-The zip contains `.claude/skills/` at its root, so this lands the folder in the right place
-in one step. `.claude` is hidden in Finder — reveal it with <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>.</kbd>
-
-### Claude Code — every project
-
-Same folder, in your home directory instead:
+### Claude Code
 
 ```bash
-mkdir -p ~/.claude/skills
-unzip iron-master-skills-architecture.zip -d /tmp/iron
-cp -R /tmp/iron/iron-master-skills-architecture/skills/* ~/.claude/skills/
+/plugin marketplace add /path/to/full-stack-design-skills-iron
+/plugin install figma-astro
 ```
 
-Installed here they're available in every project. You can still drop a project-level copy in
-a specific repo when you want that codebase pinned to its own version.
+Point the first command at a local clone or at the repository URL; either works, because
+`.claude-plugin/marketplace.json` declares this directory as its own single-plugin marketplace.
+
+Installed this way the skills are available in **every** project, and `/plugin uninstall`
+removes them cleanly. Nothing is copied into `~/.claude/skills/`, so nothing can drift out of
+step with the repository.
+
+> **Upgrading from the zip install?** Delete whatever the old instructions left in
+> `~/.claude/skills/` or a project's `.claude/skills/` first. Copies made that way do not
+> update themselves, and a stale copy shadowing an installed plugin is the one failure with no
+> visible symptom — Claude simply loads the older text.
+
+### Claude Code — one project only
+
+When a codebase should pin its own version, a project-level copy still works: put each skill
+folder at `.claude/skills/<name>/` in that repository. Prefer the plugin unless you need the
+pinning; a copy is a copy, and it stops tracking this repo the moment either changes.
 
 ### Claude app (claude.ai)
 
@@ -43,7 +45,7 @@ Each of those contains a single skill folder with its `SKILL.md` and `references
 
 ### Confirm it worked
 
-Start a new session and ask Claude to list its available skills. You should see all 16 with a
+Start a new session and ask Claude to list its available skills. You should see all 19 with a
 real one-line description each. If a description reads like a filename or a heading, that
 skill's frontmatter didn't parse — see [Troubleshooting](#5--troubleshooting).
 
@@ -166,9 +168,10 @@ description: What it does. Use when the user says "…", "…".
 ---
 ```
 
-**Claude doesn't see the skills at all.** Check the folder is `.claude/skills/<name>/SKILL.md`
-— one folder per skill, the file named exactly `SKILL.md`, and `name:` matching the folder
-name. Then restart the session.
+**Claude doesn't see the skills at all.** If you installed the plugin, check `/plugin` lists
+`figma-astro` as installed. If you copied the folders into a project instead, check the path is
+`.claude/skills/<name>/SKILL.md` — one folder per skill, the file named exactly `SKILL.md`, and
+`name:` matching the folder name. Either way, restart the session afterwards.
 
 **Check the whole install at once** (needs Node, no install step):
 

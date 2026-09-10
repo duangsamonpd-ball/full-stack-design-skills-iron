@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Iron Software Skills — structural lint for .claude/skills/*
+ * Iron Software Skills — structural lint for skills/*
  *
  * A skill only works if its plumbing is intact: the folder name Claude loads
  * must equal the `name:` it selects on, the `description:` is what triggers it,
@@ -15,7 +15,7 @@
  * pointer, or a typo'd description can't ship silently.
  *
  * Run:  node scripts/skills-lint.mjs [skills-dir]
- *       …with no argument it lints this repo's .claude/skills; pass a path to
+ *       …with no argument it lints this repo's skills/; pass a path to
  *       check an installed set instead, e.g. ~/.claude/skills (symlinks are followed).
  * Exit: 0 = clean (warnings allowed) · 1 = a real problem
  *
@@ -30,7 +30,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ARGS = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const SKILLS = ARGS[0]
   ? resolve(ARGS[0].replace(/^~(?=$|\/)/, process.env.HOME ?? '~'))
-  : join(ROOT, '.claude/skills');
+  : join(ROOT, 'skills');
 
 const errors = [];
 const warnings = [];

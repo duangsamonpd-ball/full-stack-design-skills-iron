@@ -2,7 +2,7 @@
 
 ## Skills lint
 
-`skills-lint.mjs` statically checks that every skill under `.claude/skills/*` is
+`skills-lint.mjs` statically checks that every skill under `skills/*` is
 wired correctly — the plumbing a skill needs to load and trigger at all:
 
 - the `name:` in the frontmatter **equals the folder name** (and is a valid slug)
@@ -21,7 +21,7 @@ npm run skills-lint   # no install needed — zero dependencies
 node skills-lint.mjs ~/.claude/skills
 ```
 
-With no argument it lints this repo's `.claude/skills`. Passing a directory checks a
+With no argument it lints this repo's `skills/`. Passing a directory checks a
 set as Claude actually loads it — useful when skills are symlinked into `~/.claude/skills`
 from a clone, or when a hand-installed skill lands there without frontmatter.
 

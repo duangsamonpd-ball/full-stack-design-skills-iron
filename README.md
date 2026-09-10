@@ -2,14 +2,14 @@
 
 # Full-Stack Design Skills · Iron Software
 
-**A set of 16 authored Claude skills for UX/UI + frontend engineering** — from first-principles design through tokens, components, accessibility, and shipping — tuned for **React · Astro · Vue** on **Tailwind CSS v4**.
+**A set of 19 authored Claude skills — 17 for UX/UI + frontend engineering, plus the two that give the `figma-astro` plugin its memory** — from first-principles design through tokens, components, accessibility, and shipping — tuned for **React · Astro · Vue** on **Tailwind CSS v4**.
 
 <p>
   <img alt="Tailwind CSS v4" src="https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8?logo=tailwindcss&logoColor=white" />
   <img alt="React" src="https://img.shields.io/badge/React-61dafb?logo=react&logoColor=black" />
   <img alt="Astro" src="https://img.shields.io/badge/Astro-ff5d01?logo=astro&logoColor=white" />
   <img alt="Vue" src="https://img.shields.io/badge/Vue-42b883?logo=vuedotjs&logoColor=white" />
-  <img alt="Skills" src="https://img.shields.io/badge/skills-16-0d9488" />
+  <img alt="Skills" src="https://img.shields.io/badge/skills-19-0d9488" />
   <img alt="License" src="https://img.shields.io/badge/license-MIT-111" />
   <img alt="Author" src="https://img.shields.io/badge/author-Ball_%40_Iron_Software-334155" />
 </p>
@@ -20,11 +20,18 @@
 
 ## What this is
 
-Claude *skills* are packaged instructions Claude loads on demand for a specific kind of task. This repo holds a coherent UX/UI + frontend skill set: each is a folder under [`.claude/skills/`](.claude/skills) with a `SKILL.md` (and, where depth helps, a `references/` folder loaded progressively).
+Claude *skills* are packaged instructions Claude loads on demand for a specific kind of task. This repo holds a coherent UX/UI + frontend skill set: each is a folder under [`skills/`](skills) with a `SKILL.md` (and, where depth helps, a `references/` folder loaded progressively).
 
 They share one spine — **layered design tokens → consistent component APIs → accessibility & inclusion as defaults → measured quality gates → reliable shipping** — and cross-link so following one naturally hands off to the next.
 
-> **Installing them?** [`USAGE.md`](USAGE.md) is the manual — install per project or globally, how a skill actually gets selected, what to say so the right one fires, and what to do when one doesn't.
+This repository is also a **Claude Code plugin**, so installing it is two commands:
+
+```bash
+/plugin marketplace add /path/to/full-stack-design-skills-iron
+/plugin install figma-astro
+```
+
+> **Installing them?** [`USAGE.md`](USAGE.md) is the manual — the plugin install and the project-level alternative, how a skill actually gets selected, what to say so the right one fires, and what to do when one doesn't.
 
 ## How the skills compose
 
@@ -42,7 +49,7 @@ flowchart LR
     classDef io fill:#ffffff,stroke:#0d9488,color:#0f766e;
 ```
 
-## The 16 skills
+## The 19 skills
 
 ### 🎨 Design
 | Skill | What it does |
@@ -76,12 +83,28 @@ flowchart LR
 | **deployment-devops-workflow** | Build, CI/CD, preview deploys, quality gates, hosting, one-action rollback. |
 
 ### 🧩 Stack-specific
-The fifteen above are stack-independent and never depend on this one — it is here for
+The sixteen above are stack-independent and never depend on this one — it is here for
 projects that have already chosen the stack.
 
 | Skill | What it does |
 |-------|--------------|
 | **shadcn-ui-design** | Build on Next.js with shadcn/ui + Tailwind v4 — component CLI, semantic tokens, dark mode against a 1,812-variable Figma registry. |
+
+### 🔌 The `figma-astro` plugin
+Three skills that turn a Figma frame into Astro code **in the target repository's own
+conventions** — deriving those conventions at generation time rather than carrying them. They
+address the target through `--root` and themselves through `${CLAUDE_PLUGIN_ROOT}`, so they
+work against any Astro repository with a content layer.
+
+| Skill | What it does |
+|-------|--------------|
+| **build-page-from-frame** | Name the job, not the method — build a page from a Figma frame end to end. |
+| **figma-astro-init** | Establish the generator's memory in a target repo: resolve each question to the file that answers it, record absences, capture the first fingerprint. Records no convention *values*. |
+| **figma-astro-note** | The write path for that memory — turn a conflict, drift or correction into a note with its cost attached, and only when it could not have been derived. |
+
+The four scripts they call live in [`scripts/`](scripts) and every one takes `--self-test`.
+Configuration is in [`settings.json`](settings.json); it holds thresholds and defaults, never
+cached conventions.
 
 ## Learning paths
 
@@ -151,9 +174,13 @@ Every styling skill follows v4's CSS-first model:
 
 ```
 .
-├── .claude/
-│   └── skills/                    16 skill folders (SKILL.md + optional references/)
-│       └── README.md              skill-authoring notes & trigger rules
+├── .claude-plugin/                plugin.json + marketplace.json — makes this installable
+├── skills/                        19 skill folders (SKILL.md + optional references/)
+│   └── README.md                  skill-authoring notes & trigger rules
+├── agents/                        role specifications for forked-context skills
+├── hooks/hooks.json               SessionStart surface check
+├── settings.json                  figma-astro configuration (not cached conventions)
+├── .mcp.json                      the Figma MCP server the generation skills call
 ├── component-showcase.html        component demo across the universal skills
 ├── accessibility-showcase.html    working WCAG 2.2 / universal-design demo
 ├── dashboard-prototype.html       KPI + SVG charts (dataviz)
@@ -167,7 +194,7 @@ Every styling skill follows v4's CSS-first model:
 
 ## How the skills trigger
 
-There's no separate "triggers" field — Claude selects a skill from the **`description`** in each `SKILL.md`'s YAML frontmatter. Adjacent skills (styling ↔ responsive, tokens ↔ architecture, design-to-code ↔ figma) each own their own trigger phrases and point to their neighbor, so selection stays unambiguous. Details in [`.claude/skills/README.md`](.claude/skills/README.md).
+There's no separate "triggers" field — Claude selects a skill from the **`description`** in each `SKILL.md`'s YAML frontmatter. Adjacent skills (styling ↔ responsive, tokens ↔ architecture, design-to-code ↔ figma) each own their own trigger phrases and point to their neighbor, so selection stays unambiguous. Details in [`skills/README.md`](skills/README.md).
 
 ## Checks
 

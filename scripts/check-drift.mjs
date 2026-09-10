@@ -141,7 +141,7 @@ function versions() {
  * Scanned: `uses:` lines (workflows + yaml in skill docs) and backticked pins in
  * prose. Unauthenticated API — a handful of calls, well under the 60/hr limit.
  */
-const ACTION_SOURCES = ['.github/workflows', '.claude/skills'];
+const ACTION_SOURCES = ['.github/workflows', 'skills'];
 const PIN = /(?:uses:\s*|`)([\w.-]+\/[\w.-]+)@v(\d+)/g;
 
 function* walk(dir, exts = ['.yml', '.yaml', '.md']) {
@@ -216,7 +216,7 @@ async function actions() {
  *
  * Phases come from dates, not from a hand-kept note: a major is Current, then
  * Active LTS (even majors only), then Maintenance, then EOL. The pins in
- * .claude/skills matter more than our own workflows — they get copied into
+  * skills/ matter more than our own workflows — they get copied into
  * other people's CI, where a maintenance-phase Node quietly becomes their
  * problem too.
  */
@@ -335,7 +335,7 @@ const vnum = (v) => Number(String(v).replace('.', ''));
 
 function wcagCitations() {
   const files = [
-    ...walk(join(ROOT, '.claude', 'skills'), ['.md']),
+    ...walk(join(ROOT, 'skills'), ['.md']),
     // the example pages make the same claim in marketing copy, and drifted
     ...readdirSync(ROOT).filter((f) => extname(f) === '.html').map((f) => join(ROOT, f)),
   ];
