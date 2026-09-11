@@ -338,6 +338,11 @@ function wcagCitations() {
     ...walk(join(ROOT, 'skills'), ['.md']),
     // the example pages make the same claim in marketing copy, and drifted
     ...readdirSync(ROOT).filter((f) => extname(f) === '.html').map((f) => join(ROOT, f)),
+    // ...and so do the framework ports. Reading only root .html left the Astro page
+    // saying "WCAG 2.1 AA" under a green "cites 2.2" after its three .html siblings
+    // were moved on (found 2026-09-11). Derived from WORKSPACES, like the audit.
+    ...WORKSPACES.filter((ws) => existsSync(join(ROOT, ws, 'src')))
+      .flatMap((ws) => [...walk(join(ROOT, ws, 'src'), ['.astro', '.vue', '.jsx', '.tsx', '.mdx', '.md', '.html'])]),
   ];
   const found = new Map(); // version → Set of files
   for (const file of files) {

@@ -50,7 +50,14 @@ release schedule — Current / Active LTS / maintenance / EOL is derived from to
 the bump is prompted by the calendar rather than by someone remembering — and checks the WCAG
 version the skills and example pages cite against the current W3C Recommendation, flagging a
 citation that is behind *or* ahead of it (3.0 is a Working Draft; teaching it early teaches
-something nobody must meet yet). It always exits 0 — it reports, CI is where red fails.
+something nobody must meet yet). "Example pages" includes the `src/` of every tracked
+workspace, not only the root `.html`: until 2026-09-11 it read the root pages alone, and the
+Astro port said "WCAG 2.1 AA" under a green "cites 2.2" after its three siblings had moved on.
+
+**A red gate exits 1** — since 2026-08-28; before that `--gates` printed "1 failing" over
+exit 0, and nothing quoting its exit code could be believed. Version, actions, Node, WCAG and
+audit rows are advisory and exit 0 unless `--fail-on-drift` is passed. `--hook` always exits 0,
+red or green — the status travels in the JSON it prints, not in the exit code.
 
 Set `DRIFT_TODAY=YYYY-MM-DD` to run the Node check against another date. That is how the
 phase transitions get tested (`DRIFT_TODAY=2026-10-21` shows 24 falling to maintenance)
@@ -76,8 +83,8 @@ the gate status:
 Version, Node, WCAG and advisory drift all move on the world's clock rather than on a commit,
 so `.github/workflows/drift.yml` runs those halves weekly and opens (or updates) a `drift`
 issue when something moved, closing it again once the radar is clean. `--fail-on-drift` is
-what makes that possible: it flips the exit code when anything is flagged, while a plain run
-keeps the exit-0 contract. Colour is emitted only to a TTY, so the issue body stays readable.
+what makes that possible: it flips the exit code when anything is flagged, while without it
+those rows never fail a run. Colour is emitted only to a TTY, so the issue body stays readable.
 
 ## Example-page stylesheets
 
