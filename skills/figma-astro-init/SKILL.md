@@ -76,7 +76,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/fingerprint.mjs" --root=. \
 Then **check it captured something**:
 
 ```sh
-node "${CLAUDE_PLUGIN_ROOT}/scripts/fingerprint.mjs" --self-test
+node "${CLAUDE_PLUGIN_ROOT}/scripts/fingerprint.mjs" --self-test --root=.
 ```
 
 A surface that captured empty means its source moved or does not exist here. Fix the surface or

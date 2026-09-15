@@ -147,6 +147,25 @@ const isEmptyValue = (v) => {
 
 const emptySurfaces = (snap) => Object.entries(snap).filter(([, v]) => isEmptyValue(v.value));
 
+/**
+ * Being IN a git repository is not the same as being in the TARGET one. Every
+ * surface empty means this is some other repository. Both the self-test and the
+ * emit path refuse here, with the same words and the same exit code (2, misaimed),
+ * so a bare `--self-test` run in the wrong directory says "point --root at the
+ * target" instead of reporting nine failures in a tool that is not broken.
+ */
+function refuseIfNotTarget(snap) {
+  if (emptySurfaces(snap).length !== Object.keys(snap).length) return;
+  console.error(
+    `No load-bearing surface found in: ${ROOT}\n\n`
+    + `This is a git repository, but not the target Astro one — all `
+    + `${Object.keys(snap).length} surfaces captured empty. Point --root at it:\n`
+    + `  node fingerprint.mjs --root=/path/to/iron-websites\n`
+    + `or run from inside that repository.`,
+  );
+  process.exit(2);
+}
+
 function capture() {
   const out = {};
   for (const [k, fn] of Object.entries(SURFACES)) {
@@ -159,7 +178,8 @@ function capture() {
 // ── self-test ───────────────────────────────────────────────────────────────
 if (process.argv.includes('--self-test')) {
   const base = capture();
-  const empty = emptySurfaces(base);
+  refuseIfNotTarget(base);              // wrong directory is exit 2, not nine FAILs
+  const empty = emptySurfaces(base);   // some empty inside the target IS a failure
   let bad = 0;
   if (empty.length) {
     for (const [k, v] of empty) console.log(`FAIL ${k} captured nothing: ${JSON.stringify(v.value).slice(0, 60)}`);
@@ -199,21 +219,9 @@ if (process.argv.includes('--hook')) {
 // ── compare / emit ──────────────────────────────────────────────────────────
 const now = capture();
 
-/**
- * Being IN a git repository is not the same as being in the TARGET one. Every
- * surface empty means this is some other repository — emit nothing rather than a
- * fingerprint that will compare clean against anything forever.
- */
-if (emptySurfaces(now).length === Object.keys(now).length) {
-  console.error(
-    `No load-bearing surface found in: ${ROOT}\n\n`
-    + `This is a git repository, but not the target Astro one — all `
-    + `${Object.keys(now).length} surfaces captured empty. Point --root at it:\n`
-    + `  node fingerprint.mjs --root=/path/to/iron-websites\n`
-    + `or run from inside that repository.`,
-  );
-  process.exit(2);
-}
+// Emit nothing from the wrong repository — a fingerprint of nine empty surfaces
+// would compare clean against anything forever.
+refuseIfNotTarget(now);
 
 const prior = process.argv.find((a) => a.startsWith('--against='))?.slice(10);
 
