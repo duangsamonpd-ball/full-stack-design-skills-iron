@@ -147,8 +147,8 @@ the gap says nothing and cannot be questioned.
 
 **Do not invent analytics.** The same rule with money attached. Tracking appears in no design and
 cannot be inferred from one, but omitting it has consequences that surface weeks later in a report
-nobody traces back to a component. Measured on one production codebase at `b3d256ecea`: 104 of 600 components
-carry a `<script>`, and 33 of those carry analytics or CRM wiring. A generated component that silently
+nobody traces back to a component. Measured on one production codebase at `36f37dc1ed`: 105 of 604 components
+carry a `<script>`, and 34 of those carry analytics or CRM wiring. A generated component that silently
 drops a `dataLayer` push looks perfect and is wrong.
 
 Where a generated component replaces one that had wiring, say what was there and that you did not
