@@ -42,6 +42,36 @@ try {
 }
 
 const read = (p) => (existsSync(`${ROOT}/${p}`) ? readFileSync(`${ROOT}/${p}`, 'utf8') : '');
+
+/**
+ * Source with its comments removed and its strings intact. The list surfaces
+ * pull quoted names out of a TypeScript array or union with /"([^"]+)"/, and
+ * that pattern cannot tell a path from a sentence a reviewer quoted in a comment
+ * beside it — a note explaining WHY three files are guarded contributed four
+ * "paths" to l10n.overlayGuarded in 2026-09, and the fingerprint reported drift
+ * that was prose. Strings are honoured so a "https://…" literal is not read as a
+ * line comment. JS-style comments only: CSS writes url(https://…) unquoted, so
+ * tokens.ironClasses reads raw on purpose.
+ */
+const uncommented = (src) => {
+  let out = '', i = 0, quote = null;
+  while (i < src.length) {
+    const c = src[i], next = src[i + 1];
+    if (quote) {                                           // inside a string: copy, honour escapes
+      out += c;
+      if (c === '\\') { out += next ?? ''; i += 2; continue; }
+      if (c === quote) quote = null;
+      i++; continue;
+    }
+    if (c === '"' || c === "'" || c === '`') { quote = c; out += c; i++; continue; }
+    if (c === '/' && next === '/') { while (i < src.length && src[i] !== '\n') i++; continue; }
+    if (c === '/' && next === '*') { const end = src.indexOf('*/', i + 2); i = end < 0 ? src.length : end + 2; continue; }
+    out += c; i++;
+  }
+  return out;
+};
+const source = (p) => uncommented(read(p));
+
 const ls = (spec) => {
   try {
     return execSync(`git ls-files -- ${spec}`, { cwd: ROOT, maxBuffer: 1 << 28 })
@@ -56,7 +86,7 @@ const h = (v) => createHash('sha1').update(JSON.stringify(v)).digest('hex').slic
 export const SURFACES = {
   /** What Layout destructures. A page that passes the wrong prop renders anonymous. */
   'layout.props': () => {
-    const m = read('src/layouts/Layout.astro').match(/const\s*\{([^}]*)\}\s*=\s*Astro\.props/);
+    const m = source('src/layouts/Layout.astro').match(/const\s*\{([^}]*)\}\s*=\s*Astro\.props/);
     return m ? m[1].split(',').map((s) => s.trim().split(':')[0].trim()).filter(Boolean).sort() : [];
   },
 
@@ -71,26 +101,26 @@ export const SURFACES = {
       if (!all.includes(twin)) continue;
       pairs++;
       const keys = (s) => [...s.matchAll(/\["([^"]+)"/g)].map((m) => m[1]).sort().join('|');
-      if (keys(read(f)) === keys(read(twin))) agree++;
+      if (keys(source(f)) === keys(source(twin))) agree++;
     }
     return { files: all.length, pairs, agree };
   },
 
   /** Directories whose content is chrome rather than page content. */
   'l10n.sharedDirs': () => {
-    const m = read('src/utils/l10n/policy.ts').match(/SHARED_DIRS[^=]*=\s*\[([^\]]*)\]/s);
+    const m = source('src/utils/l10n/policy.ts').match(/SHARED_DIRS[^=]*=\s*\[([^\]]*)\]/s);
     return m ? [...m[1].matchAll(/"([^"]+)"/g)].map((x) => x[1]).sort() : [];
   },
 
   /** Files where a localized list must not inherit an English tail. */
   'l10n.overlayGuarded': () => {
-    const m = read('src/utils/l10n/policy.ts').match(/OVERLAY_GUARDED_TAILS[^=]*=\s*\[([^\]]*)\]/s);
+    const m = source('src/utils/l10n/policy.ts').match(/OVERLAY_GUARDED_TAILS[^=]*=\s*\[([^\]]*)\]/s);
     return m ? [...m[1].matchAll(/"([^"]+)"/g)].map((x) => x[1]).sort() : [];
   },
 
   /** The structured-data page types a generated page may declare. */
   'jsonld.pageTypes': () => {
-    const m = read('src/utils/json-ld/types.ts').match(/export type PageType\s*=([^;]*);/s);
+    const m = source('src/utils/json-ld/types.ts').match(/export type PageType\s*=([^;]*);/s);
     return m ? [...m[1].matchAll(/"([^"]+)"/g)].map((x) => x[1]).sort() : [];
   },
 
@@ -190,6 +220,14 @@ if (process.argv.includes('--self-test')) {
     const v = fn();
     const mutated = Array.isArray(v) ? [...v, '__planted__'] : { ...v, __planted__: 1 };
     if (h(mutated) === h(v)) { console.log(`FAIL ${k} hash did not move on a planted change`); bad++; }
+  }
+  // a quoted name inside a comment must NOT read as a list member, and a "//"
+  // inside a string must not read as a comment — the two ways the list
+  // surfaces can report drift that is prose
+  const planted = 'const X = [\n  "kept.json", // "line.json"\n  /* "block.json" */\n  "https://kept.example/x",\n];';
+  const seen = [...uncommented(planted).matchAll(/"([^"]+)"/g)].map((m) => m[1]);
+  if (seen.join('|') !== 'kept.json|https://kept.example/x') {
+    console.log(`FAIL comments leak into quoted lists: read ${JSON.stringify(seen)}`); bad++;
   }
   console.log(bad
     ? `SELF-TEST FAILED (${bad})`
