@@ -98,7 +98,7 @@ reads as **lighter** (a card on a dark page is lighter than it). Mirror instead:
 
 ```
 light   page #FFFFFF → band #F8FAFC → band-alt #F2F9FE → shade #F1F5F9   stepping down
-dark    page #260F27 → band #391C39 → band-alt #372647 → shade #462244   stepping up
+dark    page #260F27 → band-alt #211933 → band #391C39 → shade #462244   stepping up
 card    #522950 sits above every band in dark, as white does in light
 ```
 
