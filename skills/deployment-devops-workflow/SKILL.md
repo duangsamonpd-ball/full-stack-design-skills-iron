@@ -36,9 +36,10 @@ A sample GitHub Actions workflow, hosting configs, and a rollback note are in
 A pipeline rots quietly: it keeps passing green on a runtime that stopped getting security
 patches. Two things to re-check when you touch CI — nothing warns you about either:
 
-- **Node** — build on a version in **Active LTS**. Even-numbered releases get ~3 years;
-  check the [release schedule](https://nodejs.org/en/about/eol) rather than trusting the
-  number already in the file. Node 20 went EOL 2026-04-30.
+- **Node** — build on a version in **Active LTS**. Through 26 only even-numbered releases
+  became LTS; from 27 there is one major a year and every one does, ~3 years each. Check
+  the [release schedule](https://nodejs.org/en/about/eol) rather than trusting the number
+  already in the file — or the odd/even rule. Node 20 went EOL 2026-04-30.
 - **Actions** — pin the **major** (`actions/checkout@v7`), which still takes security
   patches within that major. An unmaintained major eventually loses runner support.
 

@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
-        with: { node-version: 24, cache: 'npm' }   # 24 = Active LTS; 20 is EOL (2026-04-30)
+        with: { node-version: 26, cache: 'npm' }   # 26 = Active LTS to 2027-10-20; 24 is maintenance, 20 is EOL
       - run: npm ci                       # reproducible install from lockfile
       - run: npm run typecheck            # tsc --noEmit
       - run: npm run lint
@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
-        with: { node-version: 24, cache: 'npm' }   # 24 = Active LTS; 20 is EOL (2026-04-30)
+        with: { node-version: 26, cache: 'npm' }   # 26 = Active LTS to 2027-10-20; 24 is maintenance, 20 is EOL
       - run: npm ci && npm run build
       - run: npm run test:a11y            # e.g. @axe-core/playwright assertions
 ```
