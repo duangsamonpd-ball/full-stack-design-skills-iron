@@ -215,7 +215,9 @@ async function actions() {
  * release schedule is published as JSON, so ask it.
  *
  * Phases come from dates, not from a hand-kept note: a major is Current, then
- * Active LTS (even majors only), then Maintenance, then EOL. The pins in
+ * Active LTS, then Maintenance, then EOL. Which majors reach LTS is read from
+ * the schedule's own `lts` date, not from a rule: until 26 only even majors did,
+ * and from 27 every major does (one a year, nodejs.org, 2026). The pins in
   * skills/ matter more than our own workflows — they get copied into
  * other people's CI, where a maintenance-phase Node quietly becomes their
  * problem too.
@@ -247,10 +249,10 @@ function phaseOf(entry) {
   }
   if (entry.lts && today >= entry.lts) return { label: `Active LTS until ${entry.maintenance ?? entry.end}` };
   if (today >= entry.start) {
-    // odd majors never become LTS; even ones are just early
+    // no `lts` date = never LTS (an odd major up to 25); with one, it is just early
     return entry.lts
       ? { label: `Current — LTS from ${entry.lts}`, stale: true }
-      : { label: `Current — an odd major, never becomes LTS`, stale: true };
+      : { label: `Current — the schedule gives it no LTS date`, stale: true };
   }
   return { label: `unreleased until ${entry.start}`, stale: true };
 }
@@ -271,9 +273,12 @@ async function node() {
     return { text: dim('node: schedule unreachable — skipped'), behind: 0 };
   }
 
-  // what the calendar says the right pin is, today
+  // what the calendar says the right pin is, today. A major with no
+  // `maintenance` date is Active LTS until its end, as phaseOf() already reads
+  // it: v27 was published that way (2026-11), and `today < undefined` is false,
+  // so the radar told a stale pin in late 2027 to "move to nothing".
   const active = Object.entries(schedule)
-    .filter(([, entry]) => entry.lts && today >= entry.lts && today < entry.maintenance)
+    .filter(([, entry]) => entry.lts && today >= entry.lts && today < (entry.maintenance ?? entry.end))
     .map(([key]) => major(key));
   const upcoming = Object.entries(schedule)
     .filter(([, entry]) => entry.lts && entry.lts > today)
