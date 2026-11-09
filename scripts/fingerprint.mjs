@@ -229,6 +229,15 @@ if (process.argv.includes('--self-test')) {
   if (seen.join('|') !== 'kept.json|https://kept.example/x') {
     console.log(`FAIL comments leak into quoted lists: read ${JSON.stringify(seen)}`); bad++;
   }
+  // an escaped quote must not end the string: if it did, the "//" after it would
+  // read as a comment and the rest of a real value would be dropped. Compared as
+  // the stripper's whole output, not through the /"([^"]+)"/ reader above, which
+  // splits at \" whatever the stripper does, so a case routed through it cannot
+  // pass. Deleting the escape branch leaves `const X = ["a\"` — measured.
+  const escaped = 'const X = ["a\\"//b.json"];';
+  if (uncommented(escaped) !== escaped) {
+    console.log(`FAIL an escaped quote ends the string: read ${JSON.stringify(uncommented(escaped))}`); bad++;
+  }
   console.log(bad
     ? `SELF-TEST FAILED (${bad})`
     : `SELF-TEST PASSED — all ${Object.keys(SURFACES).length} surfaces captured non-empty and every hash moves on a planted change`);
