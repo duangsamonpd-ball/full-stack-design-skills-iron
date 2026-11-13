@@ -10,6 +10,14 @@ Lightweight, single-file test cases for every skill in this folder. Two things g
 skill it loads matches the "Expected" column. Disambiguation rows must pick the **winner**,
 never the **confusable** neighbor. Re-run after editing any `description`.
 
+**Headless:** `claude -p "<prompt>" --output-format stream-json --verbose` from an empty
+directory, with Bash/Edit/Write/Agent disallowed, and read the first `tool_use` named
+`Skill`. Measured 2026-11-13 on the six skills added that day, with every other plugin on
+the machine installed: 14/14 rows correct once the prompt carries its object. Without one
+— "this Figma frame" with no URL, "this mockup" with no file — the session sometimes asks
+for it before loading anything (2 of 5 and 0 of 1). That is a sensible answer, not a wrong
+skill, so a row that names an object includes one.
+
 ---
 
 ## 1 · Trigger matrix
@@ -35,7 +43,7 @@ never the **confusable** neighbor. Re-run after editing any `description`.
 | "critique this with fresh eyes before it ships" | `fresh-eyes-critique` |
 | "build a settings page for our admin — there's no design yet" | `brief-before-build` |
 | "what should this button say? review these error messages" | `ux-writing` |
-| "build this page from this Figma frame into our Astro repo" | `build-page-from-frame` |
+| "build this page from this Figma frame https://www.figma.com/design/…?node-id=12-34 into our Astro repo" | `build-page-from-frame` |
 | "set up figma-astro here / write MAP.md for this repo" | `figma-astro-init` |
 | "that generation needed rework — write that down" | `figma-astro-note` |
 
@@ -60,7 +68,7 @@ Each row is a prompt that could plausibly hit either skill; the description make
 | "why does this look off? fix the hierarchy" | `design-fundamentals` | `fresh-eyes-critique` | diagnosing while working stays in the maker's context |
 | "get an independent verdict on this page before release" | `fresh-eyes-critique` | `design-fundamentals` | a verdict from a context that never saw the work made |
 | "build a pricing page — nothing designed yet" | `brief-before-build` | `design-to-code-workflow` | no frame or mockup to implement; the brief comes first |
-| "implement this mockup as a component" | `design-to-code-workflow` | `brief-before-build` | a design exists, so there is something to read |
+| "implement this mockup as a component: ./mockup.png" | `design-to-code-workflow` | `brief-before-build` | a design exists, so there is something to read |
 | "rewrite this error message so it helps" | `ux-writing` | `anti-ai-design-patterns` | writing copy, not stripping machine tells |
 | "this hero copy sounds AI-generated" | `anti-ai-design-patterns` | `ux-writing` | a tell to remove, not a string to write |
 | "build this whole page from the frame into the repo" | `build-page-from-frame` | `design-to-code-workflow` | a full page into a named repository |

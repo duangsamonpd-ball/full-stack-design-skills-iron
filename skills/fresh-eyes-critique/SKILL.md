@@ -73,6 +73,10 @@ Read them; do not re-derive them. Both are siblings of this skill, at
 - **anti-ai-design-patterns** → `references/review-checklist.md` — every "no" is
   a finding
 
+If either file is not there — this skill was installed on its own, without its
+siblings — say so under *What I could not judge* and judge from the render alone. Do
+not reconstruct the checklists from memory and present them as this repository's.
+
 Every finding names its evidence: a file and line, a measured number, or a
 specific thing in a specific screenshot. "Feels generic" is not a finding.
 "The card's 12px inner gap equals the 12px gap between cards, so the group

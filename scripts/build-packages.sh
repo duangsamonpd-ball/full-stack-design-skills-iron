@@ -23,9 +23,10 @@ cat > "$B/README.md" <<'MD'
 # Iron Master Skills Architecture
 
 __COUNT__ authored Claude skills for UX/UI + frontend engineering — Tailwind CSS v4,
-React · Astro · Vue. They are in the **`skills/`** folder. One of them,
-`shadcn-ui-design`, is scoped to the Next.js + shadcn/ui stack; the rest are
-stack-independent.
+React · Astro · Vue. They are in the **`skills/`** folder. Most are
+stack-independent. `shadcn-ui-design` is scoped to Next.js + shadcn/ui, and the
+figma-astro generator skills (`build-page-from-frame`, `figma-astro-init`,
+`figma-astro-note`) target an Astro repository.
 
 ## Install — Claude Code
     mkdir -p /path/to/your/project/.claude
