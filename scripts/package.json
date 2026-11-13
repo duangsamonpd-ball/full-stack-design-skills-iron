@@ -16,7 +16,7 @@
     "drift:audit": "node check-drift.mjs --audit"
   },
   "dependencies": {
-    "jsdom": "^30.0.1"
+    "jsdom": "^31.0.0"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.3",
