@@ -51,5 +51,10 @@
   .btn{border:1px solid ButtonText}
   :focus-visible{outline:2px solid Highlight;outline-offset:2px}
   [role="tab"][aria-selected="true"]{outline:2px solid Highlight}
-  .strength-seg[data-on="1"]{background:Highlight}
+  /* 8 · the switch: the knob is painted as Canvas and the checked track colour is dropped, so give both system colours */
+  #theme-toggle,#theme-toggle > span{forced-color-adjust:none}   /* the UA otherwise repaints the track as Canvas: checked and unchecked looked identical */
+  #theme-toggle{border:1px solid ButtonText;background:Canvas}
+  #theme-toggle > span{background:ButtonText}
+  #theme-toggle[aria-checked="true"]{background:Highlight}
+  #theme-toggle[aria-checked="true"] > span{background:HighlightText}
 }

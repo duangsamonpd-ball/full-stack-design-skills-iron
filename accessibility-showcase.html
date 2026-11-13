@@ -21,8 +21,8 @@
         <span aria-hidden="true" class="grid h-8 w-8 place-items-center rounded-lg bg-brand text-brand-fg text-sm font-bold">Fe</span>
         <span class="font-semibold tracking-tight">Accessibility Showcase</span>
       </div>
-      <button id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Toggle dark mode"
-              class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-surface-2 ring-1 ring-inset ring-border transition-colors
+      <button id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Dark mode"
+              class="relative inline-flex h-6 w-11 before:absolute before:inset-x-0 before:-inset-y-2.5 before:content-[''] shrink-0 items-center rounded-full bg-surface-2 ring-1 ring-inset ring-border transition-colors
                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg aria-checked:bg-brand">
         <span aria-hidden="true" class="inline-block h-4 w-4 translate-x-1 rounded-full bg-white shadow transition-transform"></span>
       </button>
@@ -39,7 +39,7 @@
 
     <!-- Native disclosure -->
     <section aria-labelledby="s-disclosure">
-      <div class="mb-3 flex items-baseline justify-between border-b border-border pb-2">
+      <div class="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border pb-2">
         <h2 id="s-disclosure" class="text-xl font-semibold tracking-tight">Disclosure</h2>
         <span class="tag">native <code>&lt;details&gt;</code> · zero JS · keyboard-native</span>
       </div>
@@ -57,12 +57,12 @@
 
     <!-- Tabs (ARIA roving tabindex) -->
     <section aria-labelledby="s-tabs">
-      <div class="mb-3 flex items-baseline justify-between border-b border-border pb-2">
+      <div class="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border pb-2">
         <h2 id="s-tabs" class="text-xl font-semibold tracking-tight">Tabs</h2>
         <span class="tag">ARIA · roving tabindex · ←/→ Home/End</span>
       </div>
       <div class="card">
-        <div role="tablist" aria-label="Principles" class="flex flex-wrap gap-1 border-b border-border">
+        <div role="tablist" aria-label="Principles" class="flex gap-1 overflow-x-auto border-b border-border">
           <button role="tab" id="tab-1" aria-controls="panel-1" aria-selected="true" tabindex="0"
                   class="min-h-[44px] rounded-t-lg px-4 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring aria-selected:border-b-2 aria-selected:border-brand aria-selected:text-brand">Perceivable</button>
           <button role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false" tabindex="-1"
@@ -78,12 +78,12 @@
 
     <!-- Native dialog -->
     <section aria-labelledby="s-dialog">
-      <div class="mb-3 flex items-baseline justify-between border-b border-border pb-2">
+      <div class="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border pb-2">
         <h2 id="s-dialog" class="text-xl font-semibold tracking-tight">Modal dialog</h2>
         <span class="tag">native <code>&lt;dialog&gt;</code> · focus trap + restore + Esc, free</span>
       </div>
       <button id="open-dialog" class="btn btn-primary">Open dialog</button>
-      <dialog id="dialog" aria-labelledby="dlg-title" class="max-w-sm rounded-2xl border border-border bg-surface p-6 text-content backdrop:bg-black/40">
+      <dialog id="dialog" aria-labelledby="dlg-title" class="m-auto w-[calc(100%-2rem)] max-w-sm rounded-2xl border border-border bg-surface p-6 text-content backdrop:bg-black/40">
         <h2 id="dlg-title" class="text-lg font-semibold tracking-tight">Focus is trapped here</h2>
         <p class="mt-1 text-sm text-muted">Tab cycles inside the dialog; <kbd class="rounded border border-border px-1 text-xs">Esc</kbd> closes it and focus returns to the button that opened it — all handled by the native element.</p>
         <form method="dialog" class="mt-4 flex justify-end gap-2">
@@ -95,19 +95,19 @@
 
     <!-- Tooltip -->
     <section aria-labelledby="s-tooltip">
-      <div class="mb-3 flex items-baseline justify-between border-b border-border pb-2">
+      <div class="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border pb-2">
         <h2 id="s-tooltip" class="text-xl font-semibold tracking-tight">Tooltip</h2>
         <span class="tag">hover <b>and</b> focus · Esc dismisses · <code>aria-describedby</code></span>
       </div>
       <span class="tip-wrap relative inline-block">
         <button aria-describedby="tip1" class="btn btn-secondary">Payout schedule</button>
-        <span role="tooltip" id="tip1" class="tooltip pointer-events-none absolute left-0 top-full z-10 mt-2 w-56 rounded-lg border border-border bg-surface p-2 text-xs text-content opacity-0 shadow-lg transition-opacity">Payouts run every Friday. Funds arrive 1–2 business days later.</span>
+        <span role="tooltip" id="tip1" class="tooltip invisible absolute left-0 top-full z-10 mt-2 before:absolute before:inset-x-0 before:-top-2 before:h-2 before:content-[''] w-56 rounded-lg border border-border bg-surface p-2 text-xs text-content opacity-0 shadow-lg transition-opacity">Payouts run every Friday. Funds arrive 1–2 business days later.</span>
       </span>
     </section>
 
     <!-- Live region -->
     <section aria-labelledby="s-live">
-      <div class="mb-3 flex items-baseline justify-between border-b border-border pb-2">
+      <div class="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border pb-2">
         <h2 id="s-live" class="text-xl font-semibold tracking-tight">Live region</h2>
         <span class="tag"><code>aria-live="polite"</code> · announced to screen readers</span>
       </div>
@@ -117,7 +117,7 @@
 
     <!-- Status not color alone -->
     <section aria-labelledby="s-status">
-      <div class="mb-3 flex items-baseline justify-between border-b border-border pb-2">
+      <div class="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border pb-2">
         <h2 id="s-status" class="text-xl font-semibold tracking-tight">Status</h2>
         <span class="tag">icon + text, never color alone (1.4.1)</span>
       </div>
@@ -130,7 +130,7 @@
 
     <!-- Accessible form -->
     <section aria-labelledby="s-form">
-      <div class="mb-3 flex items-baseline justify-between border-b border-border pb-2">
+      <div class="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border pb-2">
         <h2 id="s-form" class="text-xl font-semibold tracking-tight">Accessible form</h2>
         <span class="tag">labels · error icon+text · accessible auth (3.3.8) · paste allowed</span>
       </div>
@@ -143,9 +143,9 @@
         <div class="space-y-1.5">
           <label for="pw" class="block text-sm font-medium">Password</label>
           <div class="relative">
-            <input id="pw" name="pw" type="password" class="input pr-12" autocomplete="new-password" placeholder="At least 8 characters" aria-describedby="pw-hint" />
+            <input id="pw" name="pw" type="password" class="input pr-12" autocomplete="new-password" placeholder="At least 15 characters" aria-describedby="pw-hint" />
             <button type="button" id="pw-toggle" aria-pressed="false" aria-label="Show password"
-                    class="absolute right-1 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-md text-muted hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    class="absolute right-0 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-md text-muted hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <svg id="pw-eye" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 4C6 4 2.7 6.6 1 10c1.7 3.4 5 6 9 6s7.3-2.6 9-6c-1.7-3.4-5-6-9-6Zm0 10a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>
             </button>
           </div>
@@ -153,12 +153,13 @@
           <p id="pw-err" class="hidden items-center gap-1 text-xs font-medium text-danger"></p>
         </div>
         <button type="submit" class="btn btn-primary w-full">Create account</button>
+        <p id="form-status" role="status" class="text-sm text-success wrap-anywhere" data-template="Account created for {email}."></p>
       </form>
     </section>
 
     <!-- Preferences -->
     <section aria-labelledby="s-prefs">
-      <div class="mb-3 flex items-baseline justify-between border-b border-border pb-2">
+      <div class="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border pb-2">
         <h2 id="s-prefs" class="text-xl font-semibold tracking-tight">User preferences</h2>
         <span class="tag">reduced motion · target size ≥ 24 · forced colors</span>
       </div>
@@ -167,13 +168,13 @@
           <span class="spin grid h-8 w-8 place-items-center rounded-full border-2 border-border border-t-brand" aria-hidden="true"></span>
           <span class="text-sm text-muted">This spinner stops if you set <em>Reduce Motion</em>.</span>
         </div>
-        <p class="text-sm text-muted">Every target here is ≥ 44px (2.5.8 floor is 24×24), and the whole page survives Windows High Contrast — borders and focus outlines use system colors.</p>
+        <p class="text-sm text-muted">Every target here has a hit area of at least 44×44px (the 2.5.8 floor is 24×24), and the whole page survives Windows High Contrast — borders and focus outlines use system colors.</p>
       </div>
     </section>
 
     <!-- Coverage -->
     <section aria-labelledby="s-cov">
-      <div class="mb-3 flex items-baseline justify-between border-b border-border pb-2">
+      <div class="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border pb-2">
         <h2 id="s-cov" class="text-xl font-semibold tracking-tight">What this page proves</h2>
         <span class="tag">WCAG 2.2 AA + 7 Principles</span>
       </div>
@@ -222,7 +223,7 @@
 
     // Tooltip — Esc dismisses while focus/hover persists
     document.querySelectorAll('.tip-wrap').forEach(function(w){
-      var tip = w.querySelector('.tooltip'), show = function(){ tip.style.opacity='1'; }, hide = function(){ tip.style.opacity='0'; };
+      var tip = w.querySelector('.tooltip'), show = function(){ tip.style.visibility='visible'; tip.style.opacity='1'; }, hide = function(){ tip.style.opacity='0'; tip.style.visibility='hidden'; };
       w.addEventListener('mouseenter', show); w.addEventListener('mouseleave', hide);
       w.addEventListener('focusin', show); w.addEventListener('focusout', hide);
       w.addEventListener('keydown', function(e){ if(e.key==='Escape') hide(); });
@@ -250,9 +251,9 @@
       e.preventDefault();
       var email = document.getElementById('email');
       var okE = setErr(email, 'email-err', !email.value.trim() ? 'Enter your email.' : (EMAIL.test(email.value) ? '' : 'Enter a valid email address.'));
-      var okP = setErr(pw, 'pw-err', pw.value.length>=8 ? '' : 'Use at least 8 characters.');
+      var okP = setErr(pw, 'pw-err', [...pw.value].length>=15 ? '' : 'Use at least 15 characters.');
       if(!okE){ email.focus(); return; } if(!okP){ pw.focus(); return; }
-      live.textContent = 'Account created for ' + email.value + '.';
+      var st = document.getElementById('form-status'); st.textContent = st.dataset.template.replace('{email}', email.value);
     });
   </script>
 </body>
