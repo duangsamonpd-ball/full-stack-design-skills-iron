@@ -8,7 +8,10 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ── Material 3 tonal scheme (baseline purple) — same method, swapped token values ── */
+/* color-scheme tells native controls which theme they sit in. Without it the unchecked terms
+   checkbox stayed a white square in dark mode, 14.4:1 against the card (2026-11-13). */
 :root {
+  color-scheme: light;
   --primary:#6750A4; --on-primary:#FFFFFF; --primary-container:#EADDFF; --on-primary-container:#21005D;
   --secondary-container:#E8DEF8; --on-secondary-container:#1D192B;
   --surface:#FEF7FF; --on-surface:#1D1B20; --surface-variant:#E7E0EC; --on-surface-variant:#49454F;
@@ -18,6 +21,7 @@
   --success:#386A20; --warning:#8A5A00;
 }
 .dark {
+  color-scheme: dark;
   --primary:#D0BCFF; --on-primary:#381E72; --primary-container:#4F378B; --on-primary-container:#EADDFF;
   --secondary-container:#4A4458; --on-secondary-container:#E8DEF8;
   --surface:#141218; --on-surface:#E6E0E9; --surface-variant:#49454F; --on-surface-variant:#CAC4D0;

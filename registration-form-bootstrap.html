@@ -31,7 +31,7 @@
           <i class="bi bi-box-seam-fill fs-5"></i><span class="fw-semibold">Iron Software</span>
         </div>
         <div style="max-width:24rem">
-          <h2 class="fw-bold lh-sm">Ship UI your whole team trusts.</h2>
+          <p class="h2 fw-bold lh-sm">Ship UI your whole team trusts.</p>
           <ul class="list-unstyled mt-4 d-grid gap-3 text-white-50">
             <li class="d-flex gap-2"><i class="bi bi-check-circle-fill text-white"></i><span>Accessible by default — WCAG 2.2 AA states on every component.</span></li>
             <li class="d-flex gap-2"><i class="bi bi-palette-fill text-white"></i><span>One token system — light, dark, and per-brand from a single source.</span></li>
@@ -87,7 +87,7 @@
                 <div class="mb-2">
                   <div class="form-floating position-relative">
                     <input type="password" class="form-control" id="password" placeholder="Password" autocomplete="new-password" required
-                           aria-describedby="pw-reqs" style="padding-right:3rem" />
+                           aria-describedby="pw-hint pw-reqs" style="padding-right:3rem" />
                     <label for="password">Password</label>
                     <button type="button" id="pw-toggle" aria-pressed="false" aria-label="Show password"
                             class="btn border-0 bg-transparent position-absolute end-0 top-0 h-100 px-3 text-body-secondary" style="z-index:5">
@@ -100,10 +100,11 @@
                     <div class="progress flex-grow-1" style="height:4px" aria-hidden="true">
                       <div class="progress-bar bg-danger" id="pw-bar" style="width:0%"></div>
                     </div>
-                    <span class="small fw-medium text-body-secondary" id="pw-strength" style="width:3.5rem;text-align:right" aria-live="polite">—</span>
+                    <span class="small fw-medium text-body-secondary" id="pw-strength" style="width:3.5rem;text-align:right" aria-live="polite"></span>
                   </div>
 
-                  <ul class="list-unstyled row row-cols-2 g-1 small text-body-secondary mt-2 mb-0" id="pw-reqs">
+                  <p class="small text-body-secondary mt-2 mb-0" id="pw-hint">Needs 8+ characters. The others make it stronger.</p>
+                  <ul class="list-unstyled row row-cols-2 g-1 small text-body-secondary mt-1 mb-0" id="pw-reqs">
                     <li class="col pw-req" data-req="len"><i class="bi bi-circle req-i"></i> 8+ characters</li>
                     <li class="col pw-req" data-req="case"><i class="bi bi-circle req-i"></i> Upper &amp; lower</li>
                     <li class="col pw-req" data-req="num"><i class="bi bi-circle req-i"></i> A number</li>
@@ -130,7 +131,6 @@
                   <span id="submit-label">Create account</span>
                 </button>
 
-                <p class="text-center text-body-secondary small mt-3 mb-0">Fields are required unless noted.</p>
               </form>
             </div>
           </div>
@@ -190,7 +190,7 @@
       var score = (r.len?1:0)+(r.case?1:0)+(r.num?1:0)+(r.sym?1:0), lvl = LEVELS[score];
       bar.className = 'progress-bar ' + (v ? lvl.bar : 'bg-danger');
       bar.style.width = v ? lvl.w : '0%';
-      strengthLabel.textContent = v ? lvl.l : '—';
+      strengthLabel.textContent = v ? lvl.l : '';
       strengthLabel.className = 'small fw-medium ' + (v ? lvl.t : 'text-body-secondary');
     }
     pw.addEventListener('input', updatePw);

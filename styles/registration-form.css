@@ -8,6 +8,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  color-scheme: light; /* native controls (the terms checkbox) follow the theme */
   --steel-50:  oklch(0.985 0.003 250); --steel-100: oklch(0.968 0.005 250);
   --steel-200: oklch(0.922 0.007 250); --steel-400: oklch(0.680 0.012 250);
   --steel-500: oklch(0.550 0.013 250); --steel-700: oklch(0.372 0.013 255);
@@ -25,6 +26,7 @@
   --success: var(--green-600); --warning: var(--amber-500); --danger: var(--red-600); --info: var(--blue-600);
 }
 .dark {
+  color-scheme: dark;
   --bg: var(--steel-950); --surface: var(--steel-900); --surface-2: var(--steel-800);
   --content: var(--steel-50); --muted: var(--steel-400); --border: var(--steel-800);
   --brand: var(--teal-600); --brand-hover: var(--teal-500); --brand-fg: var(--steel-950);

@@ -30,7 +30,7 @@
         <span class="font-medium">Iron Software</span>
       </div>
       <div class="max-w-sm">
-        <h2 class="text-3xl font-normal leading-tight tracking-tight xl:text-4xl">Ship UI your whole team trusts.</h2>
+        <p class="text-3xl font-normal leading-tight tracking-tight xl:text-4xl">Ship UI your whole team trusts.</p>
         <ul class="mt-8 space-y-5 text-on-primary-container/90">
           <li class="flex gap-3"><span aria-hidden="true" class="material-symbols-outlined shrink-0">verified</span><span>Accessible by default — WCAG 2.2 AA states on every component.</span></li>
           <li class="flex gap-3"><span aria-hidden="true" class="material-symbols-outlined shrink-0">palette</span><span>One token system — light, dark, and per-brand from a single source.</span></li>
@@ -100,7 +100,7 @@
             <div>
               <div class="field relative">
                 <input id="password" name="password" type="password" autocomplete="new-password" required placeholder=" "
-                       class="m3-input peer pr-12" aria-describedby="pw-reqs" />
+                       class="m3-input peer pr-12" aria-describedby="pw-hint pw-reqs" />
                 <label for="password" class="m3-label peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs peer-focus:font-medium peer-focus:text-primary">Password</label>
                 <button type="button" id="pw-toggle" aria-pressed="false" aria-label="Show password"
                         class="state absolute right-2 top-2 grid h-10 w-10 place-items-center rounded-full text-on-surface-variant focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
@@ -117,10 +117,11 @@
                   <span data-seg class="flex-1 rounded-full bg-sc-highest"></span>
                   <span data-seg class="flex-1 rounded-full bg-sc-highest"></span>
                 </div>
-                <span id="pw-strength" class="w-14 text-right text-xs font-medium text-on-surface-variant" aria-live="polite">—</span>
+                <span id="pw-strength" class="w-14 text-right text-xs font-medium text-on-surface-variant" aria-live="polite"></span>
               </div>
 
-              <ul id="pw-reqs" class="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 px-1 text-xs text-on-surface-variant">
+              <p id="pw-hint" class="mt-2 px-1 text-xs text-on-surface-variant">Needs 8+ characters. The others make it stronger.</p>
+              <ul id="pw-reqs" class="mt-1 grid grid-cols-2 gap-x-3 gap-y-1 px-1 text-xs text-on-surface-variant">
                 <li data-req="len"  class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> 8+ characters<span class="sr-only req-s">, not met</span></li>
                 <li data-req="case" class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> Upper &amp; lower<span class="sr-only req-s">, not met</span></li>
                 <li data-req="num"  class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> A number<span class="sr-only req-s">, not met</span></li>
@@ -154,7 +155,6 @@
               <span id="submit-label">Create account</span>
             </button>
 
-            <p class="text-center text-xs text-on-surface-variant">Fields are required unless noted.</p>
           </form>
         </div>
 
@@ -207,7 +207,7 @@
       });
       var score=(r.len?1:0)+(r.case?1:0)+(r.num?1:0)+(r.sym?1:0), lvl=LEVELS[score];
       segs.forEach(function(s,i){ s.className='flex-1 rounded-full '+(v && i<score ? lvl.c : 'bg-sc-highest'); });
-      strengthLabel.textContent = v?lvl.l:'—';
+      strengthLabel.textContent = v?lvl.l:'';
       strengthLabel.className='w-14 text-right text-xs font-medium '+(v?lvl.t:'text-on-surface-variant');
     }
     pw.addEventListener('input', updatePw);
@@ -241,7 +241,7 @@
     // once shown, the summary and the terms error follow the form as it is now, not as it was at submit
     function refreshSummary(){
       var t=document.getElementById('terms'), te=document.getElementById('terms-err');
-      if(t.checked && !te.classList.contains('hidden')){ te.classList.add('hidden'); te.textContent=''; }
+      if(t.checked && !te.classList.contains('hidden')){ te.classList.add('hidden'); te.textContent=''; t.removeAttribute('aria-invalid'); t.removeAttribute('aria-describedby'); }
       if(!summary.classList.contains('hidden') && !form.querySelector('.field-invalid') && t.checked) summary.classList.add('hidden');
     }
     document.getElementById('terms').addEventListener('change', refreshSummary);
@@ -259,8 +259,8 @@
         var good=setError(id, validators[id](input.value)); if(!good && !firstBad) firstBad=input; ok=ok&&good;
       });
       var terms=document.getElementById('terms'), termsErr=document.getElementById('terms-err');
-      if(!terms.checked){ termsErr.innerHTML='<span aria-hidden="true" class="material-symbols-outlined" style="font-size:16px">error</span>Please accept the Terms to continue.'; termsErr.classList.remove('hidden'); ok=false; if(!firstBad) firstBad=terms; }
-      else termsErr.classList.add('hidden');
+      if(!terms.checked){ termsErr.innerHTML='<span aria-hidden="true" class="material-symbols-outlined" style="font-size:16px">error</span>Please accept the Terms to continue.'; termsErr.classList.remove('hidden'); terms.setAttribute('aria-invalid','true'); terms.setAttribute('aria-describedby','terms-err'); ok=false; if(!firstBad) firstBad=terms; }
+      else { termsErr.classList.add('hidden'); terms.removeAttribute('aria-invalid'); terms.removeAttribute('aria-describedby'); }
 
       if(!ok){ summary.textContent='Please fix the highlighted fields.'; summary.classList.remove('hidden'); if(firstBad) firstBad.focus(); return; }
       summary.classList.add('hidden');
@@ -282,6 +282,7 @@
       submit.disabled=false; spin.classList.add('hidden'); lbl.textContent='Create account';
       form.reset(); updatePw();
       Object.keys(validators).forEach(function(id){ delete document.getElementById(id).dataset.touched; setError(id,''); });
+      var t=document.getElementById('terms'); t.removeAttribute('aria-invalid'); t.removeAttribute('aria-describedby');
       document.getElementById('form-title').focus();
     });
 

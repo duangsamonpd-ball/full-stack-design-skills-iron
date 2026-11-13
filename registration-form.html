@@ -27,7 +27,7 @@
       </div>
 
       <div class="my-auto max-w-sm">
-        <h2 class="text-3xl font-bold leading-tight tracking-tight">Ship UI your whole team trusts.</h2>
+        <p class="text-3xl font-bold leading-tight tracking-tight">Ship UI your whole team trusts.</p>
         <ul class="mt-8 space-y-4 text-brand-fg/85">
           <li class="flex gap-3">
             <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.7-9.3a1 1 0 0 0-1.4-1.4L9 10.6 7.7 9.3a1 1 0 0 0-1.4 1.4l2 2a1 1 0 0 0 1.4 0l4-4Z" clip-rule="evenodd"/></svg>
@@ -103,7 +103,7 @@
               <label for="password" class="label">Password <span class="text-danger" aria-hidden="true">*</span></label>
               <div class="relative mt-1.5">
                 <input id="password" name="password" type="password" autocomplete="new-password" required
-                       class="input pr-11" aria-describedby="pw-reqs" placeholder="At least 8 characters" />
+                       class="input pr-11" aria-describedby="pw-hint pw-reqs" placeholder="At least 8 characters" />
                 <button type="button" id="pw-toggle" aria-pressed="false" aria-label="Show password"
                         class="absolute right-1 top-1 grid h-9 w-9 place-items-center rounded-md text-muted hover:text-content
                                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
@@ -120,11 +120,12 @@
                   <span data-seg class="flex-1 rounded-full bg-surface-2"></span>
                   <span data-seg class="flex-1 rounded-full bg-surface-2"></span>
                 </div>
-                <span id="pw-strength" class="w-14 text-right text-xs font-medium text-muted" aria-live="polite">—</span>
+                <span id="pw-strength" class="w-14 text-right text-xs font-medium text-muted" aria-live="polite"></span>
               </div>
 
               <!-- requirements checklist (progressive feedback) -->
-              <ul id="pw-reqs" class="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-muted">
+              <p id="pw-hint" class="mt-2 text-xs text-muted">Needs 8+ characters. The others make it stronger.</p>
+              <ul id="pw-reqs" class="mt-1 grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-muted">
                 <li data-req="len"   class="flex items-center gap-1.5"><span class="req-dot">○</span> 8+ characters</li>
                 <li data-req="case"  class="flex items-center gap-1.5"><span class="req-dot">○</span> Upper &amp; lower case</li>
                 <li data-req="num"   class="flex items-center gap-1.5"><span class="req-dot">○</span> A number</li>
@@ -212,7 +213,7 @@
       segs.forEach(function(s,i){
         s.className = 'flex-1 rounded-full ' + (v && i < score ? lvl.seg : 'bg-surface-2');
       });
-      strengthLabel.textContent = v ? lvl.label : '—';
+      strengthLabel.textContent = v ? lvl.label : '';
       strengthLabel.className = 'w-14 text-right text-xs font-medium ' + (v ? {Weak:'text-danger',Fair:'text-warning',Good:'text-info',Strong:'text-success'}[lvl.label] : 'text-muted');
     }
     pw.addEventListener('input', updatePw);
@@ -244,7 +245,7 @@
     // once shown, the summary and the terms error follow the form as it is now, not as it was at submit
     function refreshSummary(){
       var t=document.getElementById('terms'), te=document.getElementById('terms-err');
-      if(t.checked && !te.classList.contains('hidden')){ te.classList.add('hidden'); te.textContent=''; }
+      if(t.checked && !te.classList.contains('hidden')){ te.classList.add('hidden'); te.textContent=''; t.removeAttribute('aria-invalid'); t.removeAttribute('aria-describedby'); }
       if(!summary.classList.contains('hidden') && !form.querySelector('.input-error') && t.checked) summary.classList.add('hidden');
     }
     document.getElementById('terms').addEventListener('change', refreshSummary);
@@ -265,8 +266,8 @@
       });
       // terms
       var terms = document.getElementById('terms'), termsErr = document.getElementById('terms-err');
-      if(!terms.checked){ termsErr.textContent='Please accept the Terms to continue.'; termsErr.classList.remove('hidden'); ok=false; if(!firstBad) firstBad=terms; }
-      else { termsErr.classList.add('hidden'); }
+      if(!terms.checked){ termsErr.textContent='Please accept the Terms to continue.'; termsErr.classList.remove('hidden'); terms.setAttribute('aria-invalid','true'); terms.setAttribute('aria-describedby','terms-err'); ok=false; if(!firstBad) firstBad=terms; }
+      else { termsErr.classList.add('hidden'); terms.removeAttribute('aria-invalid'); terms.removeAttribute('aria-describedby'); }
 
       if(!ok){
         summary.textContent = 'Please fix the highlighted fields.'; summary.classList.remove('hidden');
@@ -293,6 +294,7 @@
       submit.disabled=false; spin.classList.add('hidden'); lbl.textContent='Create account';
       form.reset(); updatePw();
       Object.keys(validators).forEach(function(id){ delete document.getElementById(id).dataset.touched; setError(id,''); });
+      var t=document.getElementById('terms'); t.removeAttribute('aria-invalid'); t.removeAttribute('aria-describedby');
       document.getElementById('form-title').focus();
     });
 
