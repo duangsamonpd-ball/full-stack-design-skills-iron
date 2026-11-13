@@ -18,7 +18,7 @@
 </head>
 
 <body class="min-h-screen bg-bg text-content font-sans antialiased">
-  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-brand focus:px-4 focus:py-2 focus:text-brand-fg">Skip to content</a>
+  <a id="skip" href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-brand focus:px-4 focus:py-2 focus:text-brand-fg">Skip to content</a>
 
   <div class="lg:grid lg:grid-cols-[240px_1fr] lg:min-h-screen">
 
@@ -30,6 +30,9 @@
       <div class="flex items-center gap-3 px-5 h-16 border-b border-border">
         <span aria-hidden="true" class="grid h-9 w-9 place-items-center rounded-lg bg-brand text-brand-fg font-bold">Fe</span>
         <p class="font-semibold tracking-tight">Iron Analytics</p>
+        <button id="nav-close" type="button" aria-label="Close menu" class="btn btn-sm btn-ghost ml-auto px-2 lg:hidden">
+          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M5.3 5.3a1 1 0 0 1 1.4 0L10 8.6l3.3-3.3a1 1 0 1 1 1.4 1.4L11.4 10l3.3 3.3a1 1 0 0 1-1.4 1.4L10 11.4l-3.3 3.3a1 1 0 0 1-1.4-1.4L8.6 10 5.3 6.7a1 1 0 0 1 0-1.4Z"/></svg>
+        </button>
       </div>
       <nav aria-label="Primary" class="flex-1 space-y-1 p-3">
         <a href="#" class="nav-link" aria-current="page">
@@ -58,7 +61,7 @@
     </aside>
 
     <!-- ─────────── Main column ─────────── -->
-    <div class="flex min-w-0 flex-col">
+    <div id="main-col" class="flex min-w-0 flex-col">
       <!-- Top bar -->
       <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-border bg-bg/80 px-4 backdrop-blur sm:px-6">
         <button id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar"
@@ -71,12 +74,12 @@
         </div>
         <div class="ml-auto flex items-center gap-2">
           <label class="relative hidden sm:block">
-            <span class="sr-only">Search</span>
+            <span class="sr-only">Search orders</span>
             <svg class="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 3.4 9.8l3.6 3.6a1 1 0 0 0 1.4-1.4l-3.6-3.6A5.5 5.5 0 0 0 9 3.5ZM5.5 9a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0Z" clip-rule="evenodd"/></svg>
-            <input type="search" placeholder="Search…" class="input h-9 w-48 pl-8" />
+            <input id="order-search" type="search" placeholder="Search orders…" aria-controls="orders-table" class="input h-9 w-48 pl-8" />
           </label>
-          <button id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Toggle dark mode"
-                  class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-surface-2 ring-1 ring-inset ring-border transition-colors
+          <button id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Dark mode"
+                  class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-surface-2 ring-1 ring-inset ring-muted transition-colors
                          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg aria-checked:bg-brand">
             <span aria-hidden="true" class="inline-block h-4 w-4 translate-x-1 rounded-full bg-white shadow transition-transform"></span>
           </button>
@@ -93,8 +96,8 @@
             <!-- tile -->
             <div class="card p-5">
               <p class="text-sm text-muted">Revenue</p>
-              <div class="mt-1 flex items-end justify-between gap-2">
-                <p class="text-2xl font-bold tracking-tight tabular-nums">$284.5k</p>
+              <div class="mt-1 flex flex-wrap items-end justify-between gap-2">
+                <p class="text-2xl font-bold tracking-tight tabular-nums">$34.1k</p>
                 <span class="badge bg-success/12 text-success ring-success/25">
                   <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 2 10 7H2L6 2Z"/></svg>+12.4%
                 </span>
@@ -105,7 +108,7 @@
             </div>
             <div class="card p-5">
               <p class="text-sm text-muted">Active users</p>
-              <div class="mt-1 flex items-end justify-between gap-2">
+              <div class="mt-1 flex flex-wrap items-end justify-between gap-2">
                 <p class="text-2xl font-bold tracking-tight tabular-nums">18,204</p>
                 <span class="badge bg-success/12 text-success ring-success/25">
                   <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 2 10 7H2L6 2Z"/></svg>+3.1%
@@ -117,7 +120,7 @@
             </div>
             <div class="card p-5">
               <p class="text-sm text-muted">Conversion</p>
-              <div class="mt-1 flex items-end justify-between gap-2">
+              <div class="mt-1 flex flex-wrap items-end justify-between gap-2">
                 <p class="text-2xl font-bold tracking-tight tabular-nums">3.84%</p>
                 <span class="badge bg-danger/12 text-danger ring-danger/25">
                   <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 10 2 5h8L6 10Z"/></svg>−0.6%
@@ -129,7 +132,7 @@
             </div>
             <div class="card p-5">
               <p class="text-sm text-muted">Avg. order</p>
-              <div class="mt-1 flex items-end justify-between gap-2">
+              <div class="mt-1 flex flex-wrap items-end justify-between gap-2">
                 <p class="text-2xl font-bold tracking-tight tabular-nums">$62.10</p>
                 <span class="badge bg-success/12 text-success ring-success/25">
                   <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 2 10 7H2L6 2Z"/></svg>+5.9%
@@ -160,8 +163,15 @@
               </div>
             </div>
             <div id="trend-wrap" class="relative">
-              <svg id="trend" class="w-full" viewBox="0 0 720 260" role="img" aria-label="Revenue by month, this year versus last year"></svg>
+              <svg id="trend" class="block w-full" height="260" viewBox="0 0 720 260" tabindex="0" role="img" aria-label="Revenue by month, this year versus last year. Left and right arrow keys step through the months."></svg>
               <div id="trend-tip" class="pointer-events-none absolute z-10 hidden rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs shadow-lg"></div>
+            </div>
+            <div class="sr-only">
+              <table>
+                <caption>Monthly revenue ($k), this year vs last year</caption>
+                <thead><tr><th scope="col">Month</th><th scope="col">This year</th><th scope="col">Last year</th></tr></thead>
+                <tbody><tr><th scope="row">Jan</th><td>$18k</td><td>$15k</td></tr><tr><th scope="row">Feb</th><td>$21k</td><td>$16k</td></tr><tr><th scope="row">Mar</th><td>$19k</td><td>$17k</td></tr><tr><th scope="row">Apr</th><td>$24k</td><td>$18k</td></tr><tr><th scope="row">May</th><td>$23k</td><td>$20k</td></tr><tr><th scope="row">Jun</th><td>$27k</td><td>$19k</td></tr><tr><th scope="row">Jul</th><td>$26k</td><td>$22k</td></tr><tr><th scope="row">Aug</th><td>$29k</td><td>$21k</td></tr><tr><th scope="row">Sep</th><td>$28k</td><td>$24k</td></tr><tr><th scope="row">Oct</th><td>$31k</td><td>$23k</td></tr><tr><th scope="row">Nov</th><td>$30k</td><td>$25k</td></tr><tr><th scope="row">Dec</th><td>$34k</td><td>$26k</td></tr></tbody>
+              </table>
             </div>
           </div>
 
@@ -169,24 +179,7 @@
           <div class="card p-5">
             <h3 class="font-semibold tracking-tight">Sessions by channel</h3>
             <p class="text-xs text-muted">Last 30 days</p>
-            <svg class="mt-3 w-full" viewBox="0 0 320 220" role="img" aria-label="Sessions by channel: Organic 12.4k, Direct 8.1k, Referral 5.3k, Social 3.6k">
-              <!-- recessive baseline -->
-              <line x1="16" y1="180" x2="304" y2="180" stroke="var(--border)" stroke-width="1"/>
-              <g class="chart-bar" fill="var(--chart-1)">
-                <rect x="30"  y="30"  width="50" height="150" rx="4"><title>Organic — 12.4k</title></rect>
-                <rect x="100" y="82"  width="50" height="98"  rx="4"><title>Direct — 8.1k</title></rect>
-                <rect x="170" y="116" width="50" height="64"  rx="4"><title>Referral — 5.3k</title></rect>
-                <rect x="240" y="136" width="50" height="44"  rx="4"><title>Social — 3.6k</title></rect>
-              </g>
-              <g fill="var(--content)" font-size="12" font-weight="600" text-anchor="middle">
-                <text x="55" y="22">12.4k</text><text x="125" y="74">8.1k</text>
-                <text x="195" y="108">5.3k</text><text x="265" y="128">3.6k</text>
-              </g>
-              <g fill="var(--muted)" font-size="11" text-anchor="middle">
-                <text x="55" y="198">Organic</text><text x="125" y="198">Direct</text>
-                <text x="195" y="198">Referral</text><text x="265" y="198">Social</text>
-              </g>
-            </svg>
+            <svg id="bars" class="mt-3 block w-full" height="220" role="img" aria-label="Sessions by channel: Organic 12.4k, Direct 8.1k, Referral 5.3k, Social 3.6k"></svg>
           </div>
         </section>
 
@@ -202,30 +195,31 @@
               <table id="orders-table" class="w-full text-left text-sm">
                 <thead class="text-xs uppercase tracking-wide text-muted">
                   <tr class="border-b border-border">
-                    <th scope="col" class="px-5 py-2.5 font-medium">Order</th>
+                    <th scope="col" class="hidden px-5 py-2.5 font-medium sm:table-cell">Order</th>
                     <th scope="col" class="px-5 py-2.5 font-medium">Customer</th>
                     <th scope="col" class="px-5 py-2.5 font-medium">Status</th>
                     <th scope="col" class="px-5 py-2.5 font-medium text-right">Total</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-border">
+                  <tr id="orders-empty" hidden><td colspan="4" class="px-5 py-6 text-center text-muted">No orders match that search.</td></tr>
                   <tr>
-                    <td class="px-5 py-3 font-medium tabular-nums">#4821</td><td class="px-5 py-3 text-muted">Ada Lovelace</td>
+                    <td class="hidden px-5 py-3 font-medium tabular-nums sm:table-cell">#4821</td><td class="px-5 py-3 text-muted">Ada Lovelace</td>
                     <td class="px-5 py-3"><span class="badge bg-success/12 text-success ring-success/25">Paid</span></td>
                     <td class="px-5 py-3 text-right tabular-nums">$128.00</td>
                   </tr>
                   <tr>
-                    <td class="px-5 py-3 font-medium tabular-nums">#4820</td><td class="px-5 py-3 text-muted">Grace Hopper</td>
+                    <td class="hidden px-5 py-3 font-medium tabular-nums sm:table-cell">#4820</td><td class="px-5 py-3 text-muted">Grace Hopper</td>
                     <td class="px-5 py-3"><span class="badge bg-warning/15 text-warning ring-warning/30">Pending</span></td>
                     <td class="px-5 py-3 text-right tabular-nums">$74.50</td>
                   </tr>
                   <tr>
-                    <td class="px-5 py-3 font-medium tabular-nums">#4819</td><td class="px-5 py-3 text-muted">Alan Turing</td>
+                    <td class="hidden px-5 py-3 font-medium tabular-nums sm:table-cell">#4819</td><td class="px-5 py-3 text-muted">Alan Turing</td>
                     <td class="px-5 py-3"><span class="badge bg-danger/12 text-danger ring-danger/25">Refunded</span></td>
                     <td class="px-5 py-3 text-right tabular-nums">$52.10</td>
                   </tr>
                   <tr>
-                    <td class="px-5 py-3 font-medium tabular-nums">#4818</td><td class="px-5 py-3 text-muted">Katherine Johnson</td>
+                    <td class="hidden px-5 py-3 font-medium tabular-nums sm:table-cell">#4818</td><td class="px-5 py-3 text-muted">Katherine Johnson</td>
                     <td class="px-5 py-3"><span class="badge bg-success/12 text-success ring-success/25">Paid</span></td>
                     <td class="px-5 py-3 text-right tabular-nums">$213.75</td>
                   </tr>
@@ -237,7 +231,7 @@
           <!-- Goal meter (dataviz: a single proportion → a meter, not a pie) -->
           <div class="card p-5">
             <h2 class="font-semibold tracking-tight">Quarterly goal</h2>
-            <p class="text-xs text-muted">$284.5k of $360k</p>
+            <p class="text-xs text-muted">$95k of $120k (Oct–Dec)</p>
             <div class="mt-5 flex items-end justify-between">
               <p class="text-3xl font-bold tracking-tight tabular-nums">79%</p>
               <p class="text-xs text-muted">21% to go</p>
@@ -248,8 +242,8 @@
             </div>
             <dl class="mt-5 space-y-2 text-sm">
               <div class="flex justify-between"><dt class="text-muted">Days left</dt><dd class="font-medium tabular-nums">18</dd></div>
-              <div class="flex justify-between"><dt class="text-muted">Daily run-rate</dt><dd class="font-medium tabular-nums">$4.2k</dd></div>
-              <div class="flex justify-between"><dt class="text-muted">Projected</dt><dd class="font-medium tabular-nums text-success">$360k+</dd></div>
+              <div class="flex justify-between"><dt class="text-muted">Daily run-rate</dt><dd class="font-medium tabular-nums">$1.4k</dd></div>
+              <div class="flex justify-between"><dt class="text-muted">Projected</dt><dd class="font-medium tabular-nums text-success">$120k+</dd></div>
             </dl>
           </div>
         </section>
@@ -260,7 +254,7 @@
   <script>
     // ── Export CSV: the recent-orders table, as shown ────────────
     document.getElementById('export-csv').addEventListener('click', function(){
-      var rows=[].map.call(document.querySelectorAll('#orders-table tr'), function(tr){
+      var rows=[].filter.call(document.querySelectorAll('#orders-table tr'), function(tr){ return !tr.hidden; }).map(function(tr){
         return [].map.call(tr.cells, function(c){ return '"'+c.textContent.trim().replace(/"/g,'""')+'"'; }).join(',');
       });
       var a=document.createElement('a');
@@ -279,21 +273,49 @@
     sync();
     toggle.addEventListener('click', function () {
       var d = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('theme', d ? 'dark' : 'light'); sync(); drawTrend();
+      localStorage.setItem('theme', d ? 'dark' : 'light'); sync(); drawTrend(); drawBars();
     });
 
     // ── mobile sidebar drawer ────────────────────────────────────
     var sidebar = document.getElementById('sidebar'), backdrop = document.getElementById('backdrop'), menu = document.getElementById('menu-btn');
-    function openNav(o){ sidebar.classList.toggle('-translate-x-full', !o); backdrop.classList.toggle('hidden', !o); menu.setAttribute('aria-expanded', o?'true':'false'); }
-    menu.addEventListener('click', function(){ openNav(sidebar.classList.contains('-translate-x-full')); });
+    var mainCol = document.getElementById('main-col'), skip = document.getElementById('skip'), lg = matchMedia('(min-width: 1024px)');
+    var isOpen = function(){ return !sidebar.classList.contains('-translate-x-full'); };
+    // Below lg the drawer is only translated off-screen, so its links stayed in the tab order at
+    // x = -228. Closed: the drawer is inert. Open: the page behind it is inert, focus moves in,
+    // and closing hands focus back to the button that opened it.
+    function syncInert(){
+      if (lg.matches) { sidebar.removeAttribute('inert'); mainCol.removeAttribute('inert'); skip.removeAttribute('inert'); return; }
+      sidebar.toggleAttribute('inert', !isOpen()); mainCol.toggleAttribute('inert', isOpen()); skip.toggleAttribute('inert', isOpen());
+    }
+    function openNav(o){
+      var hadFocus = sidebar.contains(document.activeElement);
+      sidebar.classList.toggle('-translate-x-full', !o); backdrop.classList.toggle('hidden', !o); menu.setAttribute('aria-expanded', o?'true':'false');
+      syncInert();   // first: focus() on an element inside an inert subtree is silently ignored
+      if (o) sidebar.querySelector('a').focus(); else if (hadFocus) menu.focus();
+    }
+    menu.addEventListener('click', function(){ openNav(!isOpen()); });
     backdrop.addEventListener('click', function(){ openNav(false); });
-    addEventListener('keydown', function(e){ if(e.key==='Escape') openNav(false); });
+    document.getElementById('nav-close').addEventListener('click', function(){ openNav(false); });
+    sidebar.querySelectorAll('nav a').forEach(function(a){ a.addEventListener('click', function(){ if (!lg.matches) openNav(false); }); });
+    addEventListener('keydown', function(e){ if(e.key==='Escape' && isOpen() && !lg.matches) openNav(false); });
+    lg.addEventListener('change', syncInert); syncInert();
+
+    // ── order search: filters the table it controls ─────────────
+    var search = document.getElementById('order-search'), emptyRow = document.getElementById('orders-empty');
+    var orderRows = [].slice.call(document.querySelectorAll('#orders-table tbody tr')).filter(function(r){ return r !== emptyRow; });
+    search.addEventListener('input', function(){
+      var q = search.value.trim().toLowerCase(), n = 0;
+      orderRows.forEach(function(r){ var hit = !q || r.textContent.toLowerCase().indexOf(q) >= 0; r.hidden = !hit; if (hit) n++; });
+      emptyRow.hidden = n > 0;
+    });
 
     // ── revenue trend chart (built in JS; sr-only table is the no-JS fallback) ──
     var SVGNS = 'http://www.w3.org/2000/svg';
     var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     var thisYr = [18,21,19,24,23,27,26,29,28,31,30,34];   // $k
     var lastYr = [15,16,17,18,20,19,22,21,24,23,25,26];
+    // Drawn at the container's own pixel width, so font-size 11 is 11px at every width
+    // (in viewBox units the same label measured 5px at 360 and 13px at 1440).
     var W=720,H=260, padL=40,padR=16,padT=16,padB=32;
     var plotW=W-padL-padR, plotH=H-padT-padB;
     var lo=10, hi=36;                                       // padded domain
@@ -304,6 +326,8 @@
 
     function drawTrend(){
       var svg=document.getElementById('trend'); svg.innerHTML='';
+      W=Math.max(240, Math.round(svg.getBoundingClientRect().width)||720); plotW=W-padL-padR;
+      svg.setAttribute('viewBox','0 0 '+W+' '+H);
       // area gradient (defs)
       var defs=el('defs',{}), grad=el('linearGradient',{id:'areaGrad',x1:0,y1:0,x2:0,y2:1});
       grad.appendChild(el('stop',{offset:'0%','stop-color':'var(--chart-1)','stop-opacity':0.30}));
@@ -315,7 +339,8 @@
         var t=el('text',{x:padL-8,y:Y(v)+4,fill:'var(--muted)','font-size':11,'text-anchor':'end'}); t.textContent='$'+v+'k'; svg.appendChild(t);
       });
       // x labels
-      months.forEach(function(m,i){ var t=el('text',{x:X(i),y:H-10,fill:'var(--muted)','font-size':11,'text-anchor':'middle'}); t.textContent=m; svg.appendChild(t); });
+      var every = plotW/(months.length-1) < 30 ? 2 : 1;   // every other month when they would collide
+      months.forEach(function(m,i){ if (i % every) return; var t=el('text',{x:X(i),y:H-10,fill:'var(--muted)','font-size':11,'text-anchor':'middle'}); t.textContent=m; svg.appendChild(t); });
       // last-year reference (dashed, muted — NOT a categorical colour)
       svg.appendChild(el('polyline',{points:lastYr.map(function(v,i){return X(i)+','+Y(v);}).join(' '),fill:'none',stroke:'var(--muted)','stroke-width':1.5,'stroke-dasharray':'4 4','stroke-linecap':'round'}));
       // this-year area + line (single series, brand hue)
@@ -336,34 +361,56 @@
     // hover crosshair + tooltip
     (function(){
       var svg=document.getElementById('trend'), tip=document.getElementById('trend-tip'), wrap=document.getElementById('trend-wrap');
+      var cur=months.length-1;
       function move(clientX){
         var r=svg.getBoundingClientRect(), sx=(clientX-r.left)/r.width*W;
-        var i=Math.round((sx-padL)/(plotW/(months.length-1))); i=Math.max(0,Math.min(months.length-1,i));
-        var px=X(i), py=Y(thisYr[i]);
+        var i=Math.round((sx-padL)/(plotW/(months.length-1))); show(Math.max(0,Math.min(months.length-1,i)));
+      }
+      function show(i){
+        cur=i; var px=X(i), py=Y(thisYr[i]);
         svg.__cross.setAttribute('x1',px); svg.__cross.setAttribute('x2',px); svg.__cross.setAttribute('visibility','visible');
         svg.__dot.setAttribute('cx',px); svg.__dot.setAttribute('cy',py); svg.__dot.setAttribute('visibility','visible');
         tip.classList.remove('hidden');
         tip.innerHTML='<div class="font-medium">'+months[i]+'</div><div class="text-muted">This yr <b class="text-content">$'+thisYr[i]+'k</b> · Last yr $'+lastYr[i]+'k</div>';
         var tx=px/W*wrap.clientWidth, ty=py/H*wrap.clientHeight;
         tip.style.left=Math.min(Math.max(tx,4),wrap.clientWidth-tip.offsetWidth-4)+'px';
-        tip.style.top=(ty-tip.offsetHeight-12)+'px';
+        // below the point when above would cover the direct label or leave the card
+        tip.style.top=(ty-tip.offsetHeight-12 < 0 || i===months.length-1 ? ty+14 : ty-tip.offsetHeight-12)+'px';
       }
       function hide(){ svg.__cross&&svg.__cross.setAttribute('visibility','hidden'); svg.__dot&&svg.__dot.setAttribute('visibility','hidden'); tip.classList.add('hidden'); }
       svg.addEventListener('pointermove',function(e){ move(e.clientX); });
       svg.addEventListener('pointerleave',hide);
+      svg.addEventListener('focus',function(){ show(cur); });
+      svg.addEventListener('blur',hide);
+      svg.addEventListener('keydown',function(e){
+        var k={ArrowLeft:-1,ArrowRight:1}[e.key]; if(e.key==='Home') k=-cur; if(e.key==='End') k=months.length-1-cur;
+        if(k===undefined) return; e.preventDefault(); show(Math.max(0,Math.min(months.length-1,cur+k)));
+      });
     })();
 
-    drawTrend();
+    // ── sessions by channel: bars drawn at pixel width as well ───
+    var channels=[['Organic',12.4],['Direct',8.1],['Referral',5.3],['Social',3.6]];
+    function drawBars(){
+      var svg=document.getElementById('bars'); svg.innerHTML='';
+      var w=Math.max(200, Math.round(svg.getBoundingClientRect().width)||320), h=220, base=180, top=30, slot=(w-32)/channels.length;
+      var bw=Math.min(56, slot*0.62), max=channels[0][1];
+      svg.setAttribute('viewBox','0 0 '+w+' '+h);
+      svg.appendChild(el('line',{x1:16,y1:base,x2:w-16,y2:base,stroke:'var(--border)','stroke-width':1}));
+      channels.forEach(function(c,i){
+        var cx=16+slot*(i+0.5), bh=(c[1]/max)*(base-top);
+        var r=el('rect',{x:cx-bw/2,y:base-bh,width:bw,height:bh,rx:4,fill:'var(--chart-1)'}); var tt=el('title',{}); tt.textContent=c[0]+' — '+c[1]+'k'; r.appendChild(tt); svg.appendChild(r);
+        var v=el('text',{x:cx,y:base-bh-8,fill:'var(--content)','font-size':12,'font-weight':600,'text-anchor':'middle'}); v.textContent=c[1]+'k'; svg.appendChild(v);
+        var l=el('text',{x:cx,y:base+18,fill:'var(--muted)','font-size':11,'text-anchor':'middle'}); l.textContent=c[0]; svg.appendChild(l);
+      });
+    }
+
+    // redraw both charts when their cards change width
+    var queued=false;
+    new ResizeObserver(function(){ if(queued) return; queued=true; requestAnimationFrame(function(){ queued=false; drawTrend(); drawBars(); }); })
+      .observe(document.getElementById('main'));
+
+    drawTrend(); drawBars();
   </script>
 
-  <!-- No-JS / screen-reader data fallback for the trend chart (dataviz: a table view exists) -->
-  <table class="sr-only">
-    <caption>Monthly revenue ($k), this year vs last year</caption>
-    <thead><tr><th>Month</th><th>This year</th><th>Last year</th></tr></thead>
-    <tbody id="trend-data"></tbody>
-  </table>
-  <script>
-    (function(){ var b=document.getElementById('trend-data'); ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].forEach(function(m,i){ b.insertAdjacentHTML('beforeend','<tr><th>'+m+'</th><td>$'+[18,21,19,24,23,27,26,29,28,31,30,34][i]+'k</td><td>$'+[15,16,17,18,20,19,22,21,24,23,25,26][i]+'k</td></tr>'); }); })();
-  </script>
 </body>
 </html>
