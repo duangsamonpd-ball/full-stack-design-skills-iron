@@ -62,7 +62,7 @@
 
         <!-- The form -->
         <div id="form-view">
-          <h1 class="text-2xl font-bold tracking-tight">Create your account</h1>
+          <h1 id="form-title" tabindex="-1" class="text-2xl font-bold tracking-tight focus:outline-none">Create your account</h1>
           <p class="mt-1 text-sm text-muted">Already have one?
             <a href="#" class="font-medium text-brand hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">Sign in</a>
           </p>
@@ -166,7 +166,7 @@
             <svg class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.7-9.3a1 1 0 0 0-1.4-1.4L9 10.6 7.7 9.3a1 1 0 0 0-1.4 1.4l2 2a1 1 0 0 0 1.4 0l4-4Z" clip-rule="evenodd"/></svg>
           </div>
           <h1 class="mt-4 text-2xl font-bold tracking-tight">Check your inbox</h1>
-          <p id="success-msg" class="mt-1 text-sm text-muted">We sent a verification link to your email.</p>
+          <p id="success-msg" class="mt-1 text-sm text-muted wrap-anywhere">We sent a verification link to your email.</p>
           <button type="button" id="reset" class="btn btn-md btn-secondary mt-6">Back to form</button>
         </div>
       </div>
@@ -238,8 +238,16 @@
         if(input.dataset.describedby) input.setAttribute('aria-describedby', input.dataset.describedby); else input.removeAttribute('aria-describedby');
         err.classList.add('hidden'); err.textContent='';
       }
+      refreshSummary();
       return !msg;
     }
+    // once shown, the summary and the terms error follow the form as it is now, not as it was at submit
+    function refreshSummary(){
+      var t=document.getElementById('terms'), te=document.getElementById('terms-err');
+      if(t.checked && !te.classList.contains('hidden')){ te.classList.add('hidden'); te.textContent=''; }
+      if(!summary.classList.contains('hidden') && !form.querySelector('.input-error') && t.checked) summary.classList.add('hidden');
+    }
+    document.getElementById('terms').addEventListener('change', refreshSummary);
     // validate a field on blur, but only after it's been touched
     Object.keys(validators).forEach(function(id){
       var input = document.getElementById(id);
@@ -284,6 +292,8 @@
       var submit=document.getElementById('submit'), spin=document.getElementById('spin'), lbl=document.getElementById('submit-label');
       submit.disabled=false; spin.classList.add('hidden'); lbl.textContent='Create account';
       form.reset(); updatePw();
+      Object.keys(validators).forEach(function(id){ delete document.getElementById(id).dataset.touched; setError(id,''); });
+      document.getElementById('form-title').focus();
     });
 
     updatePw();

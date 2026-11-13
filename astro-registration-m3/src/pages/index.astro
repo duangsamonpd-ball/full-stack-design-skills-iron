@@ -9,15 +9,15 @@ import Button from '../components/Button.astro';
     <!-- LEFT: M3 tonal hero panel (lg+) — reflows away on smaller screens -->
     <aside class="hidden bg-primary-container p-10 text-on-primary-container lg:flex lg:flex-col lg:justify-between xl:p-14">
       <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined">deployed_code</span>
+        <span aria-hidden="true" class="material-symbols-outlined">deployed_code</span>
         <span class="font-medium">Iron Software</span>
       </div>
       <div class="max-w-sm">
         <h2 class="text-3xl font-normal leading-tight tracking-tight xl:text-4xl">Ship UI your whole team trusts.</h2>
         <ul class="mt-8 space-y-5 text-on-primary-container/90">
-          <li class="flex gap-3"><span class="material-symbols-outlined shrink-0">verified</span><span>Accessible by default — WCAG 2.2 AA states on every component.</span></li>
-          <li class="flex gap-3"><span class="material-symbols-outlined shrink-0">palette</span><span>One token system — light, dark, and per-brand from a single source.</span></li>
-          <li class="flex gap-3"><span class="material-symbols-outlined shrink-0">grid_view</span><span>React · Astro · Vue — the same components across all three.</span></li>
+          <li class="flex gap-3"><span aria-hidden="true" class="material-symbols-outlined shrink-0">verified</span><span>Accessible by default — WCAG 2.2 AA states on every component.</span></li>
+          <li class="flex gap-3"><span aria-hidden="true" class="material-symbols-outlined shrink-0">palette</span><span>One token system — light, dark, and per-brand from a single source.</span></li>
+          <li class="flex gap-3"><span aria-hidden="true" class="material-symbols-outlined shrink-0">grid_view</span><span>React · Astro · Vue — the same components across all three.</span></li>
         </ul>
       </div>
       <p class="text-sm text-on-primary-container/70">Material 3 · Astro · same skills, swapped framework</p>
@@ -29,7 +29,7 @@ import Button from '../components/Button.astro';
 
         <div class="mb-4 flex items-center justify-between px-2">
           <div class="flex items-center gap-2 text-on-surface-variant lg:invisible">
-            <span class="material-symbols-outlined text-primary">deployed_code</span>
+            <span aria-hidden="true" class="material-symbols-outlined text-primary">deployed_code</span>
             <span class="text-sm font-medium">Iron Software</span>
           </div>
           <button id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Toggle dark mode"
@@ -40,14 +40,14 @@ import Button from '../components/Button.astro';
         </div>
 
         <div id="form-view" class="rounded-[28px] bg-sc-high p-6 shadow-lg sm:p-8">
-          <h1 class="text-2xl font-normal tracking-tight">Create your account</h1>
+          <h1 id="form-title" tabindex="-1" class="text-2xl font-normal tracking-tight focus:outline-none">Create your account</h1>
           <p class="mt-1 text-sm text-on-surface-variant">Already have one?{' '}
             <a href="#" class="font-medium text-primary hover:underline">Sign in</a>
           </p>
 
           <div class="mt-6 grid grid-cols-2 gap-3">
-            <Button variant="outlined"><span class="material-symbols-outlined">login</span>Google</Button>
-            <Button variant="outlined"><span class="material-symbols-outlined">code</span>GitHub</Button>
+            <Button variant="outlined"><span aria-hidden="true" class="material-symbols-outlined">login</span>Google</Button>
+            <Button variant="outlined"><span aria-hidden="true" class="material-symbols-outlined">code</span>GitHub</Button>
           </div>
 
           <div class="my-6 flex items-center gap-3 text-xs text-on-surface-variant">
@@ -69,8 +69,8 @@ import Button from '../components/Button.astro';
                 <label for="password" class="pointer-events-none absolute left-12 top-1.5 text-xs text-on-surface-variant transition-all duration-150 peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-focus:top-1.5 peer-focus:text-xs peer-focus:font-medium peer-focus:text-primary">Password</label>
                 <span class="lead material-symbols-outlined absolute left-3 top-4 text-on-surface-variant transition-colors peer-focus:text-primary" aria-hidden="true">lock</span>
                 <button type="button" id="pw-toggle" aria-pressed="false" aria-label="Show password"
-                        class="state absolute right-2 top-2 grid h-10 w-10 place-items-center rounded-full text-on-surface-variant focus-visible:outline-none">
-                  <span class="material-symbols-outlined" id="eye">visibility</span>
+                        class="state absolute right-2 top-2 grid h-10 w-10 place-items-center rounded-full text-on-surface-variant focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+                  <span aria-hidden="true" class="material-symbols-outlined" id="eye">visibility</span>
                 </button>
               </div>
               <p id="password-err" class="mt-1 hidden items-center gap-1 px-4 text-xs text-error"></p>
@@ -86,10 +86,10 @@ import Button from '../components/Button.astro';
               </div>
 
               <ul id="pw-reqs" class="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 px-1 text-xs text-on-surface-variant">
-                <li data-req="len"  class="req flex items-center gap-1"><span class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> 8+ characters</li>
-                <li data-req="case" class="req flex items-center gap-1"><span class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> Upper &amp; lower</li>
-                <li data-req="num"  class="req flex items-center gap-1"><span class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> A number</li>
-                <li data-req="sym"  class="req flex items-center gap-1"><span class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> A symbol</li>
+                <li data-req="len"  class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> 8+ characters<span class="sr-only req-s">, not met</span></li>
+                <li data-req="case" class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> Upper &amp; lower<span class="sr-only req-s">, not met</span></li>
+                <li data-req="num"  class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> A number<span class="sr-only req-s">, not met</span></li>
+                <li data-req="sym"  class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> A symbol<span class="sr-only req-s">, not met</span></li>
               </ul>
             </div>
 
@@ -107,7 +107,7 @@ import Button from '../components/Button.astro';
             <Button variant="filled" type="submit" id="submit" class="w-full">
               <!-- `hidden` goes on a wrapper: Google's Material Symbols stylesheet sets an unlayered
                    display:inline-block on the icon class, which beats the `hidden` utility -->
-              <span id="spin" class="hidden"><span class="material-symbols-outlined animate-spin" style="font-size:18px">progress_activity</span></span>
+              <span id="spin" class="hidden"><span aria-hidden="true" class="material-symbols-outlined animate-spin" style="font-size:18px">progress_activity</span></span>
               <span id="submit-label">Create account</span>
             </Button>
 
@@ -116,9 +116,9 @@ import Button from '../components/Button.astro';
         </div>
 
         <div id="success-view" class="hidden rounded-[28px] bg-sc-high p-8 py-10 text-center shadow-lg" tabindex="-1">
-          <span class="material-symbols-outlined text-primary" style="font-size:56px">mark_email_read</span>
+          <span aria-hidden="true" class="material-symbols-outlined text-primary" style="font-size:56px">mark_email_read</span>
           <h1 class="mt-3 text-2xl font-normal tracking-tight">Check your inbox</h1>
-          <p id="success-msg" class="mt-1 text-sm text-on-surface-variant">We sent a verification link to your email.</p>
+          <p id="success-msg" class="mt-1 text-sm text-on-surface-variant wrap-anywhere">We sent a verification link to your email.</p>
           <Button variant="text" id="reset" class="mx-auto mt-6">Back to form</Button>
         </div>
 
@@ -178,6 +178,7 @@ import Button from '../components/Button.astro';
     Object.keys(reqEls).forEach((k) => {
       reqEls[k].classList.toggle('met', r[k]);
       reqEls[k].querySelector('.req-i')!.textContent = r[k] ? 'check_circle' : 'radio_button_unchecked';
+      reqEls[k].querySelector('.req-s')!.textContent = r[k] ? ', met' : ', not met';
     });
     const score = (r.len ? 1 : 0) + (r.case ? 1 : 0) + (r.num ? 1 : 0) + (r.sym ? 1 : 0), lvl = LEVELS[score];
     segs.forEach((s, i) => { s.className = 'flex-1 rounded-full ' + (v && i < score ? lvl.c : 'bg-sc-highest'); });
@@ -207,7 +208,7 @@ import Button from '../components/Button.astro';
     if (msg) {
       field?.classList.add('field-invalid');
       input.setAttribute('aria-invalid', 'true'); input.setAttribute('aria-describedby', `${id}-err ${base}`.trim());
-      err.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">error</span>' + msg;
+      err.innerHTML = '<span aria-hidden="true" class="material-symbols-outlined" style="font-size:16px">error</span>' + msg;
       showRow(err);
     } else {
       field?.classList.remove('field-invalid');
@@ -215,8 +216,17 @@ import Button from '../components/Button.astro';
       if (base) input.setAttribute('aria-describedby', base); else input.removeAttribute('aria-describedby');
       hideRow(err); err.textContent = '';
     }
+    refreshSummary();
     return !msg;
   }
+  // once shown, the summary and the terms error follow the form as it is now, not as it was at submit
+  function refreshSummary() {
+    const t = document.getElementById('terms') as HTMLInputElement;
+    const te = document.getElementById('terms-err')!;
+    if (t.checked && !te.classList.contains('hidden')) { hideRow(te); te.textContent = ''; }
+    if (!summary.classList.contains('hidden') && !form.querySelector('.field-invalid') && t.checked) summary.classList.add('hidden');
+  }
+  document.getElementById('terms')!.addEventListener('change', refreshSummary);
   Object.keys(validators).forEach((id) => {
     const input = document.getElementById(id) as HTMLInputElement;
     input.addEventListener('blur', () => { if (input.dataset.touched) setError(id, validators[id](input.value)); });
@@ -232,7 +242,7 @@ import Button from '../components/Button.astro';
     });
     const terms = document.getElementById('terms') as HTMLInputElement;
     const termsErr = document.getElementById('terms-err')!;
-    if (!terms.checked) { termsErr.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">error</span>Please accept the Terms to continue.'; showRow(termsErr); ok = false; if (!firstBad) firstBad = terms; }
+    if (!terms.checked) { termsErr.innerHTML = '<span aria-hidden="true" class="material-symbols-outlined" style="font-size:16px">error</span>Please accept the Terms to continue.'; showRow(termsErr); ok = false; if (!firstBad) firstBad = terms; }
     else hideRow(termsErr);
 
     if (!ok) { summary.textContent = 'Please fix the highlighted fields.'; summary.classList.remove('hidden'); firstBad?.focus(); return; }
@@ -258,6 +268,8 @@ import Button from '../components/Button.astro';
     const lbl = document.getElementById('submit-label')!;
     submit.disabled = false; spin.classList.add('hidden'); lbl.textContent = 'Create account';
     form.reset(); updatePw();
+    Object.keys(validators).forEach((id) => { delete (document.getElementById(id) as HTMLInputElement).dataset.touched; setError(id, ''); });
+    document.getElementById('form-title')!.focus();
   });
 
   updatePw();

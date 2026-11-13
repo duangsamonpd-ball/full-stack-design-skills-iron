@@ -8,7 +8,7 @@ interface Props {
 }
 const { variant = 'filled', type = 'button', id, class: extra = '' } = Astro.props;
 
-const base = 'state inline-flex items-center justify-center gap-2 rounded-full text-sm font-medium focus-visible:outline-none';
+const base = 'state inline-flex items-center justify-center gap-2 rounded-full text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
 const variants = {
   filled:   'h-10 px-6 bg-primary text-on-primary transition-shadow hover:shadow-md disabled:opacity-40 disabled:shadow-none disabled:pointer-events-none',
   outlined: 'h-10 px-6 border border-outline text-primary',
