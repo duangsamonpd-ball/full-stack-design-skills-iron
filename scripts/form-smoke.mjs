@@ -39,7 +39,9 @@ const PAGES = [
 // page to drop — the same rule, and the same remedy, as the a11y gate.
 const ASTRO_BUILD = 'cd astro-registration-m3 && npm ci && npm run build';
 
-const VALID = { name: 'Ada Lovelace', email: 'ada@example.com', password: 'Str0ng!pass', confirm: 'Str0ng!pass' };
+// 15 characters is the single-factor minimum in NIST SP 800-63B-4 (final, July 2025); the pages enforce it.
+const VALID = { name: 'Ada Lovelace', email: 'ada@example.com', password: 'correct horse battery', confirm: 'correct horse battery' };
+const SHORT = 'fourteen chars'; // 14 code points: one under the minimum
 // The pages fake a 1.1s request with setTimeout before showing success. --gates runs at
 // every SessionStart, and waiting that out took the whole gate run to 4.8s, so timers run
 // at once here: the code path is the same, only the wait is gone.
@@ -117,6 +119,19 @@ async function check(html, file) {
     // the success copy names the address it was sent to — and nothing left unfilled
     const msg = w.document.getElementById('success-msg')?.textContent ?? '';
     if (!msg.includes(VALID.email) || /[{}]/.test(msg)) fails.push(`success message does not name the email: "${msg.trim()}"`);
+    w.close();
+  }
+  // 3 — the minimum is enforced at its edge: 14 is refused, the rest of the form being valid
+  {
+    const { w, errors } = load(html, file);
+    fill(w, { ...VALID, password: SHORT, confirm: SHORT });
+    w.document.getElementById('terms').checked = true;
+    w.document.getElementById('signup').requestSubmit();
+    await sleep(SETTLE_MS);
+    if (errors.length) fails.push(`short-password submit threw: ${errors[0]}`);
+    if (shown(w.document.getElementById('success-view'))) fails.push(`a ${[...SHORT].length}-character password was accepted`);
+    // text, not a class: Bootstrap shows .invalid-feedback through a CSS sibling rule, not a toggled class
+    if (!w.document.getElementById('password-err')?.textContent.trim()) fails.push('a too-short password showed no error beside the field');
     w.close();
   }
   return fails;

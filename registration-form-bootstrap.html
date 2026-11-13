@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create account — Bootstrap 5 (Iron Software Skills Test)</title>
-  <link rel="icon" href="data:," /> <!-- no icon yet; stops the /favicon.ico 404 on every load -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet" />
@@ -104,9 +104,9 @@
                     <span class="small fw-medium text-body-secondary" id="pw-strength" style="width:3.5rem;text-align:right" aria-live="polite"></span>
                   </div>
 
-                  <p class="small text-body-secondary mt-2 mb-0" id="pw-hint">Needs 8+ characters. The others make it stronger.</p>
+                  <p class="small text-body-secondary mt-2 mb-0" id="pw-hint">Needs 15+ characters. The others make it stronger.</p>
                   <ul class="list-unstyled row row-cols-2 g-1 small text-body-secondary mt-1 mb-0" id="pw-reqs">
-                    <li class="col pw-req" data-req="len"><i class="bi bi-circle req-i"></i> 8+ characters</li>
+                    <li class="col pw-req" data-req="len"><i class="bi bi-circle req-i"></i> 15+ characters</li>
                     <li class="col pw-req" data-req="case"><i class="bi bi-circle req-i"></i> Upper &amp; lower</li>
                     <li class="col pw-req" data-req="num"><i class="bi bi-circle req-i"></i> A number</li>
                     <li class="col pw-req" data-req="sym"><i class="bi bi-circle req-i"></i> A symbol</li>
@@ -181,7 +181,7 @@
       { l:'Good',   bar:'bg-info',    w:'75%',  t:'text-info' },
       { l:'Strong', bar:'bg-success', w:'100%', t:'text-success' }
     ];
-    function reqs(v){ return { len:v.length>=8, case:/[a-z]/.test(v)&&/[A-Z]/.test(v), num:/\d/.test(v), sym:/[^A-Za-z0-9]/.test(v) }; }
+    function reqs(v){ return { len:[...v].length>=15, case:/[a-z]/.test(v)&&/[A-Z]/.test(v), num:/\d/.test(v), sym:/[^A-Za-z0-9]/.test(v) }; }
     function updatePw(){
       var v = pw.value, r = reqs(v);
       Object.keys(reqEls).forEach(function(k){
@@ -202,7 +202,7 @@
     var validators = {
       name:    function(v){ return v.trim()?'':'Enter your name.'; },
       email:   function(v){ return !v.trim()?'Enter your email.':(EMAIL.test(v)?'':'Enter a valid email address.'); },
-      password:function(v){ return v.length>=8?'':'Use at least 8 characters.'; },
+      password:function(v){ return [...v].length>=15?'':'Use at least 15 characters.'; },
       confirm: function(v){ return !v?'Re-enter your password.':(v===pw.value?'':'Passwords don’t match.'); }
     };
     function setError(id, msg){

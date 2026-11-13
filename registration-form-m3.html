@@ -6,7 +6,7 @@
   <title>Create account — Material 3 (Iron Software Skills Test)</title>
 
   <link rel="stylesheet" href="assets/registration-form-m3.css" />
-  <link rel="icon" href="data:," /> <!-- no icon yet; stops the /favicon.ico 404 on every load -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -121,9 +121,9 @@
                 <span id="pw-strength" class="w-14 text-right text-xs font-medium text-on-surface-variant" aria-live="polite"></span>
               </div>
 
-              <p id="pw-hint" class="mt-2 px-1 text-xs text-on-surface-variant">Needs 8+ characters. The others make it stronger.</p>
+              <p id="pw-hint" class="mt-2 px-1 text-xs text-on-surface-variant">Needs 15+ characters. The others make it stronger.</p>
               <ul id="pw-reqs" class="mt-1 grid grid-cols-2 gap-x-3 gap-y-1 px-1 text-xs text-on-surface-variant">
-                <li data-req="len"  class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> 8+ characters<span class="sr-only req-s">, not met</span></li>
+                <li data-req="len"  class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> 15+ characters<span class="sr-only req-s">, not met</span></li>
                 <li data-req="case" class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> Upper &amp; lower<span class="sr-only req-s">, not met</span></li>
                 <li data-req="num"  class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> A number<span class="sr-only req-s">, not met</span></li>
                 <li data-req="sym"  class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> A symbol<span class="sr-only req-s">, not met</span></li>
@@ -198,7 +198,7 @@
     var segs=document.querySelectorAll('[data-seg]'), strengthLabel=document.getElementById('pw-strength');
     var reqEls={ len:document.querySelector('[data-req="len"]'), case:document.querySelector('[data-req="case"]'), num:document.querySelector('[data-req="num"]'), sym:document.querySelector('[data-req="sym"]') };
     var LEVELS=[{l:'Weak',c:'bg-error',t:'text-error'},{l:'Weak',c:'bg-error',t:'text-error'},{l:'Fair',c:'bg-warning',t:'text-warning'},{l:'Good',c:'bg-primary',t:'text-primary'},{l:'Strong',c:'bg-success',t:'text-success'}];
-    function reqs(v){ return { len:v.length>=8, case:/[a-z]/.test(v)&&/[A-Z]/.test(v), num:/\d/.test(v), sym:/[^A-Za-z0-9]/.test(v) }; }
+    function reqs(v){ return { len:[...v].length>=15, case:/[a-z]/.test(v)&&/[A-Z]/.test(v), num:/\d/.test(v), sym:/[^A-Za-z0-9]/.test(v) }; }
     function updatePw(){
       var v=pw.value, r=reqs(v);
       Object.keys(reqEls).forEach(function(k){
@@ -219,7 +219,7 @@
     var validators={
       name:    function(v){ return v.trim()?'':'Enter your name.'; },
       email:   function(v){ return !v.trim()?'Enter your email.':(EMAIL.test(v)?'':'Enter a valid email address.'); },
-      password:function(v){ return v.length>=8?'':'Use at least 8 characters.'; },
+      password:function(v){ return [...v].length>=15?'':'Use at least 15 characters.'; },
       confirm: function(v){ return !v?'Re-enter your password.':(v===pw.value?'':'Passwords don’t match.'); }
     };
     function setError(id,msg){

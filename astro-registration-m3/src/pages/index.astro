@@ -85,9 +85,9 @@ import Button from '../components/Button.astro';
                 <span id="pw-strength" class="w-14 text-right text-xs font-medium text-on-surface-variant" aria-live="polite"></span>
               </div>
 
-              <p id="pw-hint" class="mt-2 px-1 text-xs text-on-surface-variant">Needs 8+ characters. The others make it stronger.</p>
+              <p id="pw-hint" class="mt-2 px-1 text-xs text-on-surface-variant">Needs 15+ characters. The others make it stronger.</p>
               <ul id="pw-reqs" class="mt-1 grid grid-cols-2 gap-x-3 gap-y-1 px-1 text-xs text-on-surface-variant">
-                <li data-req="len"  class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> 8+ characters<span class="sr-only req-s">, not met</span></li>
+                <li data-req="len"  class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> 15+ characters<span class="sr-only req-s">, not met</span></li>
                 <li data-req="case" class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> Upper &amp; lower<span class="sr-only req-s">, not met</span></li>
                 <li data-req="num"  class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> A number<span class="sr-only req-s">, not met</span></li>
                 <li data-req="sym"  class="req flex items-center gap-1"><span aria-hidden="true" class="material-symbols-outlined req-i" style="font-size:16px">radio_button_unchecked</span> A symbol<span class="sr-only req-s">, not met</span></li>
@@ -172,7 +172,7 @@ import Button from '../components/Button.astro';
     { l: 'Fair', c: 'bg-warning', t: 'text-warning' }, { l: 'Good', c: 'bg-primary', t: 'text-primary' },
     { l: 'Strong', c: 'bg-success', t: 'text-success' },
   ];
-  const reqs = (v: string) => ({ len: v.length >= 8, case: /[a-z]/.test(v) && /[A-Z]/.test(v), num: /\d/.test(v), sym: /[^A-Za-z0-9]/.test(v) });
+  const reqs = (v: string) => ({ len: [...v].length>=15, case: /[a-z]/.test(v) && /[A-Z]/.test(v), num: /\d/.test(v), sym: /[^A-Za-z0-9]/.test(v) });
   function updatePw() {
     const v = pw.value, r = reqs(v) as Record<string, boolean>;
     Object.keys(reqEls).forEach((k) => {
@@ -195,7 +195,7 @@ import Button from '../components/Button.astro';
   const validators: Record<string, (v: string) => string> = {
     name: (v) => v.trim() ? '' : 'Enter your name.',
     email: (v) => !v.trim() ? 'Enter your email.' : (EMAIL.test(v) ? '' : 'Enter a valid email address.'),
-    password: (v) => v.length >= 8 ? '' : 'Use at least 8 characters.',
+    password: (v) => [...v].length>=15 ? '' : 'Use at least 15 characters.',
     confirm: (v) => !v ? 'Re-enter your password.' : (v === pw.value ? '' : 'Passwords don’t match.'),
   };
   function setError(id: string, msg: string) {

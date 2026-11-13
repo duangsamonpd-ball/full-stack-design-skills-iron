@@ -6,7 +6,7 @@
   <title>Create account — Iron Software Skills Test (Tailwind v4)</title>
 
   <link rel="stylesheet" href="assets/registration-form.css" />
-  <link rel="icon" href="data:," /> <!-- no icon yet; stops the /favicon.ico 404 on every load -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <script>
     (function () {
       var s = localStorage.getItem('theme');
@@ -104,7 +104,7 @@
               <label for="password" class="label">Password <span class="text-danger" aria-hidden="true">*</span></label>
               <div class="relative mt-1.5">
                 <input id="password" name="password" type="password" autocomplete="new-password" required
-                       class="input pr-11" aria-describedby="pw-hint pw-reqs" placeholder="At least 8 characters" />
+                       class="input pr-11" aria-describedby="pw-hint pw-reqs" placeholder="At least 15 characters" />
                 <button type="button" id="pw-toggle" aria-pressed="false" aria-label="Show password"
                         class="absolute right-1 top-1 grid h-9 w-9 place-items-center rounded-md text-muted hover:text-content
                                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
@@ -125,9 +125,9 @@
               </div>
 
               <!-- requirements checklist (progressive feedback) -->
-              <p id="pw-hint" class="mt-2 text-xs text-muted">Needs 8+ characters. The others make it stronger.</p>
+              <p id="pw-hint" class="mt-2 text-xs text-muted">Needs 15+ characters. The others make it stronger.</p>
               <ul id="pw-reqs" class="mt-1 grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-muted">
-                <li data-req="len"   class="flex items-center gap-1.5"><span class="req-dot">○</span> 8+ characters</li>
+                <li data-req="len"   class="flex items-center gap-1.5"><span class="req-dot">○</span> 15+ characters</li>
                 <li data-req="case"  class="flex items-center gap-1.5"><span class="req-dot">○</span> Upper &amp; lower case</li>
                 <li data-req="num"   class="flex items-center gap-1.5"><span class="req-dot">○</span> A number</li>
                 <li data-req="sym"   class="flex items-center gap-1.5"><span class="req-dot">○</span> A symbol</li>
@@ -202,7 +202,7 @@
       { label:'Good',   seg:'bg-info' },
       { label:'Strong', seg:'bg-success' }
     ];
-    function reqs(v){ return { len:v.length>=8, case:/[a-z]/.test(v)&&/[A-Z]/.test(v), num:/\d/.test(v), sym:/[^A-Za-z0-9]/.test(v) }; }
+    function reqs(v){ return { len:[...v].length>=15, case:/[a-z]/.test(v)&&/[A-Z]/.test(v), num:/\d/.test(v), sym:/[^A-Za-z0-9]/.test(v) }; }
     function updatePw(){
       var v = pw.value, r = reqs(v);
       Object.keys(reqEls).forEach(function(k){
@@ -225,7 +225,7 @@
     var validators = {
       name:    function(v){ return v.trim() ? '' : 'Enter your name.'; },
       email:   function(v){ return !v.trim() ? 'Enter your email.' : (EMAIL.test(v) ? '' : 'Enter a valid email address.'); },
-      password:function(v){ return v.length>=8 ? '' : 'Use at least 8 characters.'; },
+      password:function(v){ return [...v].length>=15 ? '' : 'Use at least 15 characters.'; },
       confirm: function(v){ return !v ? 'Re-enter your password.' : (v===pw.value ? '' : 'Passwords don’t match.'); }
     };
     function setError(id, msg){
