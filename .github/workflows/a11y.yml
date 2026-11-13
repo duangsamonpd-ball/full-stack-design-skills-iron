@@ -35,3 +35,9 @@ jobs:
       - name: Accessibility-tree audit
         working-directory: scripts
         run: npm run a11y
+
+      # The a11y audit reads the tree and never presses anything: a registration form
+      # that threw on every valid submit passed it for four months. This one submits.
+      - name: Registration forms submit
+        working-directory: scripts
+        run: npm run smoke

@@ -13,7 +13,8 @@
     "drift": "node check-drift.mjs",
     "drift:gates": "node check-drift.mjs --gates",
     "drift:versions": "node check-drift.mjs --versions",
-    "drift:audit": "node check-drift.mjs --audit"
+    "drift:audit": "node check-drift.mjs --audit",
+    "smoke": "node form-smoke.mjs"
   },
   "dependencies": {
     "jsdom": "^31.0.0"

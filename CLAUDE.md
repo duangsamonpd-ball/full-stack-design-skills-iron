@@ -17,7 +17,7 @@ cd scripts && npm ci          # once
 node scripts/check-drift.mjs --gates
 ```
 
-`--gates` runs all three local gates and is wired to `SessionStart`, so a
+`--gates` runs every local gate and is wired to `SessionStart`, so a
 session opens already knowing whether the tree is green. **It exits 1 when a
 gate is red — as of 2026-08-28, and not before.** Until then it printed
 `gates: 1 failing` over `exit 0`, under this heading, so every exit code quoted
@@ -32,12 +32,13 @@ yellow "not installed" with a hint naming the wrong directory. It is decided by
 exit code 2 and module-resolution failures now, and a failing gate quotes its
 own first verdict line instead of "run it directly to see why".
 
-The three underneath it, if you need one alone:
+The gates underneath it, if you need one alone:
 
 ```sh
 node scripts/skills-lint.mjs            # zero setup, no network, instant
 node scripts/build-css.mjs --check      # stylesheets match their source
 cd scripts && npm run a11y              # accessibility tree of every example
+cd scripts && npm run smoke             # every registration form submits
 ```
 
 **`--versions` and `--audit` are a different clock and they touch the network.**

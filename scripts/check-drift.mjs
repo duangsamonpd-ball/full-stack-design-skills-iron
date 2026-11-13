@@ -4,7 +4,7 @@
  *
  * Three independent halves, because they belong on different clocks:
  *
- *   --gates     Local, instant, no network. Are the three gates green right now?
+ *   --gates     Local, instant, no network. Are the local gates green right now?
  *               Wired to SessionStart so a session opens already knowing.
  *   --versions  Network. Are the pinned deps behind what npm publishes, and the
  *               pinned GitHub Actions behind their latest release?
@@ -70,6 +70,7 @@ function gates() {
     runGate('skills-lint', 'skills-lint.mjs'),
     runGate('build-css', 'build-css.mjs', ['--check']),
     runGate('a11y-audit', 'a11y-audit.mjs'),
+    runGate('form-smoke', 'form-smoke.mjs'),
   ];
   const lines = results.map((res) => {
     if (res.ok) return `  ${g('✓')} ${res.label}`;

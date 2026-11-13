@@ -37,12 +37,12 @@ memory). Three halves, on different clocks:
 ```bash
 cd scripts
 npm run drift            # all three
-npm run drift:gates      # local, instant — are the three gates green?
+npm run drift:gates      # local, instant — are the gates green?
 npm run drift:versions   # network — are pinned deps behind npm's latest?
 npm run drift:audit      # network — is what's already installed vulnerable?
 ```
 
-`--gates` runs `skills-lint`, `build-css --check` and `a11y-audit` and reports pass/fail
+`--gates` runs `skills-lint`, `build-css --check`, `a11y-audit` and `form-smoke` and reports pass/fail
 without a network call; `--versions` compares the tracked deps (tailwindcss, astro, jsdom, …)
 to what npm publishes and flags majors, does the same for the `actions/*` majors pinned in
 the workflows *and* in the skills, and checks every pinned `node-version` against the official
