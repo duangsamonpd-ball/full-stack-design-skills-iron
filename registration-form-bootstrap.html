@@ -57,7 +57,7 @@
 
           <div class="card shadow-sm" id="form-view">
             <div class="card-body p-4 p-sm-5">
-              <h1 class="h3 fw-bold mb-1">Create your account</h1>
+              <h1 class="h3 fw-bold mb-1" id="form-title" tabindex="-1" style="outline:none">Create your account</h1>
               <p class="text-body-secondary small">Already have one? <a href="#" class="link-primary">Sign in</a></p>
 
               <div class="row g-2 mt-3">
@@ -206,10 +206,25 @@
     };
     function setError(id, msg){
       var input = document.getElementById(id), err = document.getElementById(id+'-err');
-      if(msg){ input.classList.add('is-invalid'); input.setAttribute('aria-describedby', id+'-err'); err.textContent = msg; }
-      else { input.classList.remove('is-invalid'); if(id!=='password') input.removeAttribute('aria-describedby'); err.textContent=''; }
+      // what the field is described by without an error (the password's requirements list), kept so it can be given back
+      if(!('describedby' in input.dataset)) input.dataset.describedby = input.getAttribute('aria-describedby') || '';
+      // .is-invalid is Bootstrap's visual state only; aria-invalid is what a screen reader hears
+      if(msg){ input.classList.add('is-invalid'); input.setAttribute('aria-invalid','true'); input.setAttribute('aria-describedby', (id+'-err '+input.dataset.describedby).trim()); err.textContent = msg; }
+      else {
+        input.classList.remove('is-invalid'); input.removeAttribute('aria-invalid');
+        if(input.dataset.describedby) input.setAttribute('aria-describedby', input.dataset.describedby); else input.removeAttribute('aria-describedby');
+        err.textContent='';
+      }
+      refreshSummary();
       return !msg;
     }
+    // once shown, the summary and the terms error follow the form as it is now, not as it was at submit
+    function refreshSummary(){
+      var t=document.getElementById('terms'), te=document.getElementById('terms-err');
+      if(t.checked && t.classList.contains('is-invalid')){ t.classList.remove('is-invalid'); t.removeAttribute('aria-invalid'); t.removeAttribute('aria-describedby'); te.textContent=''; }
+      if(!summary.classList.contains('d-none') && !form.querySelector('.is-invalid')) summary.classList.add('d-none');
+    }
+    document.getElementById('terms').addEventListener('change', refreshSummary);
     Object.keys(validators).forEach(function(id){
       var input = document.getElementById(id);
       input.addEventListener('blur', function(){ if(input.dataset.touched) setError(id, validators[id](input.value)); });
@@ -224,8 +239,8 @@
         var good = setError(id, validators[id](input.value)); if(!good && !firstBad) firstBad = input; ok = ok && good;
       });
       var terms = document.getElementById('terms');
-      if(!terms.checked){ terms.classList.add('is-invalid'); document.getElementById('terms-err').textContent = 'Please accept the Terms to continue.'; ok = false; if(!firstBad) firstBad = terms; }
-      else terms.classList.remove('is-invalid');
+      if(!terms.checked){ terms.classList.add('is-invalid'); terms.setAttribute('aria-invalid','true'); terms.setAttribute('aria-describedby','terms-err'); document.getElementById('terms-err').textContent = 'Please accept the Terms to continue.'; ok = false; if(!firstBad) firstBad = terms; }
+      else { terms.classList.remove('is-invalid'); terms.removeAttribute('aria-invalid'); terms.removeAttribute('aria-describedby'); }
 
       if(!ok){ summary.textContent = 'Please fix the highlighted fields.'; summary.classList.remove('d-none'); if(firstBad) firstBad.focus(); return; }
       summary.classList.add('d-none');
@@ -245,7 +260,11 @@
       document.getElementById('form-view').classList.remove('d-none');
       var submit = document.getElementById('submit'), spin = document.getElementById('spin'), lbl = document.getElementById('submit-label');
       submit.disabled = false; spin.classList.add('d-none'); lbl.textContent = 'Create account';
-      form.reset(); ['name','email','password','confirm','terms'].forEach(function(id){ document.getElementById(id).classList.remove('is-invalid'); }); updatePw();
+      form.reset(); updatePw();
+      // a fresh form: no error state, no `touched`, and focus somewhere visible (the button that had it just hid itself)
+      Object.keys(validators).forEach(function(id){ delete document.getElementById(id).dataset.touched; setError(id,''); });
+      refreshSummary();
+      document.getElementById('form-title').focus();
     });
 
     updatePw();
