@@ -1,6 +1,6 @@
 ---
 name: design-fundamentals
-description: Apply core visual-design fundamentals — hierarchy, layout/grid, color theory, typography, spacing, and contrast/balance — to critique or improve a UI. Use when the user says "improve this design", "design critique", "why does this look off", "visual hierarchy", or "design principles".
+description: Apply core visual-design fundamentals — hierarchy, layout/grid, color theory, typography, spacing, and contrast/balance — to critique or improve a UI. Use when the user says "improve this design", "design critique", "why does this look off", "visual hierarchy", or "design principles". For an independent verdict from a fresh context before something ships, use fresh-eyes-critique instead.
 ---
 
 # Design Fundamentals
@@ -64,4 +64,5 @@ Contrast creates emphasis (size, weight, color, space). Balance distributes visu
 
 - Encode the chosen scales/colors as tokens in **design-tokens-system**
 - Avoid generic defaults with **anti-ai-design-patterns**
+- Before it ships, get a verdict from a context that never saw it being made with **fresh-eyes-critique**
 - Turn the improved design into UI with **design-to-code-workflow**

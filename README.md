@@ -49,13 +49,14 @@ flowchart LR
     classDef io fill:#ffffff,stroke:#0d9488,color:#0f766e;
 ```
 
-## The 19 skills
+## The skills
 
 ### 🎨 Design
 | Skill | What it does |
 |-------|--------------|
 | **design-fundamentals** | Diagnose & fix a UI from first principles — hierarchy, grid, color, type, spacing, balance. |
 | **anti-ai-design-patterns** | Catch the "tells" that make a UI look machine-generated; make it read as handcrafted. |
+| **fresh-eyes-critique** | A reject / rework / ship verdict from a forked context that never saw the work being made — rendered, clicked, stressed. |
 | **design-tokens-system** | A layered token system (primitive → semantic → component) wired into Tailwind v4 `@theme`. |
 | **design-systems-architecture** | Scale a system past 100+ components — API contracts, theming, governance, versioning. |
 

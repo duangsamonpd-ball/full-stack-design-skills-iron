@@ -97,6 +97,7 @@ Descriptions are written around what people actually type. Some worked examples:
 | Beyond pass/fail | "support reduced motion and RTL" | `inclusive-design-patterns` |
 | It looks AI-made | "why does this look generic" | `anti-ai-design-patterns` |
 | Critique the visuals | "the hierarchy feels off" | `design-fundamentals` |
+| A second opinion before it ships | "critique this with fresh eyes" | `fresh-eyes-critique` |
 | Pick a framework | "React or Astro for this?" | `frontend-framework-guide` |
 | Catch UI regressions | "set up visual regression tests" | `qa-testing-visual-regression` |
 | It's slow | "improve our Core Web Vitals" | `web-performance-optimization` |

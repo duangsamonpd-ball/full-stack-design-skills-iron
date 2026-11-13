@@ -35,7 +35,7 @@ Fast audit. Depth for each — with concrete before/after fixes — is in `refer
 
 ## Workflow
 
-1. **Capture** — screenshot the current UI at a real viewport.
+1. **Capture** — screenshot the current UI at 360 and on both sides of every breakpoint the page actually uses (read them from its CSS), light and dark, then click every control and submit every form: one that changes nothing is a finding (a form here threw on a valid submit while every gate passed and its screenshots looked finished). Fit is not judged from screenshots — that is the 8px sweep in **responsive-universal-design**.
 2. **Audit** — walk the six categories; log each tell against the specific offending element (not "colors feel off" but "hero CTA uses the default indigo→violet gradient").
 3. **Fix** — apply the targeted remedy from `references/ai-tells-catalog.md`; make each fix a *decision* (a chosen value, tied to a token where possible).
 4. **Re-check** — run `references/review-checklist.md`; every "no" is a remaining tell.
@@ -50,3 +50,4 @@ Not "more designed" — more *decided*. A reviewer should be able to point at ch
 - Encode the chosen values as tokens in **design-tokens-system**
 - Confirm the opinionated result still passes **web-accessibility-a11y** (contrast especially)
 - Apply underlying principles via **design-fundamentals**
+- For a verdict from a context that did not make the work, **fresh-eyes-critique**
