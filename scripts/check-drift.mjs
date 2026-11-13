@@ -98,6 +98,17 @@ function pinnedRange(pkgJsonPath, name) {
 }
 const major = (v) => parseInt(String(v).replace(/^[^\d]*/, ''), 10);
 
+/* What is actually INSTALLED, read from the committed lockfile (so CI needs no node_modules).
+ * Measured 2026-11-13: every row read "✓ current" while the locks held jsdom 31.0.0 (latest
+ * 31.0.1), Tailwind 4.3.3 (4.3.5) and astro 7.4.5 (7.4.11) — each inside its caret, so the range
+ * check had nothing to say. A caret can hide a stale lockfile; the lock cannot. */
+function lockedVersion(pkgJsonPath, name) {
+  try {
+    const lock = JSON.parse(readFileSync(join(ROOT, dirname(pkgJsonPath), 'package-lock.json'), 'utf8'));
+    return lock.packages?.[`node_modules/${name}`]?.version ?? null;
+  } catch { return null; }
+}
+
 function versions() {
   const rows = [];
   for (const { pkg, from } of TRACKED) {
@@ -110,11 +121,15 @@ function versions() {
       rows.push({ pkg, range, latest: null });
       continue;
     }
-    rows.push({ pkg, range, latest, behindMajor: major(latest) > major(range) });
+    const locked = lockedVersion(from, pkg);
+    rows.push({ pkg, range, latest, locked, behindMajor: major(latest) > major(range), lockBehind: !!locked && locked !== latest && major(latest) === major(range) });
   }
 
   const reachable = rows.filter((row) => row.latest);
   const behind = reachable.filter((row) => row.behindMajor);
+  // Advisory, deliberately NOT drift: patches inside the range land most weeks, and a weekly
+  // issue for each would teach the reader to skip the one that matters (a major, an advisory).
+  const lockBehind = reachable.filter((row) => !row.behindMajor && row.lockBehind);
   const offline = rows.length - reachable.length;
 
   const width = Math.max(...rows.map((row) => row.pkg.length));
@@ -122,12 +137,14 @@ function versions() {
     const name = row.pkg.padEnd(width);
     if (!row.latest) return `  ${dim('?')} ${name}  ${dim('(npm unreachable)')}`;
     if (row.behindMajor) return `  ${y('⚠')} ${name}  pinned ${row.range}  →  ${y('latest ' + row.latest)}  ${dim('(major)')}`;
-    return `  ${g('✓')} ${name}  ${dim(row.range + ' · latest ' + row.latest)}`;
+    if (row.lockBehind) return `  ${y('·')} ${name}  ${row.range} · ${y('locked ' + row.locked)} · latest ${row.latest}  ${dim('(in range — npm update)')}`;
+    return `  ${g('✓')} ${name}  ${dim(row.range + ' · latest ' + row.latest + (row.locked ? ' · locked ' + row.locked : ''))}`;
   });
 
   let head;
   if (offline === rows.length) head = dim('versions: npm unreachable — skipped');
   else if (behind.length) head = y(`versions: ${behind.length} major upgrade${behind.length > 1 ? 's' : ''} available`);
+  else if (lockBehind.length) head = g('versions: no majors behind') + y(` · ${lockBehind.length} locked behind latest, in range`);
   else head = g('versions: all current');
 
   return { text: `${head}\n${lines.join('\n')}`, behind: behind.length };
