@@ -100,3 +100,17 @@ This is judgement, not measurement. Say so in the output.
 For the session that invoked this, not the fork: fix every Critical and Major,
 re-run the gates, and critique again what changed. The loop ends when what is
 left is Minor or Enhancement.
+
+**A finding is evidence; the cause it names is a hypothesis.** Confirm the
+cause before fixing it, and judge the fix by re-running the observation that
+showed the bug, not by reading the diff. Measured 2026-11-13: the fork traced
+a spinner visible at rest to this repo's unlayered `.material-symbols-outlined`
+beating the `hidden` utility. Moving that rule into a layer changed nothing:
+Google's Material Symbols stylesheet ships the same unlayered
+`display:inline-block`, and a cross-origin sheet cannot be read from the page,
+so a walk of `document.styleSheets` lists it as unreadable, not as a match.
+Count an unreadable sheet as a possible cause, not as an absent one.
+
+**A bug in one page is a question about its siblings.** The same crash the fork
+found in `registration-form-m3.html` was in two more pages that were never
+critiqued; checking them took one grep.
