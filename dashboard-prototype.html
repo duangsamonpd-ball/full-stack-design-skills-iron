@@ -6,6 +6,7 @@
   <title>Dashboard Prototype — Iron Software Skills Test (Tailwind v4)</title>
 
   <link rel="stylesheet" href="assets/dashboard-prototype.css" />
+  <link rel="icon" href="data:," /> <!-- no icon yet; stops the /favicon.ico 404 on every load -->
   <script>
     (function () {
       var s = localStorage.getItem('theme');
@@ -66,7 +67,7 @@
         </button>
         <div>
           <h1 class="text-base font-semibold tracking-tight">Overview</h1>
-          <p class="hidden text-xs text-muted sm:block">Last 30 days · updated just now</p>
+          <p class="hidden text-xs text-muted sm:block">Last 30 days · sample data</p>
         </div>
         <div class="ml-auto flex items-center gap-2">
           <label class="relative hidden sm:block">
@@ -79,7 +80,7 @@
                          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg aria-checked:bg-brand">
             <span aria-hidden="true" class="inline-block h-4 w-4 translate-x-1 rounded-full bg-white shadow transition-transform"></span>
           </button>
-          <button class="btn btn-sm btn-primary">Export</button>
+          <button id="export-csv" type="button" class="btn btn-sm btn-primary">Export CSV</button>
         </div>
       </header>
 
@@ -194,10 +195,11 @@
           <div class="card lg:col-span-2">
             <div class="flex items-center justify-between gap-4 border-b border-border px-5 py-3">
               <h2 id="orders-h" class="font-semibold tracking-tight">Recent orders</h2>
-              <button class="btn btn-sm btn-secondary">View all</button>
+              <!-- placeholder like the sidebar links: the full orders page is not part of this prototype -->
+              <a href="#" class="btn btn-sm btn-secondary">View all orders</a>
             </div>
             <div class="overflow-x-auto">
-              <table class="w-full text-left text-sm">
+              <table id="orders-table" class="w-full text-left text-sm">
                 <thead class="text-xs uppercase tracking-wide text-muted">
                   <tr class="border-b border-border">
                     <th scope="col" class="px-5 py-2.5 font-medium">Order</th>
@@ -256,6 +258,16 @@
   </div>
 
   <script>
+    // ── Export CSV: the recent-orders table, as shown ────────────
+    document.getElementById('export-csv').addEventListener('click', function(){
+      var rows=[].map.call(document.querySelectorAll('#orders-table tr'), function(tr){
+        return [].map.call(tr.cells, function(c){ return '"'+c.textContent.trim().replace(/"/g,'""')+'"'; }).join(',');
+      });
+      var a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([rows.join('\n')+'\n'], {type:'text/csv'}));
+      a.download='recent-orders.csv'; document.body.appendChild(a); a.click(); a.remove();
+    });
+
     // ── theme toggle ─────────────────────────────────────────────
     var toggle = document.getElementById('theme-toggle');
     var knob = toggle.querySelector('span');
