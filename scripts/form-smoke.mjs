@@ -114,6 +114,9 @@ async function check(html, file) {
     if (errors.length) fails.push(`valid submit threw: ${errors[0]}`);
     if (!shown(w.document.getElementById('success-view'))) fails.push('valid submit never reached the success view');
     if (shown(w.document.getElementById('summary'))) fails.push('valid submit left the error summary on screen');
+    // the success copy names the address it was sent to — and nothing left unfilled
+    const msg = w.document.getElementById('success-msg')?.textContent ?? '';
+    if (!msg.includes(VALID.email) || /[{}]/.test(msg)) fails.push(`success message does not name the email: "${msg.trim()}"`);
     w.close();
   }
   return fails;
@@ -132,7 +135,7 @@ async function selfTest() {
 const missing = PAGES.filter((f) => !fs.existsSync(f));
 if (missing.length) {
   console.error(`\n\x1b[31m✖  ${missing.length} page(s) expected but not built — the smoke test would be incomplete\x1b[0m`);
-  for (const f of missing) console.error(`    ${rel(f)}\n      build it with:  ${ASTRO_BUILD}`);
+  for (const f of missing) console.error(`    ${rel(f)}` + (f.includes('astro-registration-m3') ? `\n      build it with:  ${ASTRO_BUILD}` : '\n      a checked-in page is missing — restore it or update PAGES'));
   process.exit(1);
 }
 

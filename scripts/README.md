@@ -107,6 +107,29 @@ gate is what makes that safe, and is the same stale-output pattern
 Note the input files use the canonical `@import "tailwindcss"`, so the script links
 `styles/node_modules` → `scripts/node_modules` (gitignored) to make that resolve.
 
+## Form smoke
+
+`form-smoke.mjs` runs each registration page's own script in jsdom, then:
+
+- submits it empty — no exception, an error beside a field, the summary shown
+- submits it filled correctly — no exception, the success view reached, its message
+  naming the address that was entered
+
+It exists because `registration-form-m3.html` threw on every valid submit from its
+first commit (2026-07-18) until 2026-11-13 while the accessibility audit passed it on
+every push: that audit reads the tree and never presses anything. A self-test runs on
+every invocation — the M3 page with `#password-err` removed must fail, or the gate does.
+
+```bash
+cd scripts
+npm run smoke
+```
+
+Covers the classic, Material 3 and Bootstrap pages and the built Astro page (refused,
+with the build command, if that build is missing). Rendering, focus and overflow are
+out of scope — jsdom lays nothing out; those belong to a browser and to
+`fresh-eyes-critique`.
+
 ## Accessibility-tree audit
 
 `a11y-audit.mjs` statically audits the **accessibility tree** of every HTML example — the

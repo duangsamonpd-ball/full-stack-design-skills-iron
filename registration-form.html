@@ -168,7 +168,7 @@
             <svg class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.7-9.3a1 1 0 0 0-1.4-1.4L9 10.6 7.7 9.3a1 1 0 0 0-1.4 1.4l2 2a1 1 0 0 0 1.4 0l4-4Z" clip-rule="evenodd"/></svg>
           </div>
           <h1 class="mt-4 text-2xl font-bold tracking-tight">Check your inbox</h1>
-          <p id="success-msg" class="mt-1 text-sm text-muted wrap-anywhere">We sent a verification link to your email.</p>
+          <p id="success-msg" class="mt-1 text-sm text-muted wrap-anywhere" data-template="We sent a verification link to {email}.">We sent a verification link to your email.</p>
           <button type="button" id="reset" class="btn btn-md btn-secondary mt-6">Back to form</button>
         </div>
       </div>
@@ -283,7 +283,7 @@
       setTimeout(function(){
         document.getElementById('form-view').classList.add('hidden');
         var sv=document.getElementById('success-view');
-        document.getElementById('success-msg').textContent = 'We sent a verification link to ' + document.getElementById('email').value + '.';
+        var msg = document.getElementById('success-msg'); msg.textContent = msg.dataset.template.replace('{email}', document.getElementById('email').value);
         sv.classList.remove('hidden'); sv.focus();
       }, 1100);
     });
