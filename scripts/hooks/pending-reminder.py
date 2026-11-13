@@ -60,7 +60,8 @@ REPO = "duangsamonpd-ball/full-stack-design-skills-iron"
 # checked: every folder in ~/.claude/skills should be a symlink that resolves
 # into this repo. Three ways it breaks, all silent today:
 #   · a real directory instead of a symlink — an orphaned copy that no commit
-#     covers and no edit here can reach (shadcn-ui-design is one, since 07-24)
+#     covers and no edit here can reach (shadcn-ui-design was one from 07-24
+#     until it was re-linked here; a folder with no SKILL.md is not counted)
 #   · a symlink whose target is gone — the skill stops loading entirely
 #   · a skill committed here with no link in ~/.claude/skills — written, but
 #     never loaded by any session
@@ -170,8 +171,13 @@ def wiring_drift() -> list[dict]:
                 out.append({"kind": "dangling", "name": entry.name})
             elif src.resolve() not in target.parents:
                 out.append({"kind": "elsewhere", "name": entry.name, "to": str(target)})
-        else:
+        elif (entry / "SKILL.md").is_file():
             out.append({"kind": "orphan", "name": entry.name})
+        # A real directory with no SKILL.md is not a skill, so it cannot be an
+        # orphaned one. `synced/` (a claude.ai sync bucket, UUID-named, no
+        # SKILL.md) was reported as an orphan every session from at least
+        # 2026-11-05 to 2026-11-13: a warning that is always on teaches the
+        # reader to skip the line a real orphan would be printed on.
 
     for entry in sorted(src.iterdir()):
         if entry.is_dir() and not entry.name.startswith(".") and entry.name not in live_names:
