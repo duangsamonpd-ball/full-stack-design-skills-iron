@@ -161,6 +161,7 @@ width nobody measured.
 | `auto-fit` floor raised "to be safe" | Recount `n × floor + (n−1) × gap`; buy the headroom out of the gap, not the column count |
 | Overflow checked per document | `overflow: hidden` clips instead of scrolling — assert per item, not on `document.scrollWidth` |
 | Layout only proven at the design's frame widths | Also test between them, and one width below the smallest frame |
+| Text and inline elements (`<code>`, `<b>`) loose inside a flex row | Wrap the label in one `<span>`. Each text run becomes its own flex item and lines cannot break between items: this repo's own accessibility showcase scrolled sideways at **320–328 (335px)** and **640–648 (651px)** — a WCAG demo failing 1.4.10 Reflow — until the 8px sweep caught it on 2026-11-13 |
 
 ## Next steps
 
