@@ -170,25 +170,40 @@
         <h2 id="s-cards" class="text-xl font-semibold tracking-tight">Cards</h2>
         <span class="text-xs text-muted">responsive-universal-design (reflow grid)</span>
       </div>
-      <!-- stack on mobile → 2 → 3 columns; reflow, don't shrink -->
+      <!-- Three card SHAPES, not three equal tiers: a featured card that spans, a stat card, an inline
+           card. Weight follows importance, and every action is a real link. (The previous version was a
+           Starter / Popular / Scale pricing row whose "Choose" chose nothing.) -->
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <article class="card">
-          <span class="badge bg-brand/12 text-brand ring-brand/25">Starter</span>
-          <h3 class="mt-3 text-lg font-semibold tracking-tight">Design tokens</h3>
-          <p class="mt-1 text-sm text-muted">Three layers: primitive → semantic → component. Theme by swapping the semantic layer.</p>
-          <button class="btn btn-sm btn-secondary mt-4 w-full">View</button>
+        <article class="card sm:col-span-2 lg:row-span-2 flex flex-col">
+          <p class="text-xs font-medium uppercase tracking-wide text-brand">Featured · stacked card</p>
+          <h3 class="mt-2 text-2xl font-bold tracking-tight text-balance">Theme by swapping one layer, not by editing a hundred values</h3>
+          <p class="mt-2 max-w-prose text-sm text-muted">Primitives hold raw values, semantic tokens name a role, components read only the roles. Dark mode is the semantic layer pointing somewhere else.</p>
+          <!-- the idea, drawn: three layers, the middle one swaps -->
+          <ol class="mt-6 grid gap-2 text-sm" aria-label="Token layers">
+            <li class="flex items-center justify-between gap-3 rounded-lg bg-surface-2 px-3 py-2"><span>Primitive</span><code class="text-xs text-muted">--teal-600</code></li>
+            <li class="flex items-center justify-between gap-3 rounded-lg bg-brand/12 px-3 py-2 ring-1 ring-inset ring-brand/30"><span class="font-medium">Semantic <span class="font-normal text-muted">— swaps per theme</span></span><code class="text-xs text-muted">--brand</code></li>
+            <li class="flex items-center justify-between gap-3 rounded-lg bg-surface-2 px-3 py-2"><span>Component</span><code class="text-xs text-muted">.btn-primary</code></li>
+          </ol>
+          <a href="skills/design-tokens-system/SKILL.md" class="mt-auto pt-6 text-sm font-medium text-brand hover:underline">Read design-tokens-system →</a>
         </article>
-        <article class="card ring-2 ring-brand">
-          <span class="badge bg-brand text-brand-fg ring-transparent">Popular</span>
-          <h3 class="mt-3 text-lg font-semibold tracking-tight">Component system</h3>
-          <p class="mt-1 text-sm text-muted">Typed variants with a shared API grammar so 50+ components feel like one library.</p>
-          <button class="btn btn-sm btn-primary mt-4 w-full">Choose</button>
-        </article>
+
         <article class="card">
-          <span class="badge bg-surface-2 text-muted ring-border">Scale</span>
-          <h3 class="mt-3 text-lg font-semibold tracking-tight">Governance</h3>
-          <p class="mt-1 text-sm text-muted">RFC flow, semver, CI quality gates — keeping quality flat past 100+ components.</p>
-          <button class="btn btn-sm btn-secondary mt-4 w-full">View</button>
+          <p class="text-xs font-medium uppercase tracking-wide text-muted">Stat card</p>
+          <p class="mt-2 text-4xl font-bold tracking-tight tabular-nums">320<span class="text-xl text-muted">px</span></p>
+          <p class="mt-1 text-sm text-muted">The narrowest width every page here is swept from, in 8px steps, before anything ships.</p>
+          <a href="skills/responsive-universal-design/SKILL.md" class="mt-4 inline-block text-sm font-medium text-brand hover:underline">Why sweep, not sample →</a>
+        </article>
+
+        <article class="card flex items-start gap-4">
+          <span aria-hidden="true" class="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand/12 text-brand">
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm3.7 6.3-4.5 4.5a1 1 0 0 1-1.4 0l-2-2a1 1 0 1 1 1.4-1.4l1.3 1.3 3.8-3.8a1 1 0 1 1 1.4 1.4Z"/></svg>
+          </span>
+          <div class="min-w-0">
+            <p class="text-xs font-medium uppercase tracking-wide text-muted">Inline card</p>
+            <h3 class="mt-1 font-semibold tracking-tight">Critique from a context that never saw it made</h3>
+            <p class="mt-1 text-sm text-muted">Rendered, clicked and stressed before a verdict.</p>
+            <a href="skills/fresh-eyes-critique/SKILL.md" class="mt-2 inline-block text-sm font-medium text-brand hover:underline">fresh-eyes-critique →</a>
+          </div>
         </article>
       </div>
     </section>
