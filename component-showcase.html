@@ -7,7 +7,7 @@
 
   <!-- Tailwind v4 browser build (dev/testing only) -->
   <link rel="stylesheet" href="assets/component-showcase.css" />
-  <link rel="icon" href="data:," /> <!-- no icon yet; stops the /favicon.ico 404 on every load -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
 
   <!-- No-flash dark mode init: respect saved choice, else OS preference (inclusive-design-patterns) -->
   <script>
@@ -52,7 +52,7 @@
 
     <!-- Intro / focal point -->
     <section class="mb-14 max-w-2xl">
-      <p class="mb-2 text-sm font-medium text-brand">Skills test · 15 skills</p>
+      <p class="mb-2 text-sm font-medium text-brand">Skills test</p>
       <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Base components, built to the house rules.</h1>
       <p class="mt-4 text-lg text-muted">Every element below consumes semantic tokens, ships accessible states,
         reflows responsively, and respects reduced-motion &amp; dark-mode preferences — a live check that the
@@ -215,7 +215,6 @@
     <section aria-labelledby="s-coverage">
       <div class="mb-4 flex items-baseline justify-between gap-4 border-b border-border pb-2">
         <h2 id="s-coverage" class="text-xl font-semibold tracking-tight">What this page exercises</h2>
-        <span class="text-xs text-muted">15 / 15</span>
       </div>
       <ul class="grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
         <li class="flex gap-2"><span class="text-brand">✓</span><span><b>design-fundamentals</b> — one focal point, real type-scale jumps, asymmetric header</span></li>
@@ -239,7 +238,7 @@
 
   <footer class="border-t border-border">
     <div class="mx-auto max-w-5xl px-5 py-6 text-xs text-muted">
-      Tailwind v4 (Play CDN, testing only) · toggle theme and tab through to verify focus + contrast.
+      Tailwind v4, built from <code>styles/component-showcase.css</code> · toggle theme and tab through to verify focus + contrast.
     </div>
   </footer>
 

@@ -59,7 +59,7 @@
   .field-error { @apply mt-1.5 flex items-center gap-1 text-xs font-medium text-danger; }
 }
 
-@media (prefers-reduced-motion: reduce) { *,*::before,*::after { transition-duration:.01ms!important; animation-duration:.01ms!important; } }
+@media (prefers-reduced-motion: reduce) { *,*::before,*::after { transition-duration:.01ms!important; animation-duration:.01ms!important; animation-iteration-count: 1 !important; } }
 
 .req-dot { @apply inline-block w-3 text-center; }
 li[data-req].met { @apply text-success; }
