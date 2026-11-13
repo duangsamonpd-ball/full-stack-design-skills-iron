@@ -98,6 +98,7 @@ Descriptions are written around what people actually type. Some worked examples:
 | It looks AI-made | "why does this look generic" | `anti-ai-design-patterns` |
 | Critique the visuals | "the hierarchy feels off" | `design-fundamentals` |
 | Something new, no design yet | "build a settings page for…" | `brief-before-build` |
+| Words on the screen | "what should this button say" | `ux-writing` |
 | A second opinion before it ships | "critique this with fresh eyes" | `fresh-eyes-critique` |
 | Pick a framework | "React or Astro for this?" | `frontend-framework-guide` |
 | Catch UI regressions | "set up visual regression tests" | `qa-testing-visual-regression` |

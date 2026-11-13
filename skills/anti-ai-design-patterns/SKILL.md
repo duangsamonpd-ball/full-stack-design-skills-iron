@@ -51,3 +51,4 @@ Not "more designed" — more *decided*. A reviewer should be able to point at ch
 - Confirm the opinionated result still passes **web-accessibility-a11y** (contrast especially)
 - Apply underlying principles via **design-fundamentals**
 - For a verdict from a context that did not make the work, **fresh-eyes-critique**
+- To write the copy itself, not just strip its tells: **ux-writing**
