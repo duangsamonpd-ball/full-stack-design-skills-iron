@@ -242,6 +242,33 @@ for (const name of skillNames) {
   }
 }
 
+/* ── 5 · every skill is listed where a reader looks for it ──────────────────
+ * Measured 2026-11-13: TESTS.md said "the 16 skills" over 16 trigger rows while the
+ * folder held 22, and the six it lacked had never been checked against a prompt;
+ * the root README table had all 22 only because each was added by hand. A list a
+ * person maintains is a count nothing checks. So: each skill needs a row in the
+ * TESTS.md trigger matrix and in the README skill tables. Only when those files sit
+ * beside this skills/ folder — linting an installed set elsewhere skips it. */
+let listChecks = 0;
+const testsFile = join(SKILLS, 'TESTS.md');
+const readmeFile = join(SKILLS, '..', 'README.md');
+if (existsSync(testsFile)) {
+  const tests = readFileSync(testsFile, 'utf8');
+  const matrix = tests.split(/^## 1 · Trigger matrix$/m)[1]?.split(/^## /m)[0] ?? '';
+  if (!matrix) err('TESTS.md', 'no "## 1 · Trigger matrix" section to check skills against');
+  for (const name of skillNames) {
+    listChecks++;
+    if (!new RegExp(`\\|\\s*\`${name}\`\\s*\\|\\s*$`, 'm').test(matrix)) err(name, `no Trigger-matrix row in skills/TESTS.md — add a prompt that should select it`);
+  }
+}
+if (existsSync(readmeFile)) {
+  const readme = readFileSync(readmeFile, 'utf8');
+  for (const name of skillNames) {
+    listChecks++;
+    if (!readme.includes(`| **${name}** |`)) err(name, `no row in the README.md skill tables`);
+  }
+}
+
 /* ── the name check is an instrument too — prove it can fail, every run ──── */
 
 const st = selfTestNameCheck(known);
@@ -274,4 +301,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`\n\x1b[32m✔  ${skillNames.length} skills lint clean — names match folders, descriptions present, ${refChecks} references resolve, ${ptrChecks} description pointers resolve, ${nameChecks} files carry no stale **bold** skill name\x1b[0m\n`);
+console.log(`\n\x1b[32m✔  ${skillNames.length} skills lint clean — names match folders, descriptions present, ${refChecks} references resolve, ${ptrChecks} description pointers resolve, ${nameChecks} files carry no stale **bold** skill name${listChecks ? `, ${listChecks} list rows present` : ''}\x1b[0m\n`);

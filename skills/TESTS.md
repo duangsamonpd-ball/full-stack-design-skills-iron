@@ -1,6 +1,6 @@
 # Skill tests
 
-Lightweight, single-file test cases for the 16 skills. Two things get checked:
+Lightweight, single-file test cases for every skill in this folder. Two things get checked:
 
 1. **Trigger** — a representative prompt selects the intended skill.
 2. **Disambiguation** — where two skills sit next to each other, the *right* one wins
@@ -32,6 +32,12 @@ never the **confusable** neighbor. Re-run after editing any `description`.
 | "improve Core Web Vitals / reduce the bundle size" | `web-performance-optimization` |
 | "set up CI/CD with preview deploys and quality gates" | `deployment-devops-workflow` |
 | "add a shadcn button / build this page with shadcn/ui on next.js" | `shadcn-ui-design` |
+| "critique this with fresh eyes before it ships" | `fresh-eyes-critique` |
+| "build a settings page for our admin — there's no design yet" | `brief-before-build` |
+| "what should this button say? review these error messages" | `ux-writing` |
+| "build this page from this Figma frame into our Astro repo" | `build-page-from-frame` |
+| "set up figma-astro here / write MAP.md for this repo" | `figma-astro-init` |
+| "that generation needed rework — write that down" | `figma-astro-note` |
 
 ## 2 · Disambiguation (the tuned pairs)
 
@@ -51,6 +57,14 @@ Each row is a prompt that could plausibly hit either skill; the description make
 | "design for reduced motion, i18n, cognitive load" | `inclusive-design-patterns` | `web-accessibility-a11y` | beyond-baseline usability, not pass/fail |
 | "style this component with tailwind" | `css-styling-pixel-perfect` | `shadcn-ui-design` | stack-independent styling; shadcn only owns the Next.js + shadcn/ui stack |
 | "restyle the shadcn dialog primitive" | `shadcn-ui-design` | `css-styling-pixel-perfect` | a named shadcn primitive is inside that stack |
+| "why does this look off? fix the hierarchy" | `design-fundamentals` | `fresh-eyes-critique` | diagnosing while working stays in the maker's context |
+| "get an independent verdict on this page before release" | `fresh-eyes-critique` | `design-fundamentals` | a verdict from a context that never saw the work made |
+| "build a pricing page — nothing designed yet" | `brief-before-build` | `design-to-code-workflow` | no frame or mockup to implement; the brief comes first |
+| "implement this mockup as a component" | `design-to-code-workflow` | `brief-before-build` | a design exists, so there is something to read |
+| "rewrite this error message so it helps" | `ux-writing` | `anti-ai-design-patterns` | writing copy, not stripping machine tells |
+| "this hero copy sounds AI-generated" | `anti-ai-design-patterns` | `ux-writing` | a tell to remove, not a string to write |
+| "build this whole page from the frame into the repo" | `build-page-from-frame` | `design-to-code-workflow` | a full page into a named repository |
+| "turn this one card from Figma into a component" | `design-to-code-workflow` | `build-page-from-frame` | a single component, no target repository |
 
 ## 3 · Behavior expectations
 
@@ -74,8 +88,14 @@ What a correct application should produce (not just which skill fires).
 | `web-performance-optimization` | Measured before/after on the worst vital; highest-leverage fix applied |
 | `deployment-devops-workflow` | Pipeline with quality gates as definition-of-done + one-action rollback |
 | `shadcn-ui-design` | Primitives added via the CLI, styled through semantic tokens rather than raw hex, dark mode from the token layer |
+| `fresh-eyes-critique` | Runs forked; rendered at 360 + both sides of each breakpoint, controls used and forms submitted; reject / rework / ship with evidence per finding, brief disagreements separate |
+| `brief-before-build` | One round of questions that change the work, every other decision written as an assumption with its cost, a `BRIEF.md` |
+| `ux-writing` | A per-string table (where · now · proposed · why) plus a separate list of copy ↔ behaviour mismatches |
+| `build-page-from-frame` | Target established first; sections reusing the repository's components, each a component plus its content slice |
+| `figma-astro-init` | `MAP.md` pointing each convention question at the file that answers it, plus the first fingerprint; no convention values |
+| `figma-astro-note` | A note only when something cost real rework, with the cost attached; nothing for one-offs |
 
 ---
 
-*Single source of truth — one file for all 16 skills, kept in sync with each `description`.
+*Single source of truth — one file for every skill, kept in sync with each `description`; `skills-lint` fails a skill with no Trigger row here.
 When a description changes, update the matching Trigger / Disambiguation rows here.*

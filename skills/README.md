@@ -11,38 +11,18 @@ Each skill is a **folder** with a `SKILL.md`. Longer material lives in a sibling
 
 ```
 skills/
-├── anti-ai-design-patterns/       SKILL.md + references/{ai-tells-catalog, icon-library-guide, review-checklist}.md
-├── design-fundamentals/           SKILL.md + references/principles-deep-dive.md
-├── design-tokens-system/          SKILL.md + references/theming-recipes.md
-├── design-systems-architecture/   SKILL.md + references/{component-contract, token-pipeline}.md   (migrated from design-system-mastery + component design)
-├── design-to-code-workflow/       SKILL.md + references/{design-extraction, states-and-gaps}.md   (migrated from design-to-code — full content)
-├── css-styling-pixel-perfect/     SKILL.md + references/tailwind-v4-recipes.md   (merged styling + pixel-perfect)
-├── responsive-universal-design/   SKILL.md + references/responsive-recipes.md
-├── component-library-mastery/     SKILL.md + references/variant-recipes.md   (migrated from component-system-building — full content)
-├── frontend-framework-guide/      SKILL.md + references/framework-patterns.md
-├── figma-expert-workflows/        SKILL.md + references/code-connect.md   (migrated from figma-code-connect)
-├── web-accessibility-a11y/        SKILL.md + references/aria-patterns.md   (migrated from accessibility-audit — full content)
-├── inclusive-design-patterns/     SKILL.md + references/{cognitive-accessibility, inclusive-patterns, universal-design-principles}.md
-├── qa-testing-visual-regression/  SKILL.md + references/testing-setup.md
-├── web-performance-optimization/  SKILL.md + references/perf-tactics.md   (migrated from performance-optimization)
-└── deployment-devops-workflow/    SKILL.md + references/ci-cd.md
+└── <skill-name>/
+    ├── SKILL.md          frontmatter (name = folder name, description) + the workflow
+    └── references/       optional, loaded on demand — linked from SKILL.md or flagged by the lint
 ```
 
-## Content status
+`ls skills/` is the list. It is deliberately not repeated here: this file used to carry
+a tree and a count ("all 16 … 25 files") that stayed true for one release and then
+described a folder that no longer existed. What *is* checked:
 
-**All 16 design skills are full content** — each has real workflows plus code / before-after
-examples, and **all 16** now carry a `references/` folder for on-demand depth (25 files):
-
-- `anti-ai-design-patterns` (+3 refs) · `inclusive-design-patterns` (+3) ·
-  `design-systems-architecture` (+2) · `design-to-code-workflow` (+2) ·
-  `design-fundamentals` (+1) · `design-tokens-system` (+1) · `css-styling-pixel-perfect` (+1) ·
-  `responsive-universal-design` (+1) · `component-library-mastery` (+1) ·
-  `frontend-framework-guide` (+1) · `figma-expert-workflows` (+1) · `web-accessibility-a11y` (+1) ·
-  `qa-testing-visual-regression` (+1) · `web-performance-optimization` (+1) ·
-  `deployment-devops-workflow` (+1)
-
-`skills-lint` asserts every `references/…md` a SKILL.md promises actually resolves, including
-the cross-skill pointers — so this list can't quietly go stale.
+- `skills-lint` — every `references/…md` a SKILL.md promises resolves (cross-skill pointers
+  too), and every skill has a row in the root README tables and in [`TESTS.md`](TESTS.md).
+- The root [`README.md`](../README.md) carries the one-line summary of each skill.
 
 ## How triggering works
 
@@ -52,21 +32,26 @@ in the YAML frontmatter. Rules:
 - `description` — one line saying *what it does* **and** *when to use it* (with the
   phrases a user would type). This is what auto-selects the skill.
 - **Disambiguation** — where two skills sit next to each other (styling ↔ responsive,
-  tokens ↔ architecture, design-to-code ↔ figma-workflows, library ↔ architecture),
+  tokens ↔ architecture, design-to-code ↔ figma-workflows, library ↔ architecture,
+  critique ↔ fundamentals, brief ↔ design-to-code, ux-writing ↔ anti-ai, page ↔ component),
   each `description` owns its own trigger phrases and points to its neighbor
   ("for X use `<other-skill>`") so auto-selection stays unambiguous.
 
 ## Suggested flow
 
-Design → `design-fundamentals`, `anti-ai-design-patterns`, `design-tokens-system`,
+Brief → `brief-before-build` (only when there is no design to read)
+Design → `design-fundamentals`, `anti-ai-design-patterns`, `ux-writing`, `design-tokens-system`,
 `design-systems-architecture`
-Build → `design-to-code-workflow`, `frontend-framework-guide`, `css-styling-pixel-perfect`,
-`responsive-universal-design`, `component-library-mastery`, `figma-expert-workflows`
+Build → `design-to-code-workflow`, `build-page-from-frame`, `frontend-framework-guide`,
+`css-styling-pixel-perfect`, `responsive-universal-design`, `component-library-mastery`,
+`figma-expert-workflows`
 Quality → `web-accessibility-a11y`, `inclusive-design-patterns`,
-`qa-testing-visual-regression`, `web-performance-optimization`
+`qa-testing-visual-regression`, `web-performance-optimization`, `fresh-eyes-critique`
 Ship → `deployment-devops-workflow`
+
+Stack-specific: `shadcn-ui-design`. The generator's memory: `figma-astro-init`, `figma-astro-note`.
 
 ## Tests
 
 [`TESTS.md`](TESTS.md) — a single-file trigger + disambiguation matrix (plus behavior
-expectations) for all 16 design skills. Re-run the rows for any skill whose `description` you edit.
+expectations) for every skill. Re-run the rows for any skill whose `description` you edit.
