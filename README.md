@@ -56,6 +56,7 @@ flowchart LR
 |-------|--------------|
 | **design-fundamentals** | Diagnose & fix a UI from first principles — hierarchy, grid, color, type, spacing, balance. |
 | **anti-ai-design-patterns** | Catch the "tells" that make a UI look machine-generated; make it read as handcrafted. |
+| **brief-before-build** | Before building something new with no design: ask only what changes the work, in one round, and write the rest down as assumptions in a `BRIEF.md`. |
 | **fresh-eyes-critique** | A reject / rework / ship verdict from a forked context that never saw the work being made — rendered, clicked, stressed. |
 | **design-tokens-system** | A layered token system (primitive → semantic → component) wired into Tailwind v4 `@theme`. |
 | **design-systems-architecture** | Scale a system past 100+ components — API contracts, theming, governance, versioning. |

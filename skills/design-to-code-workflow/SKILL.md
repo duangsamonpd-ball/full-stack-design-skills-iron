@@ -1,6 +1,6 @@
 ---
 name: design-to-code-workflow
-description: Convert Figma designs and mockups into production-ready React, Astro, or Vue components with Tailwind CSS; for ongoing Figma ↔ code sync and Code Connect use figma-expert-workflows. Use when the user says "implement this figma design", "design to code", "figma to code", "build this design in react/astro/vue", or "turn this mockup into code".
+description: Convert Figma designs and mockups into production-ready React, Astro, or Vue components with Tailwind CSS; for ongoing Figma ↔ code sync and Code Connect use figma-expert-workflows. Use when the user says "implement this figma design", "design to code", "figma to code", "build this design in react/astro/vue", or "turn this mockup into code". For a new page or component with no design yet, use brief-before-build first.
 ---
 
 # Design to Code

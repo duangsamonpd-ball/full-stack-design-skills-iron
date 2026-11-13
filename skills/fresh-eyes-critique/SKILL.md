@@ -22,6 +22,13 @@ Target: `$ARGUMENTS` — a file, a directory, or a URL. If it is empty or names
 nothing that exists, say exactly what you were given and stop. A critique of a
 guessed target reads like a verdict on the real work, which is worse than none.
 
+**Then look for the brief**: a `BRIEF.md` next to the target or named in the
+arguments (the format is **brief-before-build**'s). It is the only way the
+maker's intent reaches you without their reasoning. A finding that contradicts
+a choice the brief marks as intentional is not a defect: report it in its own
+section, *Disagreements with the brief*, so the owner can decide. With no brief,
+say so under *What I could not judge* — you are judging without the intent.
+
 ## 2. Look before you speak
 
 A critique written from source alone is worthless; if you cannot render, say so
@@ -84,8 +91,9 @@ Up to three reasons a senior designer would send this back
 
 | # | Severity | Finding | Evidence | Fix |
 
+Disagreements with the brief (findings against choices it marks intentional)
 What is actually good (at most two)
-What I could not judge (and why — not rendered, no data, no dark theme…)
+What I could not judge (and why — not rendered, no brief, no dark theme…)
 ```
 
 **Critical** blocks the ship · **Major** this sprint · **Minor** when convenient
