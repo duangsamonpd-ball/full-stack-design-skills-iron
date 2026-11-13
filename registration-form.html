@@ -110,6 +110,7 @@
                   <svg id="eye" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 4c-4 0-7.3 2.6-9 6 1.7 3.4 5 6 9 6s7.3-2.6 9-6c-1.7-3.4-5-6-9-6Zm0 10a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>
                 </button>
               </div>
+              <p id="password-err" class="field-error hidden"></p>
 
               <!-- strength meter (status colour + text label, never colour alone) -->
               <div class="mt-2 flex items-center gap-2">
@@ -227,13 +228,14 @@
     };
     function setError(id, msg){
       var input = document.getElementById(id), err = document.getElementById(id+'-err');
+      if(!('describedby' in input.dataset)) input.dataset.describedby = input.getAttribute('aria-describedby') || '';
       if(msg){
-        input.classList.add('input-error'); input.setAttribute('aria-invalid','true'); input.setAttribute('aria-describedby', id+'-err');
+        input.classList.add('input-error'); input.setAttribute('aria-invalid','true'); input.setAttribute('aria-describedby', (id+'-err '+input.dataset.describedby).trim());
         err.innerHTML = '<svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm1-8a1 1 0 1 1-2 0V7a1 1 0 1 1 2 0v3Zm-1 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/></svg>' + msg;
         err.classList.remove('hidden');
       } else {
         input.classList.remove('input-error'); input.removeAttribute('aria-invalid');
-        if(id!=='password') input.removeAttribute('aria-describedby');
+        if(input.dataset.describedby) input.setAttribute('aria-describedby', input.dataset.describedby); else input.removeAttribute('aria-describedby');
         err.classList.add('hidden'); err.textContent='';
       }
       return !msg;

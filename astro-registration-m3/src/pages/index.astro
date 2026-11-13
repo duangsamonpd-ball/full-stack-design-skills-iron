@@ -73,6 +73,7 @@ import Button from '../components/Button.astro';
                   <span class="material-symbols-outlined" id="eye">visibility</span>
                 </button>
               </div>
+              <p id="password-err" class="mt-1 hidden items-center gap-1 px-4 text-xs text-error"></p>
 
               <div class="mt-2 flex items-center gap-2 px-1">
                 <div class="flex h-1 flex-1 gap-1" aria-hidden="true">
@@ -104,7 +105,9 @@ import Button from '../components/Button.astro';
             <p id="terms-err" class="mt-1 hidden items-center gap-1 text-xs text-error"></p>
 
             <Button variant="filled" type="submit" id="submit" class="w-full">
-              <span class="material-symbols-outlined hidden animate-spin" id="spin" style="font-size:18px">progress_activity</span>
+              <!-- `hidden` goes on a wrapper: Google's Material Symbols stylesheet sets an unlayered
+                   display:inline-block on the icon class, which beats the `hidden` utility -->
+              <span id="spin" class="hidden"><span class="material-symbols-outlined animate-spin" style="font-size:18px">progress_activity</span></span>
               <span id="submit-label">Create account</span>
             </Button>
 
@@ -198,14 +201,18 @@ import Button from '../components/Button.astro';
     const input = document.getElementById(id) as HTMLInputElement;
     const err = document.getElementById(id + '-err')!;
     const field = input.closest('.field');
+    // what the field is described by without an error (the password's requirements list), kept so it can be given back
+    input.dataset.describedby ??= input.getAttribute('aria-describedby') ?? '';
+    const base = input.dataset.describedby;
     if (msg) {
       field?.classList.add('field-invalid');
-      input.setAttribute('aria-invalid', 'true'); input.setAttribute('aria-describedby', id + '-err');
+      input.setAttribute('aria-invalid', 'true'); input.setAttribute('aria-describedby', `${id}-err ${base}`.trim());
       err.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">error</span>' + msg;
       showRow(err);
     } else {
       field?.classList.remove('field-invalid');
-      input.removeAttribute('aria-invalid'); if (id !== 'password') input.removeAttribute('aria-describedby');
+      input.removeAttribute('aria-invalid');
+      if (base) input.setAttribute('aria-describedby', base); else input.removeAttribute('aria-describedby');
       hideRow(err); err.textContent = '';
     }
     return !msg;
