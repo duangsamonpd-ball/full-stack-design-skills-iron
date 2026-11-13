@@ -14,6 +14,7 @@
    fill shades: amber-500 measured 1.66:1 as badge text (2026-11-13), and --danger had
    no dark value at all. Same hue and chroma, lightness solved for >= 4.6:1. */
 :root {
+  color-scheme: light; accent-color: var(--brand);
   /* primitives — raw palette, never consumed directly */
   --steel-50:  oklch(0.985 0.003 250);
   --steel-100: oklch(0.968 0.005 250);
@@ -55,6 +56,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --bg:         var(--steel-950);
   --surface:    var(--steel-900);
   --surface-2:  var(--steel-800);
@@ -96,7 +98,8 @@
            transition-[background-color,box-shadow,opacity] duration-150
            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
            focus-visible:ring-offset-2 focus-visible:ring-offset-bg
-           disabled:opacity-50 disabled:pointer-events-none;
+           disabled:pointer-events-none disabled:bg-surface-2 disabled:text-muted disabled:ring-1 disabled:ring-border
+           aria-disabled:cursor-progress aria-disabled:opacity-80;
   }
   .btn-sm { @apply h-8 px-3 text-sm; }
   .btn-md { @apply h-10 px-4 text-sm; }

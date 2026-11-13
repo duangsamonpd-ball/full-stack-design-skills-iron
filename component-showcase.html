@@ -38,7 +38,7 @@
 
       <!-- Dark-mode switch (role=switch, keyboard-operable — a11y + inclusive) -->
       <button id="theme-toggle" type="button" role="switch" aria-checked="false"
-              aria-label="Toggle dark mode"
+              aria-label="Dark mode"
               class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-surface-2 ring-1 ring-inset ring-border transition-colors
                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg
                      aria-checked:bg-brand">
@@ -61,23 +61,25 @@
 
     <!-- ─────────────── Buttons ─────────────── -->
     <section class="mb-14" aria-labelledby="s-buttons">
-      <div class="mb-4 flex items-baseline justify-between gap-4 border-b border-border pb-2">
+      <div class="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-border pb-2">
         <h2 id="s-buttons" class="text-xl font-semibold tracking-tight">Buttons</h2>
         <span class="text-xs text-muted">component-library-mastery · css-styling-pixel-perfect</span>
       </div>
+      <p class="mb-3 text-sm text-muted">Specimens: each shows a variant. Only <b>Save changes</b> is wired, to demonstrate a loading state.</p>
       <div class="flex flex-wrap items-center gap-3">
         <button class="btn btn-md btn-primary">Primary</button>
         <button class="btn btn-md btn-secondary">Secondary</button>
         <button class="btn btn-md btn-ghost">Ghost</button>
         <button class="btn btn-md btn-danger">Delete</button>
         <button class="btn btn-md btn-primary" disabled>Disabled</button>
-        <button id="load-btn" class="btn btn-md btn-primary">
+        <button id="load-btn" type="button" class="btn btn-md btn-primary min-w-[9rem]">
           <svg class="spinner hidden h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity="0.25"/>
             <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
           </svg>
           <span>Save changes</span>
         </button>
+        <span id="save-status" role="status" class="sr-only"></span>
       </div>
       <div class="mt-4 flex flex-wrap items-center gap-3">
         <button class="btn btn-sm btn-secondary">Small</button>
@@ -88,7 +90,7 @@
 
     <!-- ─────────────── Form ─────────────── -->
     <section class="mb-14" aria-labelledby="s-form">
-      <div class="mb-4 flex items-baseline justify-between gap-4 border-b border-border pb-2">
+      <div class="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-border pb-2">
         <h2 id="s-form" class="text-xl font-semibold tracking-tight">Form controls</h2>
         <span class="text-xs text-muted">web-accessibility-a11y · inclusive-design-patterns</span>
       </div>
@@ -123,7 +125,7 @@
         </div>
 
         <label class="flex items-start gap-2.5 sm:col-span-2">
-          <input type="checkbox" class="mt-0.5 h-4 w-4 rounded border-border text-brand focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg" />
+          <input type="checkbox" class="mt-0.5 h-4 w-4 shrink-0 rounded border-border text-brand focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg" />
           <span class="text-sm text-muted">Email me product updates. You can unsubscribe anytime.</span>
         </label>
       </form>
@@ -131,7 +133,7 @@
 
     <!-- ─────────────── Badges ─────────────── -->
     <section class="mb-14" aria-labelledby="s-badges">
-      <div class="mb-4 flex items-baseline justify-between gap-4 border-b border-border pb-2">
+      <div class="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-border pb-2">
         <h2 id="s-badges" class="text-xl font-semibold tracking-tight">Badges</h2>
         <span class="text-xs text-muted">design-tokens-system (semantic colors)</span>
       </div>
@@ -146,7 +148,7 @@
 
     <!-- ─────────────── Alerts ─────────────── -->
     <section class="mb-14" aria-labelledby="s-alerts">
-      <div class="mb-4 flex items-baseline justify-between gap-4 border-b border-border pb-2">
+      <div class="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-border pb-2">
         <h2 id="s-alerts" class="text-xl font-semibold tracking-tight">Alerts</h2>
         <span class="text-xs text-muted">a11y (icon + text, not colour alone)</span>
       </div>
@@ -164,7 +166,7 @@
 
     <!-- ─────────────── Cards (responsive grid) ─────────────── -->
     <section class="mb-14" aria-labelledby="s-cards">
-      <div class="mb-4 flex items-baseline justify-between gap-4 border-b border-border pb-2">
+      <div class="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-border pb-2">
         <h2 id="s-cards" class="text-xl font-semibold tracking-tight">Cards</h2>
         <span class="text-xs text-muted">responsive-universal-design (reflow grid)</span>
       </div>
@@ -193,7 +195,7 @@
 
     <!-- ─────────────── Table (intentional density) ─────────────── -->
     <section class="mb-14" aria-labelledby="s-table">
-      <div class="mb-4 flex items-baseline justify-between gap-4 border-b border-border pb-2">
+      <div class="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-border pb-2">
         <h2 id="s-table" class="text-xl font-semibold tracking-tight">Data table</h2>
         <span class="text-xs text-muted">semantic &lt;table&gt; · scrolls on narrow screens</span>
       </div>
@@ -203,9 +205,9 @@
             <tr><th scope="col" class="px-4 py-2.5 font-medium">Skill</th><th scope="col" class="px-4 py-2.5 font-medium">Category</th><th scope="col" class="px-4 py-2.5 font-medium">Status</th></tr>
           </thead>
           <tbody class="divide-y divide-border">
-            <tr><td class="px-4 py-2.5 font-medium">design-tokens-system</td><td class="px-4 py-2.5 text-muted">Design</td><td class="px-4 py-2.5"><span class="badge bg-success/12 text-success ring-success/25">Passed</span></td></tr>
-            <tr><td class="px-4 py-2.5 font-medium">web-accessibility-a11y</td><td class="px-4 py-2.5 text-muted">Quality</td><td class="px-4 py-2.5"><span class="badge bg-success/12 text-success ring-success/25">Passed</span></td></tr>
-            <tr><td class="px-4 py-2.5 font-medium">responsive-universal-design</td><td class="px-4 py-2.5 text-muted">Build</td><td class="px-4 py-2.5"><span class="badge bg-success/12 text-success ring-success/25">Passed</span></td></tr>
+            <tr><td class="whitespace-nowrap px-4 py-2.5 font-medium">design-tokens-system</td><td class="px-4 py-2.5 text-muted">Design</td><td class="px-4 py-2.5"><span class="badge bg-success/12 text-success ring-success/25">Passed</span></td></tr>
+            <tr><td class="whitespace-nowrap px-4 py-2.5 font-medium">web-accessibility-a11y</td><td class="px-4 py-2.5 text-muted">Quality</td><td class="px-4 py-2.5"><span class="badge bg-success/12 text-success ring-success/25">Passed</span></td></tr>
+            <tr><td class="whitespace-nowrap px-4 py-2.5 font-medium">responsive-universal-design</td><td class="px-4 py-2.5 text-muted">Build</td><td class="px-4 py-2.5"><span class="badge bg-success/12 text-success ring-success/25">Passed</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -213,7 +215,7 @@
 
     <!-- ─────────────── Skills coverage map ─────────────── -->
     <section aria-labelledby="s-coverage">
-      <div class="mb-4 flex items-baseline justify-between gap-4 border-b border-border pb-2">
+      <div class="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-border pb-2">
         <h2 id="s-coverage" class="text-xl font-semibold tracking-tight">What this page exercises</h2>
       </div>
       <ul class="grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
@@ -256,15 +258,27 @@
       syncToggle(); syncKnob();
     });
 
+    // Email: starts in its error state as a specimen, then follows what is typed
+    (function(){
+      var email = document.getElementById('email'), err = document.getElementById('email-err');
+      function check(){ var ok = email.validity.valid && email.value.trim() !== '';
+        email.classList.toggle('input-error', !ok); err.hidden = ok;
+        if (ok) { email.removeAttribute('aria-invalid'); email.removeAttribute('aria-describedby'); }
+        else { email.setAttribute('aria-invalid','true'); email.setAttribute('aria-describedby','email-err'); } }
+      email.addEventListener('input', check); email.addEventListener('blur', check);
+    })();
+
     // Loading-state demo
     var loadBtn = document.getElementById('load-btn');
     loadBtn.addEventListener('click', function () {
-      var spin = loadBtn.querySelector('.spinner');
-      loadBtn.disabled = true; spin.classList.remove('hidden');
-      loadBtn.querySelector('span').textContent = 'Saving…';
+      // `disabled` dropped keyboard focus to <body>; aria-disabled keeps it on the button
+      if (loadBtn.getAttribute('aria-disabled') === 'true') return;
+      var spin = loadBtn.querySelector('.spinner'), status = document.getElementById('save-status');
+      loadBtn.setAttribute('aria-disabled', 'true'); spin.classList.remove('hidden');
+      loadBtn.querySelector('span').textContent = 'Saving…'; status.textContent = 'Saving…';
       setTimeout(function () {
-        loadBtn.disabled = false; spin.classList.add('hidden');
-        loadBtn.querySelector('span').textContent = 'Saved ✓';
+        loadBtn.removeAttribute('aria-disabled'); spin.classList.add('hidden');
+        loadBtn.querySelector('span').textContent = 'Saved ✓'; status.textContent = 'Saved.';
       }, 1200);
     });
   </script>
