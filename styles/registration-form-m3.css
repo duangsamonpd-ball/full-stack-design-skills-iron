@@ -49,13 +49,14 @@
 }
 
 @layer components {
-  /* M3 buttons — stadium shape + state layer (.state below) */
+  /* M3 buttons — stadium shape + state layer (.state below). Focus is a 2px primary outline:
+     the 12% state layer alone measured 1.17–1.32:1 against rest (2026-11-13), invisible. */
   .m3-filled   { @apply inline-flex h-10 items-center justify-center gap-2 rounded-full bg-primary px-6
                  text-sm font-medium text-on-primary transition-shadow hover:shadow-md
-                 focus-visible:outline-none disabled:opacity-40 disabled:shadow-none disabled:pointer-events-none; }
+                 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-40 disabled:shadow-none disabled:pointer-events-none; }
   .m3-outlined { @apply inline-flex h-10 items-center justify-center gap-2 rounded-full border border-outline
-                 px-6 text-sm font-medium text-primary focus-visible:outline-none; }
-  .m3-text     { @apply inline-flex h-9 items-center justify-center gap-2 rounded-full px-3 text-sm font-medium text-primary focus-visible:outline-none; }
+                 px-6 text-sm font-medium text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary; }
+  .m3-text     { @apply inline-flex h-9 items-center justify-center gap-2 rounded-full px-3 text-sm font-medium text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary; }
 
   /* M3 OUTLINED text field. The outline is drawn with `outline`, not `border`, so the
      1px → 2px change on focus costs no layout shift and the text never moves. The label
