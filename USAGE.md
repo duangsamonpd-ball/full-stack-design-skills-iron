@@ -40,7 +40,7 @@ pinning; a copy is a copy, and it stops tracking this repo the moment either cha
 
 ### Claude app (claude.ai)
 
-Upload one at a time — **Settings → Capabilities → Skills** — from `per-skill/<name>.zip`.
+Upload one at a time — **Settings → Customize → Skills → Add** — from `per-skill/<name>.zip`.
 Each of those contains a single skill folder with its `SKILL.md` and `references/`.
 
 ### Confirm it worked

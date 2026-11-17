@@ -34,7 +34,7 @@ figma-astro generator skills (`build-page-from-frame`, `figma-astro-init`,
 Claude Code auto-discovers each `SKILL.md`. (`.claude` is hidden — reveal with Cmd+Shift+. )
 
 ## Install — Claude app (claude.ai)
-Upload one skill at a time (see the `per-skill/` zips): Settings → Capabilities → Skills.
+Upload one skill at a time (see the `per-skill/` zips): Settings → Customize → Skills → Add.
 
 MIT · Ball @ Iron Software
 MD
