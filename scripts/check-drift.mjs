@@ -29,6 +29,7 @@ import { homedir } from 'node:os';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
 const hook = args.includes('--hook'); // emit a SessionStart JSON envelope instead of a report
+const appHook = args.includes('--app-hook'); // SessionStart envelope for the claude.ai copies only — wired at USER level, so it speaks in every room
 const want = {
   gates: args.includes('--gates') || hook,
   versions: args.includes('--versions'),
@@ -578,6 +579,28 @@ function audit() {
   return { text: `${head}\n${lines.join('\n')}`, flagged: flagged.length };
 }
 
+/* ── SessionStart hook, USER level: the claude.ai copies, in every room ────── */
+// The reminder Ball asked for on 2026-11-17, addressed to him because he does
+// the upload. It first lived in this room's --hook, which was the wrong place
+// twice over: it spoke only when a session opened HERE, and the edits that day
+// had been made from the design-system room. A skill can be edited from any
+// room on this machine, so the reminder is wired in ~/.claude/settings.json and
+// this room's hook is back to gates only — or this room would say it twice.
+//
+// It answers in every case, one line when current: a hook that is silent when
+// all is well cannot be told from a hook that did not run.
+if (appHook) {
+  const app = appCopies();
+  const text = app.text.replace(/\x1b\[[0-9;]*m/g, '').trim();
+  const nudge = app.behind.length
+    ? '\nTELL BALL at the start of this session: these skills were edited in ~/Projects/test-build-skills but the claude.ai app still has the old version, and he uses them there. He uploads the zips by hand; offer to rebuild dist/ first. (If an upload happened in the last ~20 minutes the sync may not have landed yet — say so rather than repeat the ask.)'
+    : '';
+  process.stdout.write(JSON.stringify({
+    hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: text + nudge },
+  }));
+  process.exit(0);
+}
+
 /* ── SessionStart hook: gates only, emit JSON for additionalContext ────────── */
 if (hook) {
   const res = gates();
@@ -585,15 +608,8 @@ if (hook) {
   const prefix = res.bad
     ? 'Maintained skills workspace — a quality gate is RED (see memory maintenance-cadence):\n'
     : 'Maintained skills workspace — gate status at session start:\n';
-  // The reminder Ball asked for on 2026-11-17: say it at session start, in the
-  // room where skills get edited, and address it to him — he does the upload.
-  const app = appCopies();
-  const appText = app.text.replace(/\x1b\[[0-9;]*m/g, '').trim();
-  const nudge = app.behind.length
-    ? '\nTELL BALL at the start of this session: these skills were edited here but the claude.ai app still has the old version, and he uses them there. He uploads the zips by hand; offer to rebuild dist/ first. (If an upload happened in the last ~20 minutes the sync may not have landed yet — say so rather than repeat the ask.)'
-    : '';
   process.stdout.write(JSON.stringify({
-    hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: `${prefix}${clean}\n\n${appText}${nudge}` },
+    hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: prefix + clean },
   }));
   process.exit(0);
 }

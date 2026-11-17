@@ -86,7 +86,9 @@ there daily — ideas, wireframes, layouts. An edit here reaches the app only wh
 `dist/per-skill/<name>.zip` is uploaded again by hand (`bash
 scripts/build-packages.sh`, then claude.ai → Settings → Customize → Skills →
 Add; the same name replaces). On 2026-11-17 every copy there was four months
-old and nothing had said so. The SessionStart hook says so now: `check-drift`
+old and nothing had said so. A SessionStart hook says so now, in EVERY room on
+this machine — `check-drift.mjs --app-hook`, wired in `~/.claude/settings.json`,
+not in this repo's settings, because a skill can be edited from any room. It
 compares the app's synced copies with `skills/` byte for byte and names the
 ones behind. **After editing a skill, tell Ball which zips to upload** — do not
 advise deleting the copies, which the old audit row did.
