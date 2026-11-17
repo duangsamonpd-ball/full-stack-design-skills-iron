@@ -24,6 +24,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, extname } from 'node:path';
+import { homedir } from 'node:os';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -81,6 +82,66 @@ function gates() {
   const skipped = results.filter((res) => res.missing).length;
   const head = bad ? r(`gates: ${bad} failing`) : skipped ? y('gates: not installed') : g('gates: all green');
   return { text: `${head}\n${lines.join('\n')}`, bad };
+}
+
+/* ── claude.ai app copies: has an edited skill been re-uploaded? ───────────── */
+// The symlinks make an edit here live in Claude Code on this machine. They do
+// NOT reach the claude.ai app: it holds its own uploaded copy of each skill, and
+// that copy stays as it was until someone uploads `dist/per-skill/<name>.zip`
+// again by hand. On 2026-11-17 all fifteen copies there dated from 2026-07-20 —
+// four months behind — and nothing said so, because the one check that looked
+// asked whether a copy existed, not whether it matched.
+//
+// The app syncs its skills down to `~/.claude/skills/synced/<bucket>/<name>/`,
+// which is what makes this checkable from here: compare those bytes with
+// `skills/<name>`. A skill the app does not hold is not a fault — four of them
+// need a repository and were left out on purpose. The sync runs roughly every
+// twenty minutes, so a copy can read "behind" for that long after an upload.
+//
+// SKILLS_SYNCED_DIR points this at a fixture, so the refusal can be shown on a
+// machine whose real copies are all current.
+const SYNCED = process.env.SKILLS_SYNCED_DIR ?? join(homedir(), '.claude/skills/synced');
+
+function treeBytes(root) {
+  const out = new Map();
+  const walk = (d, rel) => {
+    for (const e of readdirSync(d, { withFileTypes: true })) {
+      if (e.name === '.DS_Store') continue;
+      const at = rel ? `${rel}/${e.name}` : e.name;
+      if (e.isDirectory()) walk(join(d, e.name), at); else out.set(at, readFileSync(join(d, e.name)));
+    }
+  };
+  walk(root, '');
+  return out;
+}
+
+function appCopies() {
+  const names = readdirSync(join(ROOT, 'skills'), { withFileTypes: true })
+    .filter((e) => e.isDirectory() && existsSync(join(ROOT, 'skills', e.name, 'SKILL.md'))).map((e) => e.name);
+  const buckets = existsSync(SYNCED)
+    ? readdirSync(SYNCED, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => join(SYNCED, e.name))
+    : [];
+  const held = [];
+  const behind = [];
+  for (const name of names) {
+    for (const bucket of buckets) {
+      const copy = join(bucket, name);
+      if (!existsSync(join(copy, 'SKILL.md'))) continue;
+      held.push(name);
+      const a = treeBytes(copy);
+      const b = treeBytes(join(ROOT, 'skills', name));
+      const same = a.size === b.size && [...b].every(([k, v]) => a.has(k) && a.get(k).equals(v));
+      if (!same) behind.push(name);
+    }
+  }
+  if (!held.length) return { text: dim('claude.ai app: no synced copies on this machine — nothing to compare'), behind: [] };
+  if (!behind.length) return { text: `${g('claude.ai app: current')}\n  ${g('✓')} ${held.length} uploaded skills match this repo byte for byte`, behind };
+  return {
+    text: `${r(`claude.ai app: ${behind.length} of ${held.length} uploaded skills are behind this repo`)}\n`
+      + behind.map((n) => `  ${r('✗')} ${n}`).join('\n')
+      + `\n  ${dim('bash scripts/build-packages.sh, then upload dist/per-skill/<name>.zip at claude.ai → Settings → Customize → Skills → Add (same name replaces)')}`,
+    behind,
+  };
 }
 
 /* ── versions: compare pinned deps to npm's latest ────────────────────────── */
@@ -524,8 +585,15 @@ if (hook) {
   const prefix = res.bad
     ? 'Maintained skills workspace — a quality gate is RED (see memory maintenance-cadence):\n'
     : 'Maintained skills workspace — gate status at session start:\n';
+  // The reminder Ball asked for on 2026-11-17: say it at session start, in the
+  // room where skills get edited, and address it to him — he does the upload.
+  const app = appCopies();
+  const appText = app.text.replace(/\x1b\[[0-9;]*m/g, '').trim();
+  const nudge = app.behind.length
+    ? '\nTELL BALL at the start of this session: these skills were edited here but the claude.ai app still has the old version, and he uses them there. He uploads the zips by hand; offer to rebuild dist/ first. (If an upload happened in the last ~20 minutes the sync may not have landed yet — say so rather than repeat the ask.)'
+    : '';
   process.stdout.write(JSON.stringify({
-    hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: prefix + clean },
+    hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: `${prefix}${clean}\n\n${appText}${nudge}` },
   }));
   process.exit(0);
 }
@@ -534,7 +602,12 @@ if (hook) {
 const blocks = [];
 let drift = 0;
 let gateFail = 0;
-if (want.gates) { const res = gates(); blocks.push(res.text); drift += res.bad; gateFail = res.bad; }
+if (want.gates) {
+  const res = gates(); blocks.push(res.text); drift += res.bad; gateFail = res.bad;
+  // Advisory, and deliberately not counted into `drift`: it is a property of
+  // this machine's sync, absent on the runner, and an upload is Ball's to do.
+  blocks.push(appCopies().text);
+}
 if (want.versions) {
   for (const res of [versions(), await actions(), await node(), await wcag()]) {
     blocks.push(res.text);

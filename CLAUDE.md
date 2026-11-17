@@ -80,6 +80,17 @@ gate that quietly narrows its own scope reports the narrowed scope as a pass.
 `skills/`. Save a `SKILL.md` and the next session on this machine — in
 any project — loads it. There is no install step and no reinstall step.
 
+**"Everywhere" means Claude Code on this machine. It does not mean the claude.ai
+app.** The app holds its own uploaded copy of each skill and Ball uses them
+there daily — ideas, wireframes, layouts. An edit here reaches the app only when
+`dist/per-skill/<name>.zip` is uploaded again by hand (`bash
+scripts/build-packages.sh`, then claude.ai → Settings → Customize → Skills →
+Add; the same name replaces). On 2026-11-17 every copy there was four months
+old and nothing had said so. The SessionStart hook says so now: `check-drift`
+compares the app's synced copies with `skills/` byte for byte and names the
+ones behind. **After editing a skill, tell Ball which zips to upload** — do not
+advise deleting the copies, which the old audit row did.
+
 That is the point, and it is also the blast radius: a half-finished edit is a
 half-finished skill for every room. Verified 2026-08-26 by planting a marker in
 a `SKILL.md` here and reading it back through `~/.claude/skills`.
