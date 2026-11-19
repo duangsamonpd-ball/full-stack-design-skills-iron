@@ -129,6 +129,31 @@ its box.** No overflow sweep, no box-escape sweep and no scroll check can ever
 see it — the layout is correct, the words are wrong. `{' '}` survives the trim
 and is the fix.
 
+### A `*/` in a comment's prose ends the comment
+
+Writing a wildcard the way prose writes it — "the `*/50` fills and `*/300`
+accents" — closes the CSS comment at the `*/`. Everything after it is parsed as
+CSS, and the browser recovers silently, so what is lost depends on where the
+comment sits:
+
+- **between rules**, the leftover text becomes the next rule's selector, which is
+  invalid, so the WHOLE NEXT RULE is dropped;
+- **inside a declaration block**, it runs on to the next `;` and swallows the
+  next declaration.
+
+Measured 2026-11-18 on a Notice component: one comment dropped `.notice--info`
+entirely and another dropped `--color-notice-info-fill` from both `:root` and
+`.dark`, so the info card rendered with no fill and a text-coloured icon in both
+themes while the other four intents were right. Every gate was green — Tailwind
+and Astro pass the text through, and nothing parses CSS strictly. It shipped to a
+consuming site and was found by a person reading the source.
+
+Write `<hue>/300`, not `*/300`. Then gate it, because a scan is exact here: walk
+the text as a tokenizer does (comments, then strings), and **a `*/` met outside a
+comment is never valid CSS**, nor is a `/*` that never closes. Scan generated
+stylesheets as well — a builder that strips comments strips only up to the first
+`*/`, and left three lines of that comment in the output as CSS.
+
 ### Assert the words, not just the boxes — as a SUBSEQUENCE
 
 Read the rendered text at a wide width and at a narrow one, and require every

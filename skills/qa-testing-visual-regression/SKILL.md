@@ -190,6 +190,24 @@ had been left. Only a full run — every page, every width — may decide that a
 entry has gone silent, because "nobody looked there" and "it is no longer
 happening" are different sentences.
 
+### A diff against a baseline that is already wrong passes
+
+A regression diff answers "did anything change since the baseline", never "is it
+right". When the baseline itself is broken, the diff is green forever. Measured
+2026-11-18: an end-of-day review compared every computed style on every docs page
+against `HEAD`, found nothing different, and called the day's work clean. The
+fault was IN `HEAD` — one of five Notice intents had no fill in either theme,
+committed that morning — so "0 elements render differently" was true and
+worthless. A person reading the source found it hours later.
+
+So beside the diff, keep one check that asks a question with an ABSOLUTE answer:
+
+- **every variant against its declared value** — each intent's fill is the token
+  the spec names, not merely what it was yesterday;
+- **every variant against its siblings** — when four intents have a fill and one
+  is `transparent`, the odd one out is the finding. It needs no baseline at all,
+  and it is the cheapest arming there is: the siblings are the control.
+
 ### The shapes a skipping gate takes
 
 The failure that costs the most is not a gate that fails — it is a gate that

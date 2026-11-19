@@ -58,6 +58,15 @@ found it.
   `registration-form-m3.html`: a correctly filled form threw on submit and never
   reached its success view — a missing `#password-err` — while every gate
   passed and all four screenshots looked finished. Only submitting it showed it.
+- **Render every variant side by side, in both themes, and look for the odd one
+  out.** A component with five intents that has a fill on four is a finding
+  before you know why. Measured 2026-11-18: a Notice's `info` intent rendered
+  with no fill and a text-coloured icon in light and dark — a CSS comment
+  containing `*/300` had closed early and dropped its rule — while every gate,
+  including a full computed-style diff against the previous commit, was green.
+  The diff could not see it because the previous commit was already broken; a
+  reviewer reading the component's source found it. So **read the stylesheet as
+  well as the render**: the comments are code to the parser.
 - **Stress it**: the longest real string, an empty list, one item, forty, a
   nine-digit number, a missing image. Push each into every state it can reach,
   not only the first one: on that same page a 93-character email widened the
